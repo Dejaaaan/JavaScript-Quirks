@@ -34,6 +34,7 @@ export interface LeetCodeTestCase {
 
 export interface LeetCodeSolution {
   title?: string;
+  titleEn?: string;
   code: string;
   timeComplexity: string;
   spaceComplexity: string;
@@ -61,6 +62,7 @@ export interface LeetCodeProblem {
     explanationEn?: string;
   }>;
   constraints: string[];
+  constraintsEn?: string[];
   intuition: string;
   intuitionEn?: string;
   optimalSolution: LeetCodeSolution;
@@ -109,6 +111,72 @@ export interface VisualDemoPreset {
   interactiveConfig?: Record<string, any>;
 }
 
+export interface ChapterGuideStep {
+  stepNumber: number;
+  title: string;
+  titleEn?: string;
+  description: string;
+  descriptionEn?: string;
+  codeSnippet?: string;
+}
+
+export interface ChapterGuidePitfall {
+  title: string;
+  titleEn?: string;
+  cause: string;
+  causeEn?: string;
+  impact: string;
+  impactEn?: string;
+  codeSnippet?: string;
+}
+
+export interface ChapterGuideSolution {
+  title: string;
+  titleEn?: string;
+  solution: string;
+  solutionEn?: string;
+  recommendation: string;
+  recommendationEn?: string;
+  codeSnippet?: string;
+}
+
+export interface ChapterGuideFunFact {
+  title: string;
+  titleEn?: string;
+  codeSnippet?: string;
+  explanation: string;
+  explanationEn?: string;
+}
+
+export interface ChapterGuide {
+  overview: string;
+  overviewEn?: string;
+  analogy?: string;
+  analogyEn?: string;
+  historyAndOrigin: {
+    title: string;
+    titleEn?: string;
+    description: string;
+    descriptionEn?: string;
+    whyItExists: string;
+    whyItExistsEn?: string;
+  };
+  underTheHood: {
+    title: string;
+    titleEn?: string;
+    summary: string;
+    summaryEn?: string;
+    steps: ChapterGuideStep[];
+  };
+  pitfalls: ChapterGuidePitfall[];
+  solutions: ChapterGuideSolution[];
+  funFacts: ChapterGuideFunFact[];
+  mentalModel: string;
+  mentalModelEn?: string;
+  goldenRule: string;
+  goldenRuleEn?: string;
+}
+
 export interface DeepDiveGuide {
   title: string;
   titleEn?: string;
@@ -131,11 +199,17 @@ export interface JSTopic {
   summary: string;
   summaryEn?: string;
   deepDive?: DeepDiveGuide;
+  deepDiveEn?: DeepDiveGuide;
+  chapterGuide?: ChapterGuide;
+  chapterGuideEn?: ChapterGuide;
   ecmaSpecNote?: string;
   visualType?: 'event-loop' | 'coercion' | 'prototype' | 'this-binding' | 'scope-hoisting' | 'custom-console';
   codePresets: VisualDemoPreset[];
+  codePresetsEn?: VisualDemoPreset[];
   comparisons: CodeComparison[];
+  comparisonsEn?: CodeComparison[];
   languageComparisons: LanguageComparison[];
+  languageComparisonsEn?: LanguageComparison[];
   quizzes?: QuizQuestion[];
 }
 

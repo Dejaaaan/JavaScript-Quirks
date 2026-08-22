@@ -1,6 +1,6 @@
 {
-  "name": "JavaScript Deep Dive & Quirks Explorer",
-  "description": "An interactive, visual exploration of JavaScript specificities, quirky mechanics, type coercion, event loop, prototype inheritance, bad vs good practices, solved algorithmic interview challenges, and cross-language comparisons.",
+  "name": "JavaScript Quirks",
+  "description": "An interactive, visual exploration of JavaScript quirks, type coercion, event loop, prototype inheritance, bad vs good practices, solved algorithmic interview challenges, and cross-language comparisons.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

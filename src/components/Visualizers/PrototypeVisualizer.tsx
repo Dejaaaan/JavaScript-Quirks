@@ -1,48 +1,56 @@
 import React, { useState } from 'react';
 import { GitCommit, Search, CheckCircle2, XCircle, ArrowDown, HelpCircle, ShieldAlert } from 'lucide-react';
+import { useI18n } from '../../i18n';
 
 interface PrototypeNode {
   name: string;
+  nameEn?: string;
   type: 'instanca' | 'prototip' | 'koren' | 'null';
   properties: { key: string; value: string; isOwn: boolean }[];
   protoTargetName: string | null;
 }
 
-const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: PrototypeNode[] }[] = [
+const SAMPLE_CHAINS: { id: string; name: string; nameEn: string; description: string; descriptionEn: string; nodes: PrototypeNode[] }[] = [
   {
     id: 'dog-inheritance',
     name: 'Korisnička Hijerarhija Klasa (Dog -> Animal -> Object)',
+    nameEn: 'Custom Class Hierarchy (Dog -> Animal -> Object)',
     description: 'Klasičan lanac instanci koji prikazuje kako se nasleđene metode delegiraju uz lanac',
+    descriptionEn: 'Classic instance chain showing how inherited methods delegate up the prototype chain',
     nodes: [
       {
         name: 'myDog (Instanca)',
+        nameEn: 'myDog (Instance)',
         type: 'instanca',
         properties: [
           { key: 'name', value: '"Sparky"', isOwn: true },
-          { key: 'breed', value: '"Zlatni Retriver"', isOwn: true }
+          { key: 'breed', value: '"Golden Retriever"', isOwn: true }
         ],
         protoTargetName: 'Dog.prototype'
       },
       {
         name: 'Dog.prototype',
+        nameEn: 'Dog.prototype',
         type: 'prototip',
         properties: [
-          { key: 'bark', value: 'function() { return "Av av!" }', isOwn: true },
-          { key: 'fetch', value: 'function() { return "Loptica" }', isOwn: true }
+          { key: 'bark', value: 'function() { return "Woof!" }', isOwn: true },
+          { key: 'fetch', value: 'function() { return "Ball" }', isOwn: true }
         ],
         protoTargetName: 'Animal.prototype'
       },
       {
         name: 'Animal.prototype',
+        nameEn: 'Animal.prototype',
         type: 'prototip',
         properties: [
-          { key: 'eat', value: 'function() { return "Jede" }', isOwn: true },
-          { key: 'sleep', value: 'function() { return "Spava" }', isOwn: true }
+          { key: 'eat', value: 'function() { return "Nom nom" }', isOwn: true },
+          { key: 'sleep', value: 'function() { return "Zzz" }', isOwn: true }
         ],
         protoTargetName: 'Object.prototype'
       },
       {
         name: 'Object.prototype',
+        nameEn: 'Object.prototype',
         type: 'koren',
         properties: [
           { key: 'toString', value: 'function() { [native code] }', isOwn: true },
@@ -53,6 +61,7 @@ const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: Pro
       },
       {
         name: 'null',
+        nameEn: 'null',
         type: 'null',
         properties: [],
         protoTargetName: null
@@ -62,10 +71,13 @@ const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: Pro
   {
     id: 'array-chain',
     name: 'Ugrađeni Array ([1, 2, 3] -> Array.prototype -> Object.prototype)',
+    nameEn: 'Built-in Array ([1, 2, 3] -> Array.prototype -> Object.prototype)',
     description: 'Kako se metode niza poput .map() i .filter() pronalaze na Array.prototype',
+    descriptionEn: 'How array methods like .map() and .filter() are found on Array.prototype',
     nodes: [
       {
         name: 'myArr = [1, 2, 3] (Instanca)',
+        nameEn: 'myArr = [1, 2, 3] (Instance)',
         type: 'instanca',
         properties: [
           { key: '0', value: '1', isOwn: true },
@@ -77,6 +89,7 @@ const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: Pro
       },
       {
         name: 'Array.prototype',
+        nameEn: 'Array.prototype',
         type: 'prototip',
         properties: [
           { key: 'map', value: 'function() { ... }', isOwn: true },
@@ -88,6 +101,7 @@ const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: Pro
       },
       {
         name: 'Object.prototype',
+        nameEn: 'Object.prototype',
         type: 'koren',
         properties: [
           { key: 'toString', value: 'function() { [native code] }', isOwn: true },
@@ -97,6 +111,7 @@ const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: Pro
       },
       {
         name: 'null',
+        nameEn: 'null',
         type: 'null',
         properties: [],
         protoTargetName: null
@@ -106,6 +121,7 @@ const SAMPLE_CHAINS: { id: string; name: string; description: string; nodes: Pro
 ];
 
 export const PrototypeVisualizer: React.FC = () => {
+  const { locale } = useI18n();
   const [selectedChainIdx, setSelectedChainIdx] = useState(0);
   const [searchProp, setSearchProp] = useState('bark');
 
@@ -115,10 +131,22 @@ export const PrototypeVisualizer: React.FC = () => {
   let foundInNode: string | null = null;
   for (const node of chain.nodes) {
     if (node.properties.some((p) => p.key === searchProp.trim())) {
-      foundInNode = node.name;
+      foundInNode = locale === 'en' && node.nameEn ? node.nameEn : node.name;
       break;
     }
   }
+
+  const getTypeLabel = (type: PrototypeNode['type']) => {
+    if (locale === 'en') {
+      switch (type) {
+        case 'instanca': return 'Instance';
+        case 'prototip': return 'Prototype';
+        case 'koren': return 'Root';
+        case 'null': return 'Terminal null';
+      }
+    }
+    return type;
+  };
 
   return (
     <div id="prototype-visualizer" className="bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] space-y-6">
@@ -127,30 +155,39 @@ export const PrototypeVisualizer: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded-md bg-[#BE185D]/10 dark:bg-[#EC4899]/20 text-[#BE185D] dark:text-[#F472B6] font-mono text-[11px] font-bold border border-[#BE185D]/20 dark:border-[#EC4899]/30">
               <GitCommit className="w-3.5 h-3.5 inline-block mr-1" />
-              Graf Delegacije
+              {locale === 'en' ? 'Delegation Graph' : 'Graf Delegacije'}
             </span>
-            <h3 className="text-xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight">Istraživač lanca prototipova i delegacije</h3>
+            <h3 className="text-xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight">
+              {locale === 'en' ? 'Prototype Chain & Delegation Explorer' : 'Istraživač lanca prototipova i delegacije'}
+            </h3>
           </div>
           <p className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic mt-1">
-            Pratite skriveni <code className="text-[#BE185D] dark:text-[#F472B6] font-mono">[[Prototype]]</code> lanac od instance objekta sve do završnog <code className="text-[#BE185D] dark:text-[#F472B6] font-mono">null</code>.
+            {locale === 'en' ? (
+              <>Trace the hidden <code className="text-[#BE185D] dark:text-[#F472B6] font-mono">[[Prototype]]</code> chain from instance up to terminal <code className="text-[#BE185D] dark:text-[#F472B6] font-mono">null</code>.</>
+            ) : (
+              <>Pratite skriveni <code className="text-[#BE185D] dark:text-[#F472B6] font-mono">[[Prototype]]</code> lanac od instance objekta sve do završnog <code className="text-[#BE185D] dark:text-[#F472B6] font-mono">null</code>.</>
+            )}
           </p>
         </div>
 
         {/* Chain Selector */}
         <div className="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-[#202023] p-1 rounded-xl border border-[#E5E5DF] dark:border-[#27272A]">
-          {SAMPLE_CHAINS.map((c, idx) => (
-            <button
-              key={c.id}
-              onClick={() => setSelectedChainIdx(idx)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                selectedChainIdx === idx
-                  ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] shadow-sm'
-                  : 'text-[#575750] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]'
-              }`}
-            >
-              {c.name.split('(')[0]}
-            </button>
-          ))}
+          {SAMPLE_CHAINS.map((c, idx) => {
+            const displayName = locale === 'en' ? c.nameEn : c.name;
+            return (
+              <button
+                key={c.id}
+                onClick={() => setSelectedChainIdx(idx)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                  selectedChainIdx === idx
+                    ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] shadow-sm'
+                    : 'text-[#575750] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]'
+                }`}
+              >
+                {displayName.split('(')[0]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -158,12 +195,14 @@ export const PrototypeVisualizer: React.FC = () => {
       <div className="bg-[#FAF9F5] dark:bg-[#202023] p-4 rounded-xl border border-[#E5E5DF] dark:border-[#27272A] flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="flex items-center gap-2 flex-1">
           <Search className="w-4 h-4 text-[#BE185D] dark:text-[#F472B6]" />
-          <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic">Simulirajte pretragu svojstva:</span>
+          <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic">
+            {locale === 'en' ? 'Simulate property lookup:' : 'Simulirajte pretragu svojstva:'}
+          </span>
           <input
             type="text"
             value={searchProp}
             onChange={(e) => setSearchProp(e.target.value)}
-            placeholder="npr. bark, name, toString, nepostojece"
+            placeholder={locale === 'en' ? 'e.g. bark, name, toString, nonExistent' : 'npr. bark, name, toString, nepostojece'}
             className="bg-[#FFFFFF] dark:bg-[#18181B] border border-[#E5E5DF] dark:border-[#27272A] text-[#BE185D] dark:text-[#F472B6] font-bold rounded-lg px-3 py-1 text-xs font-mono outline-none focus:border-[#BE185D] dark:focus:border-[#F472B6] flex-1 shadow-sm"
           />
         </div>
@@ -172,12 +211,12 @@ export const PrototypeVisualizer: React.FC = () => {
           {foundInNode ? (
             <div className="flex items-center gap-1.5 text-[#166534] dark:text-[#86EFAC] bg-[#F0FDF4] dark:bg-[#064E3B]/30 border border-[#BBF7D0] dark:border-[#059669]/40 px-3 py-1.5 rounded-lg shadow-sm">
               <CheckCircle2 className="w-4 h-4 text-[#16A34A] dark:text-[#4ADE80]" />
-              <span>Pronađeno na: <strong>{foundInNode}</strong></span>
+              <span>{locale === 'en' ? 'Found on:' : 'Pronađeno na:'} <strong>{foundInNode}</strong></span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5 text-[#991B1B] dark:text-[#FCA5A5] bg-[#FEF2F2] dark:bg-[#7F1D1D]/30 border border-[#FECACA] dark:border-[#991B1B]/50 px-3 py-1.5 rounded-lg shadow-sm">
               <XCircle className="w-4 h-4 text-[#DC2626] dark:text-[#F87171]" />
-              <span>Dostignut <code className="text-[#1A1A1A] dark:text-[#F4F4F5] font-bold">null</code> =&gt; undefined</span>
+              <span>{locale === 'en' ? 'Reached' : 'Dostignut'} <code className="text-[#1A1A1A] dark:text-[#F4F4F5] font-bold">null</code> =&gt; undefined</span>
             </div>
           )}
         </div>
@@ -186,7 +225,8 @@ export const PrototypeVisualizer: React.FC = () => {
       {/* Vertical Prototype Chain Nodes */}
       <div className="space-y-4 max-w-2xl mx-auto py-2">
         {chain.nodes.map((node, idx) => {
-          const isMatchNode = foundInNode === node.name;
+          const nodeName = locale === 'en' && node.nameEn ? node.nameEn : node.name;
+          const isMatchNode = foundInNode === nodeName;
           const isNullNode = node.type === 'null';
 
           return (
@@ -214,9 +254,9 @@ export const PrototypeVisualizer: React.FC = () => {
                           : 'bg-[#F4F4F0] dark:bg-[#27272A] text-[#73736C] dark:text-[#A1A1AA]'
                       }`}
                     >
-                      {node.type}
+                      {getTypeLabel(node.type)}
                     </span>
-                    <span className="font-mono text-xs font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">{node.name}</span>
+                    <span className="font-mono text-xs font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">{nodeName}</span>
                   </div>
 
                   {node.protoTargetName && (
@@ -230,7 +270,7 @@ export const PrototypeVisualizer: React.FC = () => {
                 {!isNullNode && (
                   <div className="space-y-1.5 mt-2">
                     <span className="text-[10px] font-semibold uppercase text-[#73736C] dark:text-[#A1A1AA] block font-mono">
-                      Sopstvena svojstva (Own Properties) ({node.properties.length}):
+                      {locale === 'en' ? `Own Properties (${node.properties.length}):` : `Sopstvena svojstva (Own Properties) (${node.properties.length}):`}
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 font-mono text-xs">
                       {node.properties.map((prop, pIdx) => {
@@ -270,8 +310,14 @@ export const PrototypeVisualizer: React.FC = () => {
       <div className="bg-[#FFFBEB] dark:bg-[#78350F]/30 p-4 rounded-xl border border-[#FDE68A] dark:border-[#B45309]/50 flex items-start gap-3 text-xs text-[#92400E] dark:text-[#FDE68A]">
         <ShieldAlert className="w-5 h-5 text-[#D97706] dark:text-[#F59E0B] flex-shrink-0 mt-0.5" />
         <div>
-          <span className="font-serif font-bold text-[#B45309] dark:text-[#F59E0B] block mb-1">Sigurnosno upozorenje: Prototype Pollution</span>
-          Direktna mutacija na <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">Object.prototype</code> zagađuje SVAKI pojedinačni objekat u celom JavaScript runtime-u! Uvek koristite <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">Object.create(null)</code> ili <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">new Map()</code> kada radite sa dinamičkim korisničkim ključevima.
+          <span className="font-serif font-bold text-[#B45309] dark:text-[#F59E0B] block mb-1">
+            {locale === 'en' ? 'Security Alert: Prototype Pollution' : 'Sigurnosno upozorenje: Prototype Pollution'}
+          </span>
+          {locale === 'en' ? (
+            <>Direct mutation on <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">Object.prototype</code> pollutes EVERY single object in the entire JavaScript runtime! Always use <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">Object.create(null)</code> or <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">new Map()</code> when handling arbitrary user-provided object keys.</>
+          ) : (
+            <>Direktna mutacija na <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">Object.prototype</code> zagađuje SVAKI pojedinačni objekat u celom JavaScript runtime-u! Uvek koristite <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">Object.create(null)</code> ili <code className="text-[#BE185D] dark:text-[#F472B6] font-mono font-bold bg-[#FFFFFF] dark:bg-[#18181B] px-1 rounded border border-[#FDE68A] dark:border-[#B45309]">new Map()</code> kada radite sa dinamičkim korisničkim ključevima.</>
+          )}
         </div>
       </div>
     </div>

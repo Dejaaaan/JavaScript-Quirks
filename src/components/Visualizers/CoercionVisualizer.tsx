@@ -46,6 +46,10 @@ export const CoercionVisualizer: React.FC = () => {
     }
   };
 
+  const selectedExplanation = (locale === 'en' && selectedItem.explanationEn) ? selectedItem.explanationEn : selectedItem.explanation;
+  const selectedSteps = (locale === 'en' && selectedItem.stepsEn) ? selectedItem.stepsEn : selectedItem.steps;
+  const selectedCategory = (locale === 'en' && selectedItem.categoryEn) ? selectedItem.categoryEn : selectedItem.category;
+
   return (
     <div id="coercion-visualizer-root" className="bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] space-y-6">
       {/* Header & Tabs */}
@@ -99,44 +103,49 @@ export const CoercionVisualizer: React.FC = () => {
 
       {/* Tab 1: Presets Catalog */}
       {activeTab === 'presets' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Preset Buttons List (5 cols) */}
-          <div className="lg:col-span-5 space-y-2 max-h-[480px] overflow-y-auto pr-1">
-            <span className="text-xs font-mono font-bold text-[#73736C] dark:text-[#A1A1AA] uppercase tracking-wider block mb-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* Preset Buttons List (5 cols) - height strictly driven by the right-hand column */}
+          <div className="lg:col-span-5 flex flex-col min-h-0 bg-[#FAF9F5] dark:bg-[#202023] rounded-xl p-5 border border-[#E5E5DF] dark:border-[#27272A]">
+            <span className="text-xs font-mono font-bold text-[#73736C] dark:text-[#A1A1AA] uppercase tracking-wider block mb-3 border-b border-[#E5E5DF] dark:border-[#27272A] pb-2 flex-shrink-0">
               {localize('Izaberite izraz za analizu:', 'Select expression for analysis:')}
             </span>
-            {COERCION_DATABASE.map((item) => {
-              const isSelected = selectedItem.id === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setSelectedItem(item)}
-                  className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between gap-2.5 cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#1A1A1A] dark:bg-[#27272A] border-[#1A1A1A] dark:border-[#F59E0B] text-[#F9F9F7] dark:text-[#F4F4F5] shadow-sm'
-                      : 'bg-[#FAF9F5] dark:bg-[#202023] border-[#E5E5DF] dark:border-[#27272A] text-[#1A1A1A] dark:text-[#F4F4F5] hover:border-[#1A1A1A] dark:hover:border-[#52525B] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A]'
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <span className={`font-mono text-xs sm:text-[13px] font-bold block truncate ${isSelected ? 'text-[#FDE68A] dark:text-[#FCD34D]' : 'text-[#1A1A1A] dark:text-[#F4F4F5]'}`}>
-                      {item.expression}
-                    </span>
-                    <span className={`text-[11px] ${isSelected ? 'text-[#A3A39A] dark:text-[#A1A1AA]' : 'text-[#73736C] dark:text-[#71717A]'}`}>{item.category}</span>
-                  </div>
-                  <span
-                    className={`px-2.5 py-1 rounded text-xs font-mono font-semibold shrink-0 ${
-                      isSelected ? 'bg-[#333330] dark:bg-[#18181B] text-[#6EE7B7] dark:text-[#34D399]' : 'bg-[#E5E5DF] dark:bg-[#27272A] text-[#40403C] dark:text-[#A1A1AA]'
-                    }`}
-                  >
-                    =&gt; {item.evaluatedResult}
-                  </span>
-                </button>
-              );
-            })}
+            <div className="relative flex-1 min-h-0">
+              <div className="absolute inset-0 overflow-y-auto space-y-2 pr-1.5 custom-scrollbar">
+                {COERCION_DATABASE.map((item) => {
+                  const isSelected = selectedItem.id === item.id;
+                  const catLabel = (locale === 'en' && item.categoryEn) ? item.categoryEn : item.category;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelectedItem(item)}
+                      className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between gap-2.5 cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#1A1A1A] dark:bg-[#27272A] border-[#1A1A1A] dark:border-[#F59E0B] text-[#F9F9F7] dark:text-[#F4F4F5] shadow-sm'
+                          : 'bg-[#FFFFFF] dark:bg-[#18181B] border-[#E5E5DF] dark:border-[#27272A] text-[#1A1A1A] dark:text-[#F4F4F5] hover:border-[#1A1A1A] dark:hover:border-[#52525B] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A]'
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <span className={`font-mono text-xs sm:text-[13px] font-bold block truncate ${isSelected ? 'text-[#FDE68A] dark:text-[#FCD34D]' : 'text-[#1A1A1A] dark:text-[#F4F4F5]'}`}>
+                          {item.expression}
+                        </span>
+                        <span className={`text-[11px] ${isSelected ? 'text-[#A3A39A] dark:text-[#A1A1AA]' : 'text-[#73736C] dark:text-[#71717A]'}`}>{catLabel}</span>
+                      </div>
+                      <span
+                        className={`px-2.5 py-1 rounded text-xs font-mono font-semibold shrink-0 ${
+                          isSelected ? 'bg-[#333330] dark:bg-[#18181B] text-[#6EE7B7] dark:text-[#34D399]' : 'bg-[#E5E5DF] dark:bg-[#27272A] text-[#40403C] dark:text-[#A1A1AA]'
+                        }`}
+                      >
+                        =&gt; {item.evaluatedResult}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Detailed Dissection Card (7 cols) */}
-          <div className="lg:col-span-7 bg-[#FAF9F5] dark:bg-[#202023] rounded-xl p-5 border border-[#E5E5DF] dark:border-[#27272A] space-y-5">
+          <div className="lg:col-span-7 bg-[#FAF9F5] dark:bg-[#202023] rounded-xl p-5 border border-[#E5E5DF] dark:border-[#27272A] space-y-5 flex flex-col justify-start">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] pb-4 gap-3">
               <div>
                 <span className="text-xs text-[#4338CA] dark:text-[#818CF8] font-mono font-bold">
@@ -154,6 +163,13 @@ export const CoercionVisualizer: React.FC = () => {
               </div>
             </div>
 
+            {/* Category tag */}
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-semibold bg-[#E5E5DF] dark:bg-[#27272A] text-[#575750] dark:text-[#D4D4D8]">
+                {selectedCategory}
+              </span>
+            </div>
+
             {/* Explanation */}
             <div>
               <h5 className="text-xs font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -161,7 +177,7 @@ export const CoercionVisualizer: React.FC = () => {
                 {localize('Mehanika i suštinsko objašnjenje', 'Mechanics & Core Explanation')}
               </h5>
               <div className="text-xs sm:text-sm text-[#40403C] dark:text-[#D4D4D8] leading-relaxed bg-[#FFFFFF] dark:bg-[#18181B] p-4 rounded-lg border border-[#E5E5DF] dark:border-[#27272A]">
-                <FormattedText text={selectedItem.explanation} as="p" />
+                <FormattedText text={selectedExplanation} as="p" />
               </div>
             </div>
 
@@ -172,7 +188,7 @@ export const CoercionVisualizer: React.FC = () => {
                 {localize('ECMAScript koraci izvršavanja:', 'ECMAScript Execution Steps:')}
               </h5>
               <div className="space-y-2">
-                {selectedItem.steps.map((step, idx) => (
+                {selectedSteps.map((step, idx) => (
                   <div key={idx} className="flex items-start gap-3 text-xs sm:text-[13px] font-mono bg-[#FFFFFF] dark:bg-[#18181B] p-3 rounded-lg border border-[#E5E5DF] dark:border-[#27272A] text-[#262624] dark:text-[#D4D4D8]">
                     <span className="shrink-0 w-5 h-5 rounded-full bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] flex items-center justify-center font-bold text-[10px] mt-0.5">
                       {idx + 1}
@@ -229,7 +245,7 @@ export const CoercionVisualizer: React.FC = () => {
                           className={`p-2 border border-[#E5E5DF] dark:border-[#27272A] transition-colors ${
                             isEqual
                               ? 'bg-[#DCFCE7] dark:bg-[#0E2718] text-[#166534] dark:text-[#4ADE80] font-bold'
-                              : 'bg-[#FFFFFF] dark:bg-[#18181B] text-[#A3A39A] dark:text-[#52525B]'
+                              : 'bg-[#FEE2E2] dark:bg-[#2A1515] text-[#B91C1C] dark:text-[#F87171] font-medium'
                           }`}
                           title={`${rowVal} == ${colVal} => ${isEqual}`}
                         >
@@ -250,58 +266,38 @@ export const CoercionVisualizer: React.FC = () => {
 
       {/* Tab 3: Custom Expression Calculator */}
       {activeTab === 'custom' && (
-        <div className="space-y-4 bg-[#FAF9F5] dark:bg-[#202023] p-5 rounded-xl border border-[#E5E5DF] dark:border-[#27272A]">
-          <label className="block text-xs font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] uppercase tracking-wider">
-            {localize('Testirajte bilo koji proizvoljan JavaScript izraz:', 'Test any arbitrary JavaScript expression:')}
-          </label>
-          <div className="flex gap-2">
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               value={customExpr}
               onChange={(e) => setCustomExpr(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && evaluateCustom(customExpr)}
-              placeholder="npr. [] + {}, +!+[], false == '0', null >= 0"
-              className="flex-1 bg-[#FFFFFF] dark:bg-[#18181B] border border-[#E5E5DF] dark:border-[#3F3F46] rounded-lg px-4 py-2.5 text-xs font-mono text-[#1A1A1A] dark:text-[#F4F4F5] focus:outline-none focus:border-[#1A1A1A] dark:focus:border-[#F59E0B]"
+              placeholder={localize('Unesite JS izraz, npr: [] + {} ili "5" - 2', 'Enter JS expression, e.g. [] + {} or "5" - 2')}
+              className="flex-1 px-4 py-2.5 rounded-xl border border-[#E5E5DF] dark:border-[#3F3F46] bg-[#FAF9F5] dark:bg-[#202023] font-mono text-sm focus:outline-none focus:border-[#1A1A1A] dark:focus:border-[#F59E0B]"
             />
             <button
               onClick={() => evaluateCustom(customExpr)}
-              className="px-5 py-2.5 rounded-lg bg-[#1A1A1A] dark:bg-[#F59E0B] hover:bg-[#333330] dark:hover:bg-[#D97706] text-[#F9F9F7] dark:text-[#18181B] text-xs font-semibold transition cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
             >
-              {localize('Izračunaj', 'Evaluate')}
+              <Calculator className="w-3.5 h-3.5" />
+              <span>{localize('Izračunaj', 'Evaluate')}</span>
             </button>
           </div>
 
-          {/* Quick shortcuts */}
-          <div className="flex flex-wrap gap-2 pt-1">
-            <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] my-auto font-serif italic">{localize('Primeri:', 'Presets:')}</span>
-            {['[] + []', '[] + {}', '[] == ![]', '"5" - 3', 'null == 0', 'null >= 0', 'NaN === NaN', 'Math.min() > Math.max()'].map(
-              (snippet) => (
-                <button
-                  key={snippet}
-                  onClick={() => {
-                    setCustomExpr(snippet);
-                    evaluateCustom(snippet);
-                  }}
-                  className="px-2.5 py-1 bg-[#FFFFFF] dark:bg-[#27272A] hover:bg-[#EBEBE5] dark:hover:bg-[#3F3F46] text-[#1A1A1A] dark:text-[#F4F4F5] rounded text-xs font-mono border border-[#E5E5DF] dark:border-[#3F3F46] transition cursor-pointer"
-                >
-                  {snippet}
-                </button>
-              )
-            )}
-          </div>
-
-          {/* Result Output */}
           {customOutput && (
-            <div className="mt-4 p-4 bg-[#FFFFFF] dark:bg-[#18181B] rounded-lg border border-[#E5E5DF] dark:border-[#27272A] space-y-2">
-              <div className="flex items-center justify-between text-xs text-[#73736C] dark:text-[#A1A1AA]">
-                <span className="font-serif">{localize('Rezultat Evaluacije:', 'Evaluation Result:')}</span>
-                <span className="px-2 py-0.5 rounded bg-[#FAF9F5] dark:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#4338CA] dark:text-[#818CF8] font-mono text-[11px] font-bold">
-                  {localize('tip:', 'type:')} {customOutput.type}
+            <div className={`p-4 rounded-xl border ${
+              customOutput.isError
+                ? 'bg-[#FFF5F5] dark:bg-[#2A1515] border-[#FECACA] dark:border-[#7F1D1D] text-[#991B1B] dark:text-[#FCA5A5]'
+                : 'bg-[#F0FDF4] dark:bg-[#0E2718] border-[#BBF7D0] dark:border-[#14532D] text-[#166534] dark:text-[#86EFAC]'
+            }`}>
+              <div className="flex items-center justify-between font-mono text-xs mb-1">
+                <span className="font-bold">{localize('Rezultat evaluacije:', 'Evaluation result:')}</span>
+                <span className="px-2 py-0.5 rounded bg-white/40 dark:bg-black/40 font-mono text-[11px]">
+                  {customOutput.type}
                 </span>
               </div>
-              <div className={`font-mono text-base font-bold ${customOutput.isError ? 'text-[#DC2626] dark:text-[#F87171]' : 'text-[#15803D] dark:text-[#4ADE80]'}`}>
-                {customOutput.result}
-              </div>
+              <pre className="font-mono text-sm sm:text-base font-bold whitespace-pre-wrap">{customOutput.result}</pre>
             </div>
           )}
         </div>

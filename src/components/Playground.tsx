@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Play, RotateCcw, Copy, Check, Terminal, Clock, AlertCircle, Code2, Eye } from 'lucide-react';
+import { Play, RotateCcw, Copy, Check, Terminal, Clock, AlertCircle } from 'lucide-react';
+import Editor from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-javascript';
 import { runJavaScriptCode } from '../utils/codeRunner';
 import { ExecutionResult } from '../types';
-import { CodeBlock } from './CodeBlock';
 import { useI18n } from '../i18n';
 
 interface PlaygroundProps {
@@ -97,7 +99,6 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
     }
   }, [initialCode]);
 
-  const [editorMode, setEditorMode] = useState<'edit' | 'highlight'>('edit');
   const [result, setResult] = useState<ExecutionResult | null>(null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -114,6 +115,8 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const lines = code.split('\n');
 
   return (
     <div id="playground-root" className="space-y-6">
@@ -158,35 +161,13 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
                 <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] inline-block"></span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] inline-block"></span>
                 <span className="text-xs font-mono text-[#73736C] dark:text-[#A1A1AA] ml-2">sandbox.js</span>
+                <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-[#FAF9F5] dark:bg-[#27272A] text-[#73736C] dark:text-[#A1A1AA] border border-[#E5E5DF] dark:border-[#3F3F46]">
+                  {localize('Uživo označavanje koda', 'Live Syntax Highlighting')}
+                </span>
               </div>
 
-              {/* Toggle Edit vs Highlight & Copy */}
+              {/* Action buttons (Copy, Clear) */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center bg-[#FAF9F5] dark:bg-[#27272A] p-0.5 rounded-lg border border-[#E5E5DF] dark:border-[#3F3F46] text-xs">
-                  <button
-                    onClick={() => setEditorMode('edit')}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1 cursor-pointer ${
-                      editorMode === 'edit'
-                        ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] shadow-sm font-semibold'
-                        : 'text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]'
-                    }`}
-                  >
-                    <Code2 className="w-3 h-3" />
-                    <span>{localize('Uredi', 'Edit')}</span>
-                  </button>
-                  <button
-                    onClick={() => setEditorMode('highlight')}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1 cursor-pointer ${
-                      editorMode === 'highlight'
-                        ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] shadow-sm font-semibold'
-                        : 'text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]'
-                    }`}
-                  >
-                    <Eye className="w-3 h-3" />
-                    <span>{localize('Pregled', 'Preview')}</span>
-                  </button>
-                </div>
-
                 <button
                   onClick={handleCopy}
                   className="flex items-center gap-1 text-xs text-[#575750] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] px-2.5 py-1 rounded-lg bg-[#FAF9F5] dark:bg-[#27272A] hover:bg-[#EBEBE5] dark:hover:bg-[#3F3F46] border border-[#E5E5DF] dark:border-[#3F3F46] transition cursor-pointer"
@@ -205,28 +186,39 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
               </div>
             </div>
 
-            {/* Code Textarea or Highlighted CodeBlock */}
-            {editorMode === 'edit' ? (
-              <div className="relative">
-                <textarea
+            {/* Live Syntax-Highlighted Editor */}
+            <div className="rounded-xl border border-[#27272A] dark:border-[#3F3F46] bg-[#18181B] dark:bg-[#121214] flex overflow-hidden shadow-inner focus-within:border-[#F59E0B] focus-within:ring-1 focus-within:ring-[#F59E0B] transition">
+              {/* Line Numbers Gutter */}
+              <div className="select-none py-3 px-2.5 text-right font-mono text-xs text-[#52525B] bg-[#141416] dark:bg-[#0D0D0E] border-r border-[#27272A] dark:border-[#27272A] flex flex-col shrink-0 min-w-[2.5rem] leading-[1.65rem]">
+                {lines.map((_, i) => (
+                  <span key={i} className="block text-[11px] font-mono leading-[1.65rem] opacity-75">
+                    {i + 1}
+                  </span>
+                ))}
+              </div>
+
+              {/* Editable Code Area */}
+              <div className="flex-1 overflow-x-auto min-h-[320px] max-h-[480px] overflow-y-auto">
+                <Editor
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  onValueChange={(val) => setCode(val)}
+                  highlight={(c) => Prism.highlight(c, Prism.languages.javascript, 'javascript')}
+                  padding={12}
+                  className="font-mono text-xs"
                   placeholder={localize('// Upišite ili nalepite vaš JavaScript kod ovde...', '// Type or paste your JavaScript code here...')}
-                  rows={14}
-                  className="w-full bg-[#18181B] dark:bg-[#121214] text-[#F4F4F5] font-mono text-xs p-4 rounded-xl border border-[#27272A] dark:border-[#3F3F46] focus:border-[#F59E0B] focus:outline-none resize-none leading-relaxed shadow-inner"
-                  spellCheck={false}
+                  style={{
+                    fontFamily: 'var(--font-mono, ui-monospace, monospace)',
+                    fontSize: '12px',
+                    lineHeight: '1.65rem',
+                    minHeight: '320px',
+                    color: '#F4F4F5',
+                    backgroundColor: 'transparent',
+                    outline: 'none',
+                  }}
+                  textareaClassName="focus:outline-none focus:ring-0 leading-[1.65rem]"
                 />
               </div>
-            ) : (
-              <div className="min-h-[295px]">
-                <CodeBlock
-                  code={code || (locale === 'sr' ? '// (Editor je prazan. Kliknite "Uredi" da upišete JavaScript kod)' : '// (Editor is empty. Click "Edit" to type JavaScript code)')}
-                  language="javascript"
-                  showLineNumbers={true}
-                  showCopyButton={false}
-                />
-              </div>
-            )}
+            </div>
           </div>
 
           {/* Action Bar */}

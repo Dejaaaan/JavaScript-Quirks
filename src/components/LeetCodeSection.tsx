@@ -22,10 +22,19 @@ import {
   Terminal,
   Zap,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Flame,
   AlertTriangle,
-  Lightbulb
+  Lightbulb,
+  Edit3,
+  Undo2,
+  X,
+  Trash2
 } from 'lucide-react';
+import Editor from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-javascript';
 import { LEETCODE_PROBLEMS } from '../data/leetcodeProblems';
 import { LeetCodeProblem, LeetCodeDifficulty, LeetCodeCategory } from '../types';
 import { CodeBlock } from './CodeBlock';
@@ -45,13 +54,24 @@ interface TestCaseResult {
   error?: string;
 }
 
+interface ConsoleLogEntry {
+  id: string;
+  type: 'log' | 'warn' | 'error' | 'info';
+  message: string;
+  testLabel?: string;
+  timestamp: string;
+}
+
 export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlayground }) => {
   const { locale, m } = useI18n();
   const [selectedProblemId, setSelectedProblemId] = useState<string>(LEETCODE_PROBLEMS[0].id);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [activeTab, setActiveTab] = useState<'problem' | 'optimal' | 'comparison' | 'runner'>('optimal');
+  const [activeTab, setActiveTab] = useState<'optimal' | 'problem' | 'comparison'>('optimal');
+  const [isOutputExpanded, setIsOutputExpanded] = useState<boolean>(false);
+  const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
+  const [consoleLogs, setConsoleLogs] = useState<ConsoleLogEntry[]>([]);
   
   // Solved tracking via localStorage
   const [solvedIds, setSolvedIds] = useState<string[]>(() => {
@@ -63,10 +83,29 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
     }
   });
 
+  // Editable Solution Code state per problem
+  const [customCodes, setCustomCodes] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('js_challenges_custom_codes');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('js_challenges_custom_codes', JSON.stringify(customCodes));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [customCodes]);
+
   // Test Runner state
   const [isRunningTests, setIsRunningTests] = useState<boolean>(false);
   const [testResults, setTestResults] = useState<TestCaseResult[] | null>(null);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [isRunnerEditorExpanded, setIsRunnerEditorExpanded] = useState<boolean>(true);
 
   useEffect(() => {
     try {
@@ -117,6 +156,31 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
     return found || filteredProblems[0] || LEETCODE_PROBLEMS[0];
   }, [selectedProblemId, filteredProblems]);
 
+  // Current problem's active code (custom or optimal)
+  const currentCode = customCodes[currentProblem.id] ?? currentProblem.optimalSolution.code;
+  const isCodeModified = customCodes[currentProblem.id] !== undefined && customCodes[currentProblem.id] !== currentProblem.optimalSolution.code;
+
+  const handleCodeChange = (newCode: string) => {
+    setCustomCodes((prev) => ({
+      ...prev,
+      [currentProblem.id]: newCode
+    }));
+  };
+
+  const handleResetCode = () => {
+    setCustomCodes((prev) => {
+      const next = { ...prev };
+      delete next[currentProblem.id];
+      return next;
+    });
+  };
+
+  const handleLoadBruteForce = () => {
+    if (currentProblem.bruteForceSolution) {
+      handleCodeChange(currentProblem.bruteForceSolution.code);
+    }
+  };
+
   const currentIndex = filteredProblems.findIndex((p) => p.id === currentProblem.id);
 
   const handlePrevProblem = () => {
@@ -141,25 +205,70 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
 
   const handleCopyCode = () => {
     if (currentProblem) {
-      navigator.clipboard.writeText(currentProblem.optimalSolution.code);
+      navigator.clipboard.writeText(currentCode);
       setCopiedCode(true);
       setTimeout(() => setCopiedCode(false), 2000);
     }
   };
 
-  // Safe client-side Sandbox Test Runner
-  const handleRunTests = async () => {
+  const formatConsoleArg = (arg: any): string => {
+    if (arg === undefined) return 'undefined';
+    if (arg === null) return 'null';
+    if (typeof arg === 'object') {
+      try {
+        return JSON.stringify(arg, null, 2);
+      } catch {
+        return String(arg);
+      }
+    }
+    return String(arg);
+  };
+
+  // Safe client-side Sandbox Test Runner & Console Capture
+  const handleRunTests = async (customCodeToRun?: string) => {
     if (!currentProblem) return;
     setIsRunningTests(true);
     setTestResults(null);
+    setIsOutputExpanded(true);
+
+    let currentTestLabel = locale === 'sr' ? 'Inicijalizacija' : 'Initialization';
+    const capturedLogs: ConsoleLogEntry[] = [];
+
+    const addLog = (type: 'log' | 'warn' | 'error' | 'info', args: any[]) => {
+      capturedLogs.push({
+        id: Math.random().toString(36).substring(2, 9),
+        type,
+        message: args.map(formatConsoleArg).join(' '),
+        testLabel: currentTestLabel,
+        timestamp: new Date().toLocaleTimeString()
+      });
+    };
+
+    const customConsole = {
+      log: (...args: any[]) => addLog('log', args),
+      warn: (...args: any[]) => addLog('warn', args),
+      error: (...args: any[]) => addLog('error', args),
+      info: (...args: any[]) => addLog('info', args)
+    };
+
+    // Backup global console methods during execution so direct/window calls are also intercepted
+    const origLog = console.log;
+    const origWarn = console.warn;
+    const origError = console.error;
+    const origInfo = console.info;
 
     try {
-      // Evaluate user code in a function constructor wrapper
-      const codeToRun = currentProblem.optimalSolution.code;
+      console.log = customConsole.log;
+      console.warn = customConsole.warn;
+      console.error = customConsole.error;
+      console.info = customConsole.info;
+
+      // Evaluate active user code in a function constructor wrapper with injected console
+      const codeToRun = customCodeToRun ?? currentCode;
       const fnName = currentProblem.runFunctionName;
 
       // Sandbox wrapper
-      const createRunner = new Function(`
+      const createRunner = new Function('console', `
         ${codeToRun}
         if (typeof ${fnName} !== 'function') {
           throw new Error('Funkcija "${fnName}" nije definisana u kodu.');
@@ -167,10 +276,14 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
         return ${fnName};
       `);
 
-      const userFn = createRunner();
+      const userFn = createRunner(customConsole);
       const results: TestCaseResult[] = [];
 
+      let tcIdx = 1;
       for (const tc of currentProblem.testCases) {
+        currentTestLabel = `Test #${tcIdx}: ${tc.name || tc.id}`;
+        tcIdx++;
+
         const startTime = performance.now();
         try {
           // Deep clone input params to avoid mutation side-effects across tests
@@ -220,7 +333,10 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
       }
 
       setTestResults(results);
+      setConsoleLogs(capturedLogs);
     } catch (err: any) {
+      customConsole.error(err?.message || (locale === 'sr' ? 'Greška pri evaluaciji koda.' : 'Error evaluating code.'));
+      setConsoleLogs(capturedLogs);
       setTestResults([
         {
           testId: 'error-eval',
@@ -232,6 +348,10 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
         }
       ]);
     } finally {
+      console.log = origLog;
+      console.warn = origWarn;
+      console.error = origError;
+      console.info = origInfo;
       setIsRunningTests(false);
     }
   };
@@ -388,87 +508,89 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
       </div>
 
       {/* Main Two-Column / Master-Detail Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Problem List Directory */}
-        <div className="lg:col-span-4 space-y-3">
-          <div className="flex items-center justify-between px-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* Left Column: Problem List Directory (height strictly driven by the right-hand column) */}
+        <div className="lg:col-span-4 flex flex-col min-h-[420px] lg:min-h-0 bg-[#FAF9F5] dark:bg-[#202023] rounded-2xl p-4 border border-[#E5E5DF] dark:border-[#27272A] shadow-xs">
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#E5E5DF] dark:border-[#27272A] flex-shrink-0">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#73736C] dark:text-[#A1A1AA]">
               {locale === 'sr' ? `Prikazano: ${filteredProblems.length} zadataka` : `Showing: ${filteredProblems.length} problems`}
             </span>
           </div>
 
-          <div className="space-y-2 max-h-[700px] overflow-y-auto pr-1">
-            {filteredProblems.map((problem) => {
-              const isSelected = problem.id === currentProblem.id;
-              const isSolved = solvedIds.includes(problem.id);
-              const displayTitle = locale === 'en' ? (problem.titleEn || problem.title) : problem.title;
+          <div className="relative flex-1 min-h-0">
+            <div className="absolute inset-0 overflow-y-auto space-y-2 pr-1.5 custom-scrollbar">
+              {filteredProblems.map((problem) => {
+                const isSelected = problem.id === currentProblem.id;
+                const isSolved = solvedIds.includes(problem.id);
+                const displayTitle = locale === 'en' ? (problem.titleEn || problem.title) : problem.title;
 
-              return (
-                <div
-                  key={problem.id}
-                  onClick={() => {
-                    setSelectedProblemId(problem.id);
-                    setTestResults(null);
-                  }}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
-                    isSelected
-                      ? 'bg-[#FFFFFF] dark:bg-[#202023] border-[#B45309] dark:border-[#F59E0B] shadow-md ring-1 ring-[#B45309]/30 dark:ring-[#F59E0B]/30'
-                      : 'bg-[#FFFFFF] dark:bg-[#18181B] border-[#E5E5DF] dark:border-[#27272A] hover:border-[#B45309]/40 dark:hover:border-[#F59E0B]/40 hover:bg-[#FDFDFB] dark:hover:bg-[#1E1E22]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSolved(problem.id);
-                        }}
-                        className="text-[#8C8C82] hover:text-[#047857] dark:hover:text-[#34D399] transition cursor-pointer"
-                        title={isSolved ? (locale === 'sr' ? 'Označi kao nerešeno' : 'Mark as unsolved') : (locale === 'sr' ? 'Označi kao rešeno' : 'Mark as solved')}
-                      >
-                        {isSolved ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 fill-emerald-100 dark:fill-emerald-950" />
-                        ) : (
-                          <Circle className="w-4 h-4" />
-                        )}
-                      </button>
-                      <span className="font-mono text-xs font-bold text-[#73736C] dark:text-[#A1A1AA]">
-                        #{problem.number}
-                      </span>
+                return (
+                  <div
+                    key={problem.id}
+                    onClick={() => {
+                      setSelectedProblemId(problem.id);
+                      setTestResults(null);
+                    }}
+                    className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
+                      isSelected
+                        ? 'bg-[#FFFFFF] dark:bg-[#202023] border-[#B45309] dark:border-[#F59E0B] shadow-md ring-1 ring-[#B45309]/30 dark:ring-[#F59E0B]/30'
+                        : 'bg-[#FFFFFF] dark:bg-[#18181B] border-[#E5E5DF] dark:border-[#27272A] hover:border-[#B45309]/40 dark:hover:border-[#F59E0B]/40 hover:bg-[#FDFDFB] dark:hover:bg-[#1E1E22]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleSolved(problem.id);
+                          }}
+                          className="text-[#8C8C82] hover:text-[#047857] dark:hover:text-[#34D399] transition cursor-pointer"
+                          title={isSolved ? (locale === 'sr' ? 'Označi kao nerešeno' : 'Mark as unsolved') : (locale === 'sr' ? 'Označi kao rešeno' : 'Mark as solved')}
+                        >
+                          {isSolved ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 fill-emerald-100 dark:fill-emerald-950" />
+                          ) : (
+                            <Circle className="w-4 h-4" />
+                          )}
+                        </button>
+                        <span className="font-mono text-xs font-bold text-[#73736C] dark:text-[#A1A1AA]">
+                          #{problem.number}
+                        </span>
+                      </div>
+
+                      {getDifficultyBadge(problem.difficulty)}
                     </div>
 
-                    {getDifficultyBadge(problem.difficulty)}
-                  </div>
+                    <h3 className="font-serif font-bold text-xs sm:text-sm text-[#1A1A1A] dark:text-[#F4F4F5] line-clamp-1">
+                      {displayTitle}
+                    </h3>
 
-                  <h3 className="font-serif font-bold text-xs sm:text-sm text-[#1A1A1A] dark:text-[#F4F4F5] line-clamp-1">
-                    {displayTitle}
-                  </h3>
-
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E5E5DF]/60 dark:border-[#27272A] text-[11px] text-[#73736C] dark:text-[#A1A1AA]">
-                    <span className="font-mono truncate">{problem.pattern}</span>
-                    <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-1 text-[#B45309] dark:text-[#F59E0B]' : 'opacity-40'}`} />
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E5E5DF]/60 dark:border-[#27272A] text-[11px] text-[#73736C] dark:text-[#A1A1AA]">
+                      <span className="font-mono truncate">{problem.pattern}</span>
+                      <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-1 text-[#B45309] dark:text-[#F59E0B]' : 'opacity-40'}`} />
+                    </div>
                   </div>
+                );
+              })}
+
+              {filteredProblems.length === 0 && (
+                <div className="p-8 text-center bg-[#FFFFFF] dark:bg-[#18181B] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] space-y-2">
+                  <AlertTriangle className="w-8 h-8 text-[#A3A39A] dark:text-[#52525B] mx-auto" />
+                  <p className="text-xs text-[#73736C] dark:text-[#A1A1AA]">{m.lc_no_problems_found()}</p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedDifficulty('All');
+                      setSelectedCategory('All');
+                    }}
+                    className="text-xs text-[#B45309] dark:text-[#F59E0B] font-bold hover:underline cursor-pointer"
+                  >
+                    {m.filter_reset()}
+                  </button>
                 </div>
-              );
-            })}
-
-            {filteredProblems.length === 0 && (
-              <div className="p-8 text-center bg-[#FFFFFF] dark:bg-[#18181B] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] space-y-2">
-                <AlertTriangle className="w-8 h-8 text-[#A3A39A] dark:text-[#52525B] mx-auto" />
-                <p className="text-xs text-[#73736C] dark:text-[#A1A1AA]">{m.lc_no_problems_found()}</p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedDifficulty('All');
-                    setSelectedCategory('All');
-                  }}
-                  className="text-xs text-[#B45309] dark:text-[#F59E0B] font-bold hover:underline cursor-pointer"
-                >
-                  {m.filter_reset()}
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -601,23 +723,11 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                   <span>{m.lc_tab_comparison()}</span>
                 </button>
               )}
-
-              <button
-                onClick={() => setActiveTab('runner')}
-                className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeTab === 'runner'
-                    ? 'border-[#B45309] dark:border-[#F59E0B] text-[#B45309] dark:text-[#F59E0B]'
-                    : 'border-transparent text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white'
-                }`}
-              >
-                <Terminal className="w-3.5 h-3.5 text-[#047857] dark:text-[#34D399]" />
-                <span>{m.lc_tab_runner({ count: currentProblem.testCases.length })}</span>
-              </button>
             </div>
 
             {/* TAB CONTENT AREA */}
             <div className="p-5 sm:p-6 space-y-6">
-              {/* TAB 1: Optimal Solution */}
+              {/* TAB 1: Optimal Solution & Integrated Test Runner */}
               {activeTab === 'optimal' && (
                 <div className="space-y-6">
                   {/* Complexity Quick Metric Cards */}
@@ -649,26 +759,71 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                     </div>
                   </div>
 
-                  {/* Solution Code Block with Copy & Actions */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-[#73736C] dark:text-[#A1A1AA] uppercase tracking-wider">
-                        JavaScript Implementacija (ES2024+)
-                      </span>
+                  {/* Solution Code Block with Copy, Edit & Run Actions */}
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5E5DF] dark:border-[#27272A] pb-2">
                       <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold text-[#73736C] dark:text-[#A1A1AA] uppercase tracking-wider flex items-center gap-1.5">
+                          <Edit3 className="w-3.5 h-3.5 text-[#B45309] dark:text-[#F59E0B]" />
+                          <span>{locale === 'en' ? 'Interactive JavaScript Solution' : 'Interaktivno JavaScript Rešenje'}</span>
+                        </span>
+                        {isCodeModified ? (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-[#B45309] dark:text-[#FCD34D] border border-amber-500/20">
+                            {locale === 'en' ? '● Custom Edited' : '● Izmenjeno'}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#EBEBE5] dark:bg-[#27272A] text-[#73736C] dark:text-[#A1A1AA]">
+                            {locale === 'en' ? 'Optimal Default' : 'Optimalno podrazumevano'}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {currentProblem.bruteForceSolution && (
+                          <button
+                            onClick={handleLoadBruteForce}
+                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#FAF9F5] dark:bg-[#202023] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
+                            title={locale === 'en' ? 'Load naive approach to test its runtime' : 'Učitaj naivno rešenje za poređenje'}
+                          >
+                            <Layers className="w-3 h-3 text-rose-500" />
+                            <span>{locale === 'en' ? 'Load Naive' : 'Učitaj Naivno'}</span>
+                          </button>
+                        )}
+
+                        {isCodeModified && (
+                          <button
+                            onClick={handleResetCode}
+                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/20 text-[#B45309] dark:text-[#FCD34D] border border-amber-500/30 flex items-center gap-1 transition cursor-pointer"
+                            title={locale === 'en' ? 'Reset to optimal solution' : 'Vrati na originalno rešenje'}
+                          >
+                            <Undo2 className="w-3 h-3" />
+                            <span>{locale === 'en' ? 'Reset' : 'Resetuj'}</span>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => handleRunTests(currentCode)}
+                          disabled={isRunningTests}
+                          className="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white flex items-center gap-1.5 shadow-xs transition cursor-pointer disabled:opacity-50"
+                        >
+                          <Play className="w-3 h-3 fill-current" />
+                          <span>{isRunningTests ? (locale === 'en' ? 'Testing...' : 'Testiram...') : (locale === 'en' ? 'Run Tests' : 'Pokreni Testove')}</span>
+                        </button>
+
                         {onOpenInPlayground && (
                           <button
-                            onClick={() => onOpenInPlayground(currentProblem.optimalSolution.code)}
-                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F2F2ED] dark:bg-[#27272A] hover:bg-[#E5E5DF] dark:hover:bg-[#3F3F46] text-[#1A1A1A] dark:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
+                            onClick={() => onOpenInPlayground(currentCode)}
+                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#FAF9F5] dark:bg-[#202023] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#1A1A1A] dark:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
                             title={m.card_open_playground()}
                           >
                             <Terminal className="w-3 h-3 text-[#047857] dark:text-[#34D399]" />
                             <span>{m.card_open_playground()}</span>
                           </button>
                         )}
+
                         <button
                           onClick={handleCopyCode}
-                          className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F2F2ED] dark:bg-[#27272A] hover:bg-[#E5E5DF] dark:hover:bg-[#3F3F46] text-[#1A1A1A] dark:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#FAF9F5] dark:bg-[#202023] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#1A1A1A] dark:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
                         >
                           {copiedCode ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                           <span>{copiedCode ? m.lc_copied() : m.lc_copy()}</span>
@@ -676,11 +831,319 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                       </div>
                     </div>
 
-                    <CodeBlock
-                      code={currentProblem.optimalSolution.code}
-                      language="javascript"
-                      showLineNumbers={true}
-                    />
+                    {/* Live Syntax-Highlighted Editor */}
+                    <div className="rounded-xl border border-[#27272A] dark:border-[#3F3F46] bg-[#18181B] dark:bg-[#121214] flex overflow-hidden shadow-inner focus-within:border-[#F59E0B] focus-within:ring-1 focus-within:ring-[#F59E0B] transition">
+                      {/* Line numbers gutter */}
+                      <div className="select-none py-3 px-2.5 text-right font-mono text-xs text-[#52525B] bg-[#141416] dark:bg-[#0D0D0E] border-r border-[#27272A] dark:border-[#27272A] flex flex-col shrink-0 min-w-[2.5rem] leading-[1.65rem]">
+                        {currentCode.split('\n').map((_, i) => (
+                          <span key={i} className="block text-[11px] font-mono leading-[1.65rem] opacity-75">
+                            {i + 1}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Editable Code */}
+                      <div className="flex-1 overflow-x-auto min-h-[220px]">
+                        <Editor
+                          value={currentCode}
+                          onValueChange={(val) => handleCodeChange(val)}
+                          highlight={(c) => Prism.highlight(c, Prism.languages.javascript, 'javascript')}
+                          padding={12}
+                          className="font-mono text-xs"
+                          placeholder="// Write JavaScript solution here..."
+                          style={{
+                            fontFamily: 'var(--font-mono, ui-monospace, monospace)',
+                            fontSize: '12px',
+                            lineHeight: '1.65rem',
+                            minHeight: '100%',
+                            color: '#F4F4F5',
+                            backgroundColor: 'transparent',
+                            outline: 'none',
+                          }}
+                          textareaClassName="focus:outline-none focus:ring-0 leading-[1.65rem]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Mini Collapsible / Expandable Output Window (Separated Test Runner & Console Output) */}
+                    <div className="rounded-xl border border-[#E5E5DF] dark:border-[#27272A] bg-[#FAF9F5] dark:bg-[#18181B] overflow-hidden shadow-xs">
+                      {/* Output Window Header */}
+                      <div className="px-3 py-2 bg-[#F2F2ED] dark:bg-[#202023] flex items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] gap-2 flex-wrap">
+                        {/* Left Tab Switcher: Tests vs Console */}
+                        <div className="flex items-center gap-1.5 p-0.5 bg-[#E5E5DF]/60 dark:bg-[#121214] rounded-lg">
+                          <button
+                            onClick={() => {
+                              setOutputTab('tests');
+                              if (!isOutputExpanded) setIsOutputExpanded(true);
+                            }}
+                            className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                              outputTab === 'tests'
+                                ? 'bg-white dark:bg-[#27272A] text-[#1A1A1A] dark:text-white shadow-xs'
+                                : 'text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white'
+                            }`}
+                          >
+                            <Play className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                            <span>{locale === 'sr' ? 'Test Runner' : 'Test Runner'}</span>
+
+                            {/* Summary status badge */}
+                            {isRunningTests ? (
+                              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                            ) : testResults ? (
+                              testResults.every((r) => r.passed) ? (
+                                <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                                  {testResults.length}/{testResults.length}
+                                </span>
+                              ) : (
+                                <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-500/20 text-rose-700 dark:text-rose-300">
+                                  {testResults.filter((r) => !r.passed).length}/{testResults.length}
+                                </span>
+                              )
+                            ) : (
+                              <span className="px-1.5 py-0.2 rounded text-[10px] bg-black/5 dark:bg-white/10 text-[#73736C] dark:text-[#A1A1AA]">
+                                {currentProblem.testCases.length}
+                              </span>
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setOutputTab('console');
+                              if (!isOutputExpanded) setIsOutputExpanded(true);
+                            }}
+                            className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                              outputTab === 'console'
+                                ? 'bg-white dark:bg-[#27272A] text-[#1A1A1A] dark:text-white shadow-xs'
+                                : 'text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white'
+                            }`}
+                          >
+                            <Terminal className="w-3 h-3 text-[#B45309] dark:text-[#F59E0B]" />
+                            <span>{locale === 'sr' ? 'Konzolni Izlaz' : 'Console Output'}</span>
+                            {consoleLogs.length > 0 && (
+                              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                                {consoleLogs.length}
+                              </span>
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Right Header Action Buttons */}
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleRunTests(currentCode)}
+                            disabled={isRunningTests}
+                            className="px-2.5 py-1 rounded text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white flex items-center gap-1 shadow-xs transition cursor-pointer disabled:opacity-50"
+                          >
+                            <Play className="w-3 h-3 fill-current" />
+                            <span>{isRunningTests ? (locale === 'sr' ? 'Testiram...' : 'Running...') : (locale === 'sr' ? 'Pokreni Testove' : 'Run Tests')}</span>
+                          </button>
+
+                          {((outputTab === 'tests' && testResults) || (outputTab === 'console' && consoleLogs.length > 0)) && (
+                            <button
+                              onClick={() => {
+                                if (outputTab === 'tests') {
+                                  setTestResults(null);
+                                } else {
+                                  setConsoleLogs([]);
+                                }
+                              }}
+                              className="px-2 py-1 rounded text-xs font-semibold text-[#73736C] dark:text-[#A1A1AA] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer flex items-center gap-1"
+                              title={locale === 'sr' ? 'Obriši trenutni izlaz' : 'Clear current output'}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>{locale === 'sr' ? 'Obriši' : 'Clear'}</span>
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => setIsOutputExpanded(!isOutputExpanded)}
+                            className="px-2 py-1 rounded text-xs font-semibold bg-white dark:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#575750] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white flex items-center gap-1 transition cursor-pointer"
+                            title={isOutputExpanded ? (locale === 'sr' ? 'Sakrij prozor' : 'Collapse output') : (locale === 'sr' ? 'Proširi prozor' : 'Expand output')}
+                          >
+                            {isOutputExpanded ? (
+                              <>
+                                <ChevronUp className="w-3.5 h-3.5" />
+                                <span>{locale === 'sr' ? 'Sakrij' : 'Hide'}</span>
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                                <span>{locale === 'sr' ? 'Prikaži' : 'Show'}</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Output Panel Body (Collapsible) */}
+                      {isOutputExpanded && (
+                        <div className="p-3.5 bg-[#18181B] dark:bg-[#121214] text-[#F4F4F5] border-t border-[#27272A] space-y-2.5 max-h-[360px] overflow-y-auto font-mono text-xs">
+                          {/* TAB 1: TEST RUNNER VIEW */}
+                          {outputTab === 'tests' && (
+                            testResults ? (
+                              <div className="space-y-2.5">
+                                {consoleLogs.length > 0 && (
+                                  <div
+                                    onClick={() => setOutputTab('console')}
+                                    className="p-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-between text-xs font-mono transition cursor-pointer"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <Terminal className="w-3.5 h-3.5 shrink-0" />
+                                      <span>
+                                        {locale === 'sr'
+                                          ? `Zabeleženo ${consoleLogs.length} konzolnih zapisa u ovom testu.`
+                                          : `Captured ${consoleLogs.length} console log(s) during this run.`}
+                                      </span>
+                                    </div>
+                                    <span className="text-[11px] underline font-semibold flex items-center gap-1">
+                                      {locale === 'sr' ? 'Pogledaj Konzolni Izlaz →' : 'View Console Output →'}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {testResults.map((res, idx) => {
+                                  const tc = currentProblem.testCases.find((t) => t.id === res.testId) || currentProblem.testCases[idx];
+                                  return (
+                                    <div
+                                      key={res.testId || idx}
+                                      className={`p-3 rounded-lg border ${
+                                        res.passed
+                                          ? 'bg-emerald-500/5 border-emerald-500/20'
+                                          : 'bg-rose-500/5 border-rose-500/20'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                                        <div className="flex items-center gap-2">
+                                          <span className={`w-2 h-2 rounded-full ${res.passed ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                                          <span className="font-bold text-xs text-white">
+                                            Test #{idx + 1}: {tc?.name || res.testId}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] text-[#A1A1AA]">{res.executionTimeMs} ms</span>
+                                          {res.passed ? (
+                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300">
+                                              PASSED
+                                            </span>
+                                          ) : (
+                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300">
+                                              FAILED
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] bg-[#0E0E10] p-2.5 rounded border border-[#27272A]">
+                                        <div>
+                                          <span className="text-[#71717A] text-[10px] uppercase block">{m.lc_input_label()}</span>
+                                          <span className="text-[#D4D4D8] break-all">{tc ? tc.inputStr : '-'}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#71717A] text-[10px] uppercase block">{locale === 'sr' ? 'Očekivano:' : 'Expected:'}</span>
+                                          <span className="text-emerald-400 font-bold break-all">{tc ? tc.expectedStr : '-'}</span>
+                                        </div>
+                                        {(!res.passed || res.error) && (
+                                          <div className="sm:col-span-2 pt-1.5 border-t border-[#27272A] text-rose-400">
+                                            <span className="text-[10px] uppercase font-bold block">{m.lc_actual_output()}</span>
+                                            <span className="break-all">{res.error ? `${m.lc_error()} ${res.error}` : res.actualStr}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="space-y-2">
+                                <div className="text-[#A1A1AA] text-xs flex items-center justify-between pb-1 border-b border-[#27272A]">
+                                  <span>{locale === 'sr' ? 'Pregled test primera za ovaj zadatak:' : 'Preview of test cases for this challenge:'}</span>
+                                  <span className="text-[10px] text-emerald-400 font-semibold">{locale === 'sr' ? 'Kliknite "Pokreni Testove" iznad' : 'Click "Run Tests" above'}</span>
+                                </div>
+                                <div className="space-y-2">
+                                  {currentProblem.testCases.map((tc, idx) => (
+                                    <div key={tc.id} className="p-2.5 rounded bg-[#0E0E10] border border-[#27272A] text-[11px]">
+                                      <div className="font-bold text-[#E4E4E7] mb-1">Test #{idx + 1}: {tc.name}</div>
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[#A1A1AA]">
+                                        <div><span className="text-[#71717A]">Input: </span><span className="text-[#D4D4D8]">{tc.inputStr}</span></div>
+                                        <div><span className="text-[#71717A]">Expected: </span><span className="text-emerald-400">{tc.expectedStr}</span></div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )
+                          )}
+
+                          {/* TAB 2: SEPARATED CONSOLE OUTPUT (STDOUT) VIEW */}
+                          {outputTab === 'console' && (
+                            consoleLogs.length > 0 ? (
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between pb-1.5 border-b border-[#27272A] text-[11px] text-[#A1A1AA]">
+                                  <span>{locale === 'sr' ? 'Stdout / Konzolni zapisi:' : 'Stdout / Console logs:'}</span>
+                                  <span className="text-[10px] text-[#71717A]">
+                                    {consoleLogs.length} {locale === 'sr' ? 'zapisa' : 'entries'}
+                                  </span>
+                                </div>
+                                <div className="space-y-1.5">
+                                  {consoleLogs.map((log) => (
+                                    <div
+                                      key={log.id}
+                                      className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+                                        log.type === 'error'
+                                          ? 'bg-rose-950/20 border-rose-800/40 text-rose-300'
+                                          : log.type === 'warn'
+                                          ? 'bg-amber-950/20 border-amber-800/40 text-amber-300'
+                                          : log.type === 'info'
+                                          ? 'bg-sky-950/20 border-sky-800/40 text-sky-300'
+                                          : 'bg-[#0E0E10] border-[#27272A] text-[#E4E4E7]'
+                                      }`}
+                                    >
+                                      <span
+                                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 uppercase tracking-wider ${
+                                          log.type === 'error'
+                                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                                            : log.type === 'warn'
+                                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                            : log.type === 'info'
+                                            ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                                            : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
+                                        }`}
+                                      >
+                                        {log.type}
+                                      </span>
+                                      <div className="flex-1 min-w-0 space-y-1">
+                                        {log.testLabel && (
+                                          <div className="text-[10px] text-[#A1A1AA] font-semibold opacity-75">
+                                            {log.testLabel}
+                                          </div>
+                                        )}
+                                        <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed overflow-x-auto text-white dark:text-[#F4F4F5]">
+                                          {log.message}
+                                        </pre>
+                                      </div>
+                                      <span className="text-[10px] text-[#71717A] shrink-0 font-mono">
+                                        {log.timestamp}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="py-8 px-4 text-center space-y-2">
+                                <Terminal className="w-7 h-7 mx-auto text-[#71717A] opacity-60" />
+                                <p className="text-xs font-semibold text-[#D4D4D8]">
+                                  {locale === 'sr' ? 'Konzola je trenutno prazna' : 'Console is currently empty'}
+                                </p>
+                                <p className="text-[11px] text-[#71717A] max-w-md mx-auto">
+                                  {locale === 'sr'
+                                    ? 'Dodajte console.log(...) u funkciju i kliknite "Pokreni Testove" da biste videli formatirani ispis i objekte ovde.'
+                                    : 'Add console.log(...) in your solution function and click "Run Tests" to inspect formatted logs and objects here.'}
+                                </p>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Explanation Walkthrough */}
@@ -822,97 +1285,6 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                         {locale === 'en' && currentProblem.optimalSolution.explanationEn ? currentProblem.optimalSolution.explanationEn : currentProblem.optimalSolution.explanation}
                       </p>
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: Interactive Test Runner */}
-              {activeTab === 'runner' && (
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#F9F9F7] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A]">
-                    <div>
-                      <h3 className="text-sm font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
-                        {m.lc_test_runner_title()}
-                      </h3>
-                      <p className="text-xs text-[#73736C] dark:text-[#A1A1AA]">
-                        {m.lc_test_runner_desc({ func: currentProblem.runFunctionName })}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={handleRunTests}
-                      disabled={isRunningTests}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-semibold text-xs rounded-xl flex items-center gap-2 shadow-sm transition cursor-pointer self-start sm:self-auto disabled:opacity-50"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>{isRunningTests ? m.lc_running_tests_btn() : m.lc_run_tests_btn()}</span>
-                    </button>
-                  </div>
-
-                  {/* Test Cases Table / List */}
-                  <div className="space-y-3">
-                    {currentProblem.testCases.map((tc, idx) => {
-                      const res = testResults?.find((r) => r.testId === tc.id);
-
-                      return (
-                        <div
-                          key={tc.id}
-                          className={`p-4 rounded-xl border transition-all ${
-                            res
-                              ? res.passed
-                                ? 'bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/30'
-                                : 'bg-rose-500/5 dark:bg-rose-500/10 border-rose-500/30'
-                              : 'bg-[#FFFFFF] dark:bg-[#18181B] border-[#E5E5DF] dark:border-[#27272A]'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs font-bold text-[#73736C] dark:text-[#A1A1AA]">
-                                Test #{idx + 1}:
-                              </span>
-                              <span className="text-xs font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">
-                                {tc.name}
-                              </span>
-                            </div>
-
-                            {res && (
-                              <div className="flex items-center gap-2">
-                                <span className="font-mono text-[10px] text-[#73736C] dark:text-[#A1A1AA]">
-                                  {res.executionTimeMs} ms
-                                </span>
-                                {res.passed ? (
-                                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1">
-                                    <Check className="w-3 h-3" /> {m.lc_test_passed()}
-                                  </span>
-                                ) : (
-                                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
-                                    ✕ {m.lc_test_failed()}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono bg-[#F9F9F7] dark:bg-[#121214] p-3 rounded-lg border border-[#E5E5DF] dark:border-[#27272A]">
-                            <div>
-                              <span className="text-[#8C8C82] block text-[10px] uppercase">{m.lc_input_label()}</span>
-                              <span className="text-[#1A1A1A] dark:text-[#F4F4F5] break-all">{tc.inputStr}</span>
-                            </div>
-                            <div>
-                              <span className="text-[#8C8C82] block text-[10px] uppercase">{locale === 'sr' ? 'Očekivani Izlaz:' : 'Expected Output:'}</span>
-                              <span className="text-emerald-600 dark:text-emerald-400 font-bold break-all">{tc.expectedStr}</span>
-                            </div>
-
-                            {res && !res.passed && (
-                              <div className="col-span-1 md:col-span-2 pt-2 border-t border-rose-500/20 text-rose-600 dark:text-rose-400">
-                                <span className="block text-[10px] uppercase font-bold">{m.lc_actual_output()}</span>
-                                <span>{res.error ? `${m.lc_error()} ${res.error}` : res.actualStr}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
                   </div>
                 </div>
               )}

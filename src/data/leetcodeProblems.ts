@@ -46,7 +46,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Umesto dvostruke petlje koja poredi svaki par sa vremenskom složenošću O(n²), koristimo Hash Map (JavaScript `Map` ili plain objekat `{}`). Prilikom prolaska kroz niz za svaki broj `num` računamo komplement: `complement = target - num`. Ako komplement već postoji u mapi, odmah vraćamo njegov indeks i trenutni indeks.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Hash Map u jednom prolazu",
-      "code": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nfunction twoSum(nums, target) {\n  // Map za čuvanje parova: { broj => indeks }\n  const map = new Map();\n  \n  for (let i = 0; i < nums.length; i++) {\n    const current = nums[i];\n    const complement = target - current;\n    \n    // Ako smo ranije videli komplement, pronašli smo par\n    if (map.has(complement)) {\n      return [map.get(complement), i];\n    }\n    \n    // Čuvamo trenutni broj i njegov indeks u mapi\n    map.set(current, i);\n  }\n  \n  return [];\n}",
+      "code": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nfunction twoSum(nums, target) {\n  // Map to store pairs: { number => index }\n  const map = new Map();\n  \n  for (let i = 0; i < nums.length; i++) {\n    const current = nums[i];\n    const complement = target - current;\n    \n    // If we've seen the complement before, pair is found\n    if (map.has(complement)) {\n      return [map.get(complement), i];\n    }\n    \n    // Store current number and its index in map\n    map.set(current, i);\n  }\n  \n  return [];\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz niz dužine n; pretraga i upis u Map traju O(1) u proseku.",
       "spaceComplexity": "O(n) — U najgorem slučaju čuvamo do n elemenata u mapi.",
       "explanation": "U svakom koraku proveravamo da li je komplement već viđen. JavaScript `Map` nudi konzistentne O(1) operacije `.has()` i `.get()` bez zagađivanja prototipskog lanca koje običan objekat `{}` može imati.",
@@ -67,7 +67,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Standardni niz",
+        "name": "Standard array",
         "inputParams": [
           [
             2,
@@ -86,7 +86,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Elementi nisu sortirani",
+        "name": "Unsorted elements",
         "inputParams": [
           [
             3,
@@ -104,7 +104,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Duplikati",
+        "name": "Duplicates",
         "inputParams": [
           [
             3,
@@ -121,7 +121,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-4",
-        "name": "Negativni brojevi",
+        "name": "Negative numbers",
         "inputParams": [
           [
             -1,
@@ -196,7 +196,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Stack struktura podataka je savršena za uparivanje zagrada jer poslednja otvorena zagrada mora biti prva koja će se zatvoriti (LIFO). Kada naiđemo na otvorenu zagradu, stavljamo je na stack (ili odmah stavljamo njenu odgovarajuću zatvorenu). Kada naiđemo na zatvorenu zagradu, skidamo vrh stack-a i poredimo.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Stack sa Hash Mapom",
-      "code": "/**\n * @param {string} s\n * @return {boolean}\n */\nfunction isValid(s) {\n  // Ako je dužina stringa neparna, nemoguće je da su sve zagrade uparene\n  if (s.length % 2 !== 0) return false;\n  \n  const stack = [];\n  const map = {\n    ')': '(',\n    '}': '{',\n    ']': '['\n  };\n  \n  for (let i = 0; i < s.length; i++) {\n    const char = s[i];\n    \n    if (map[char]) {\n      // char je zatvorena zagrada -> skidamo sa stack-a i poredimo\n      const top = stack.length > 0 ? stack.pop() : '#';\n      if (top !== map[char]) {\n        return false;\n      }\n    } else {\n      // char je otvorena zagrada -> dodajemo na stack\n      stack.push(char);\n    }\n  }\n  \n  // Ako je stack prazan, sve zagrade su validno zatvorene\n  return stack.length === 0;\n}",
+      "code": "/**\n * @param {string} s\n * @return {boolean}\n */\nfunction isValid(s) {\n  // If string length is odd, brackets cannot all be matched\n  if (s.length % 2 !== 0) return false;\n  \n  const stack = [];\n  const map = {\n    ')': '(',\n    '}': '{',\n    ']': '['\n  };\n  \n  for (let i = 0; i < s.length; i++) {\n    const char = s[i];\n    \n    if (map[char]) {\n      // char is closing bracket -> pop stack and compare\n      const top = stack.length > 0 ? stack.pop() : '#';\n      if (top !== map[char]) {\n        return false;\n      }\n    } else {\n      // char is opening bracket -> push to stack\n      stack.push(char);\n    }\n  }\n  \n  // If stack is empty, all brackets are properly matched\n  return stack.length === 0;\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz sve karaktere stringa; push i pop na JS niz traju O(1).",
       "spaceComplexity": "O(n) — U najgorem slučaju (npr. \"((((((\") na stack stavljamo do n elemenata.",
       "explanation": "Prethodna provera `s.length % 2 !== 0` odmah odbacuje neparne dužine u O(1). Koristimo JS niz kao brz Stack sa ugrađenim `.push()` i `.pop()` metodama.",
@@ -209,7 +209,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Jednostavan par",
+        "name": "Simple pair",
         "inputParams": [
           "()"
         ],
@@ -219,7 +219,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Mešovite zagrade",
+        "name": "Mixed brackets",
         "inputParams": [
           "()[]{}"
         ],
@@ -229,7 +229,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Pogrešno uparene zagrade",
+        "name": "Mismatched brackets",
         "inputParams": [
           "(]"
         ],
@@ -239,7 +239,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-4",
-        "name": "Ugnježdeni niz",
+        "name": "Nested sequence",
         "inputParams": [
           "{[]()}"
         ],
@@ -249,7 +249,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-5",
-        "name": "Samo zatvorene zagrade",
+        "name": "Closing brackets only",
         "inputParams": [
           "]["
         ],
@@ -304,7 +304,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Kako prolazimo kroz niz s leva na desno, konstantno pamtimo najmanju cenu viđenu do sada (`minPrice`). Za svaki sledeći dan računamo potencijalni profit: `trenutnaCena - minPrice` i ažuriramo `maxProfit`.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Jedan prolaz (Greedy)",
-      "code": "/**\n * @param {number[]} prices\n * @return {number}\n */\nfunction maxProfit(prices) {\n  let minPrice = Infinity;\n  let maxProfit = 0;\n  \n  for (let i = 0; i < prices.length; i++) {\n    const price = prices[i];\n    \n    if (price < minPrice) {\n      minPrice = price; // Pronašli smo novu najnižu cenu za kupovinu\n    } else {\n      const currentProfit = price - minPrice;\n      if (currentProfit > maxProfit) {\n        maxProfit = currentProfit;\n      }\n    }\n  }\n  \n  return maxProfit;\n}",
+      "code": "/**\n * @param {number[]} prices\n * @return {number}\n */\nfunction maxProfit(prices) {\n  let minPrice = Infinity;\n  let maxProfit = 0;\n  \n  for (let i = 0; i < prices.length; i++) {\n    const price = prices[i];\n    \n    if (price < minPrice) {\n      minPrice = price; // Found a new lowest buying price\n    } else {\n      const currentProfit = price - minPrice;\n      if (currentProfit > maxProfit) {\n        maxProfit = currentProfit;\n      }\n    }\n  }\n  \n  return maxProfit;\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz ceo niz cena.",
       "spaceComplexity": "O(1) — Koriste se samo dve promenljive za praćenje stanja.",
       "explanation": "Ovaj pristup rešava problem u linearnom vremenu bez alokacije dodatne memorije. Inicijalizacija sa `Infinity` garantuje da će prva stvarna cena postati početni minimum.",
@@ -317,7 +317,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Standardan primer",
+        "name": "Standard example",
         "inputParams": [
           [
             7,
@@ -334,7 +334,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Opadajući niz (Bez profita)",
+        "name": "Descending prices (Zero profit)",
         "inputParams": [
           [
             7,
@@ -350,7 +350,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Dva elementa",
+        "name": "Two elements",
         "inputParams": [
           [
             2,
@@ -408,7 +408,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Dva stringa su anagrami ako i samo ako imaju identičnu dužinu i svako slovo se pojavljuje isti broj puta. Možemo koristiti fiksni niz od 26 elemenata (ili Hash Map) za praćenje broja pojavljivanja svakog karaktera.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Niz frekvencije (26 karaktera)",
-      "code": "/**\n * @param {string} s\n * @param {string} t\n * @return {boolean}\n */\nfunction isAnagram(s, t) {\n  if (s.length !== t.length) return false;\n  \n  // Niz od 26 brojača za mala slova abecede ('a' do 'z')\n  const count = new Int32Array(26);\n  const baseCode = 'a'.charCodeAt(0);\n  \n  for (let i = 0; i < s.length; i++) {\n    count[s.charCodeAt(i) - baseCode]++;\n    count[t.charCodeAt(i) - baseCode]--;\n  }\n  \n  // Ako su stringovi anagrami, svi brojači moraju biti 0\n  for (let i = 0; i < 26; i++) {\n    if (count[i] !== 0) return false;\n  }\n  \n  return true;\n}",
+      "code": "/**\n * @param {string} s\n * @param {string} t\n * @return {boolean}\n */\nfunction isAnagram(s, t) {\n  if (s.length !== t.length) return false;\n  \n  // Array of 26 counters for lowercase letters ('a' through 'z')\n  const count = new Int32Array(26);\n  const baseCode = 'a'.charCodeAt(0);\n  \n  for (let i = 0; i < s.length; i++) {\n    count[s.charCodeAt(i) - baseCode]++;\n    count[t.charCodeAt(i) - baseCode]--;\n  }\n  \n  // If strings are anagrams, all counts must be 0\n  for (let i = 0; i < 26; i++) {\n    if (count[i] !== 0) return false;\n  }\n  \n  return true;\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz oba stringa dužine n.",
       "spaceComplexity": "O(1) — Koristi se fiksni TypedArray veličine 26 bajtova.",
       "explanation": "Umesto skupog sortiranja O(n log n), brojač frekvencije postiže O(n) vreme i O(1) dodatnu memoriju. Korišćenje `Int32Array(26)` u JS V8 engine-u je ekstremno brzo i eliminiše kreiranje objekata na heap-u.",
@@ -429,7 +429,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Validan anagram",
+        "name": "Valid anagram",
         "inputParams": [
           "anagram",
           "nagaram"
@@ -440,7 +440,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Nisu anagrami",
+        "name": "Not anagrams",
         "inputParams": [
           "rat",
           "car"
@@ -451,7 +451,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Različite dužine",
+        "name": "Different lengths",
         "inputParams": [
           "a",
           "ab"
@@ -513,7 +513,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Svi anagrami imaju identičan oblik kada se njihova slova sortiraju (npr. \"eat\", \"tea\", \"ate\" sva postaju \"aet\"). Koristimo taj sortirani oblik kao ključ u Hash Mapi, gde je vrednost lista reči koje pripadaju toj grupi.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Hash Map sa sortiranim ključem",
-      "code": "/**\n * @param {string[]} strs\n * @return {string[][]}\n */\nfunction groupAnagrams(strs) {\n  const map = new Map();\n  \n  for (let i = 0; i < strs.length; i++) {\n    const str = strs[i];\n    \n    // Sortiramo karaktere da dobijemo kanonski ključ za grupu\n    const sortedKey = str.split('').sort().join('');\n    \n    if (!map.has(sortedKey)) {\n      map.set(sortedKey, []);\n    }\n    \n    map.get(sortedKey).push(str);\n  }\n  \n  // Vraćamo niz svih grupa\n  return Array.from(map.values());\n}",
+      "code": "/**\n * @param {string[]} strs\n * @return {string[][]}\n */\nfunction groupAnagrams(strs) {\n  const map = new Map();\n  \n  for (let i = 0; i < strs.length; i++) {\n    const str = strs[i];\n    \n    // Sort characters to get canonical key for the group\n    const sortedKey = str.split('').sort().join('');\n    \n    if (!map.has(sortedKey)) {\n      map.set(sortedKey, []);\n    }\n    \n    map.get(sortedKey).push(str);\n  }\n  \n  // Return array of all groups\n  return Array.from(map.values());\n}",
       "timeComplexity": "O(N * K log K) — gde je N broj stringova u nizu, a K maksimalna dužina pojedinačnog stringa.",
       "spaceComplexity": "O(N * K) — Ukupna memorija potrebna za skladištenje svih reči u Hash Mapi.",
       "explanation": "Za prosečne reči (K <= 100) sortiranje reči je izuzetno brzo. Na kraju koristimo `Array.from(map.values())` da ekstrahujemo grupe u traženi format.",
@@ -526,7 +526,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Klasičan primer",
+        "name": "Classic example",
         "inputParams": [
           [
             "eat",
@@ -556,7 +556,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Jedan prazan string",
+        "name": "Single empty string",
         "inputParams": [
           [
             ""
@@ -572,7 +572,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Jedan karakter",
+        "name": "Single character",
         "inputParams": [
           [
             "a"
@@ -639,7 +639,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Održavamo \"klizni prozor\" definisan sa dva pokazivača: `left` i `right`. Pomeramo `right` udesno i dodajemo karaktere u `Set`. Ako naiđemo na karakter koji se već nalazi u Set-u, sužavamo prozor pomeranjem `left` udesno i uklanjanjem karaktera iz Set-a sve dok duplikat ne nestane.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Sliding Window sa Set-om",
-      "code": "/**\n * @param {string} s\n * @return {number}\n */\nfunction lengthOfLongestSubstring(s) {\n  const set = new Set();\n  let left = 0;\n  let maxLength = 0;\n  \n  for (let right = 0; right < s.length; right++) {\n    const char = s[right];\n    \n    // Ako karakter već postoji u prozoru, sužavamo prozor sa leve strane\n    while (set.has(char)) {\n      set.delete(s[left]);\n      left++;\n    }\n    \n    // Dodajemo novi karakter u trenutni prozor\n    set.add(char);\n    \n    // Ažuriramo maksimalnu dužinu\n    maxLength = Math.max(maxLength, right - left + 1);\n  }\n  \n  return maxLength;\n}",
+      "code": "/**\n * @param {string} s\n * @return {number}\n */\nfunction lengthOfLongestSubstring(s) {\n  const set = new Set();\n  let left = 0;\n  let maxLength = 0;\n  \n  for (let right = 0; right < s.length; right++) {\n    const char = s[right];\n    \n    // If character already exists in window, shrink window from left\n    while (set.has(char)) {\n      set.delete(s[left]);\n      left++;\n    }\n    \n    // Add new character to current window\n    set.add(char);\n    \n    // Update maximum length\n    maxLength = Math.max(maxLength, right - left + 1);\n  }\n  \n  return maxLength;\n}",
       "timeComplexity": "O(n) — Iako imamo while petlju unutra, svaki karakter se dodaje u Set tačno jednom i briše najviše jednom (2n koraka ukupno).",
       "spaceComplexity": "O(min(m, n)) — Gde je n dužina stringa, a m veličina azbuke/skupa mogućih karaktera u Set-u.",
       "explanation": "Sliding window tehnika obezbeđuje optimalno linearno rešenje umesto testiranja svih mogućih podstringova u O(n²).",
@@ -662,7 +662,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Svi isti karakteri",
+        "name": "All identical characters",
         "inputParams": [
           "bbbbb"
         ],
@@ -672,7 +672,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Prazan string",
+        "name": "Empty string",
         "inputParams": [
           ""
         ],
@@ -682,7 +682,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-4",
-        "name": "Sa razmacima i brojevima",
+        "name": "With spaces and numbers",
         "inputParams": [
           "pwwkew"
         ],
@@ -738,7 +738,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Postavljamo dva pokazivača: jedan na početak (`left = 0`) i jedan na kraj (`right = height.length - 1`). Površina je određena formulom: `(right - left) * min(height[left], height[right])`. Pošto se širina `(right - left)` smanjuje u svakom koraku, jedina šansa da nađemo veću površinu je da pomerimo pokazivač sa MANJOM visinom, u nadi da ćemo naići na višu liniju.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Dva Pokazivača (Two Pointers)",
-      "code": "/**\n * @param {number[]} height\n * @return {number}\n */\nfunction maxArea(height) {\n  let left = 0;\n  let right = height.length - 1;\n  let maxWater = 0;\n  \n  while (left < right) {\n    const width = right - left;\n    const hLeft = height[left];\n    const hRight = height[right];\n    \n    // Visina je ograničena nižom stranicom\n    const currentHeight = Math.min(hLeft, hRight);\n    const currentArea = width * currentHeight;\n    \n    if (currentArea > maxWater) {\n      maxWater = currentArea;\n    }\n    \n    // Pomeramo onaj pokazivač koji je kraći jer on predstavlja usko grlo\n    if (hLeft < hRight) {\n      left++;\n    } else {\n      right--;\n    }\n  }\n  \n  return maxWater;\n}",
+      "code": "/**\n * @param {number[]} height\n * @return {number}\n */\nfunction maxArea(height) {\n  let left = 0;\n  let right = height.length - 1;\n  let maxWater = 0;\n  \n  while (left < right) {\n    const width = right - left;\n    const hLeft = height[left];\n    const hRight = height[right];\n    \n    // Height is constrained by the shorter boundary\n    const currentHeight = Math.min(hLeft, hRight);\n    const currentArea = width * currentHeight;\n    \n    if (currentArea > maxWater) {\n      maxWater = currentArea;\n    }\n    \n    // Move the pointer with smaller height because it is the bottleneck\n    if (hLeft < hRight) {\n      left++;\n    } else {\n      right--;\n    }\n  }\n  \n  return maxWater;\n}",
       "timeComplexity": "O(n) — Dva pokazivača pređu ceo niz za tačno n koraka.",
       "spaceComplexity": "O(1) — Konstantan broj promenljivih.",
       "explanation": "Pomeranje pokazivača sa većom visinom nikada ne bi moglo doneti bolju površinu jer bi širina opala, a visina bi i dalje bila ograničena kraćom linijom.",
@@ -751,7 +751,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Standardni niz",
+        "name": "Standard array",
         "inputParams": [
           [
             1,
@@ -771,7 +771,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Dva elementa",
+        "name": "Two elements",
         "inputParams": [
           [
             1,
@@ -784,7 +784,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Rastući niz",
+        "name": "Ascending array",
         "inputParams": [
           [
             4,
@@ -851,7 +851,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Prvo sortiramo niz u rastućem poretku. Zatim iteriramo kroz niz fiksnim elementom `nums[i]`. Za preostali deo niza primenjujemo tehniku dva pokazivača (`left` i `right`) tražeći zbir `-nums[i]`. Ključ je u preskakanju duplikata za `i`, `left` i `right` kako bi se izbegle identične trojke bez korišćenja sporog Hash Seta.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Sortiranje + Two Pointers",
-      "code": "/**\n * @param {number[]} nums\n * @return {number[][]}\n */\nfunction threeSum(nums) {\n  const result = [];\n  if (nums.length < 3) return result;\n  \n  // OBAVEZNO: Numeričko sortiranje u JavaScript-u!\n  nums.sort((a, b) => a - b);\n  \n  for (let i = 0; i < nums.length - 2; i++) {\n    // Ako je najmanji broj veći od nule, zbir tri broja nikada ne može biti 0\n    if (nums[i] > 0) break;\n    \n    // Preskačemo duplikate za prvi element trojke\n    if (i > 0 && nums[i] === nums[i - 1]) continue;\n    \n    let left = i + 1;\n    let right = nums.length - 1;\n    \n    while (left < right) {\n      const sum = nums[i] + nums[left] + nums[right];\n      \n      if (sum === 0) {\n        result.push([nums[i], nums[left], nums[right]]);\n        \n        // Preskačemo duplikate za levi i desni pokazivač\n        while (left < right && nums[left] === nums[left + 1]) left++;\n        while (left < right && nums[right] === nums[right - 1]) right--;\n        \n        left++;\n        right--;\n      } else if (sum < 0) {\n        left++; // Zbir je premali, povećavamo levu stranu\n      } else {\n        right--; // Zbir je prevelik, smanjujemo desnu stranu\n      }\n    }\n  }\n  \n  return result;\n}",
+      "code": "/**\n * @param {number[]} nums\n * @return {number[][]}\n */\nfunction threeSum(nums) {\n  const result = [];\n  if (nums.length < 3) return result;\n  \n  // REQUIRED: Numeric sorting in JavaScript!\n  nums.sort((a, b) => a - b);\n  \n  for (let i = 0; i < nums.length - 2; i++) {\n    // If the smallest number > 0, sum of three numbers can never be 0\n    if (nums[i] > 0) break;\n    \n    // Skip duplicates for the first element of triplet\n    if (i > 0 && nums[i] === nums[i - 1]) continue;\n    \n    let left = i + 1;\n    let right = nums.length - 1;\n    \n    while (left < right) {\n      const sum = nums[i] + nums[left] + nums[right];\n      \n      if (sum === 0) {\n        result.push([nums[i], nums[left], nums[right]]);\n        \n        // Skip duplicates for left and right pointers\n        while (left < right && nums[left] === nums[left + 1]) left++;\n        while (left < right && nums[right] === nums[right - 1]) right--;\n        \n        left++;\n        right--;\n      } else if (sum < 0) {\n        left++; // Sum is too small, advance left\n      } else {\n        right--; // Sum is too large, decrement right\n      }\n    }\n  }\n  \n  return result;\n}",
       "timeComplexity": "O(n²) — Sortiranje je O(n log n), a dvostruka petlja (for + two pointers) traje O(n²).",
       "spaceComplexity": "O(1) ili O(log n) — Zavisi od memorije potrebne za sortiranje u JS engine-u.",
       "explanation": "Preskakanje duplikata na licu mesta (in-place) eliminiše potrebu za pretvaranjem trojki u stringove radi ubacivanja u Set, što drastično ubrzava izvršavanje.",
@@ -892,7 +892,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Tri nule",
+        "name": "Three zeros",
         "inputParams": [
           [
             0,
@@ -912,7 +912,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Nema rešenja",
+        "name": "No solution",
         "inputParams": [
           [
             0,
@@ -977,7 +977,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Kadaneov algoritam se zasniva na prostom uvidu: kada sabiramo elemente, ako kumulativni zbir postane negativan (`currentSum < 0`), on samo odmaže bilo kom budućem podnizu. U tom trenutku \"odbacujemo\" prethodni segment i resetujemo `currentSum = 0` (odnosno počinjemo novi podniz od trenutnog elementa).",
     "optimalSolution": {
       "title": "Optimalno rešenje: Kadane's Algorithm",
-      "code": "/**\n * @param {number[]} nums\n * @return {number}\n */\nfunction maxSubArray(nums) {\n  let maxSoFar = nums[0];\n  let currentSum = 0;\n  \n  for (let i = 0; i < nums.length; i++) {\n    currentSum += nums[i];\n    \n    if (currentSum > maxSoFar) {\n      maxSoFar = currentSum;\n    }\n    \n    // Ako trenutni zbir ode ispod nule, resetujemo ga\n    if (currentSum < 0) {\n      currentSum = 0;\n    }\n  }\n  \n  return maxSoFar;\n}",
+      "code": "/**\n * @param {number[]} nums\n * @return {number}\n */\nfunction maxSubArray(nums) {\n  let maxSoFar = nums[0];\n  let currentSum = 0;\n  \n  for (let i = 0; i < nums.length; i++) {\n    currentSum += nums[i];\n    \n    if (currentSum > maxSoFar) {\n      maxSoFar = currentSum;\n    }\n    \n    // If current sum drops below zero, reset it\n    if (currentSum < 0) {\n      currentSum = 0;\n    }\n  }\n  \n  return maxSoFar;\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz niz.",
       "spaceComplexity": "O(1) — Potrebne su samo dve promenljive.",
       "explanation": "Inicijalizacija `maxSoFar = nums[0]` obezbeđuje ispravnost čak i u slučaju kada su svi brojevi u nizu negativni (npr. `[-3, -2, -5]` vraća `-2`).",
@@ -990,7 +990,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Mešoviti pozitivni i negativni",
+        "name": "Mixed positive and negative",
         "inputParams": [
           [
             -2,
@@ -1010,7 +1010,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Jedan element",
+        "name": "Single element",
         "inputParams": [
           [
             1
@@ -1022,7 +1022,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Svi negativni brojevi",
+        "name": "All negative numbers",
         "inputParams": [
           [
             -5,
@@ -1038,7 +1038,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-4",
-        "name": "Svi pozitivni brojevi",
+        "name": "All positive numbers",
         "inputParams": [
           [
             5,
@@ -1191,7 +1191,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Pošto je niz već sortiran, u svakom koraku poredimo ciljnu vrednost `target` sa srednjim elementom (`mid`). Ako je `target` manji, pretragu nastavljamo u levoj polovini; ako je veći, u desnoj. Time se prostor pretrage prepolovljuje u svakom koraku.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Iterativna Binarna Pretraga",
-      "code": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number}\n */\nfunction search(nums, target) {\n  let left = 0;\n  let right = nums.length - 1;\n  \n  while (left <= right) {\n    // U JS-u koristimo Math.floor jer deljenje / vraća float!\n    const mid = Math.floor(left + (right - left) / 2);\n    const midVal = nums[mid];\n    \n    if (midVal === target) {\n      return mid;\n    } else if (midVal < target) {\n      left = mid + 1; // Traženi element je desno\n    } else {\n      right = mid - 1; // Traženi element je levo\n    }\n  }\n  \n  return -1;\n}",
+      "code": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number}\n */\nfunction search(nums, target) {\n  let left = 0;\n  let right = nums.length - 1;\n  \n  while (left <= right) {\n    // In JS use Math.floor because / returns float!\n    const mid = Math.floor(left + (right - left) / 2);\n    const midVal = nums[mid];\n    \n    if (midVal === target) {\n      return mid;\n    } else if (midVal < target) {\n      left = mid + 1; // Target is in the right half\n    } else {\n      right = mid - 1; // Target is in the left half\n    }\n  }\n  \n  return -1;\n}",
       "timeComplexity": "O(log n) — Prostor pretrage se prepolovljuje u svakoj iteraciji.",
       "spaceComplexity": "O(1) — Konstantna memorija bez rekurzivnih poziva.",
       "explanation": "Formulacija `left + Math.floor((right - left) / 2)` sprečava potencijalno prekoračenje i garantuje ceo broj.",
@@ -1204,7 +1204,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Element postoji",
+        "name": "Target exists",
         "inputParams": [
           [
             -1,
@@ -1222,7 +1222,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Element ne postoji",
+        "name": "Target does not exist",
         "inputParams": [
           [
             -1,
@@ -1240,7 +1240,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Jedan element (Poklapa se)",
+        "name": "Single element found",
         "inputParams": [
           [
             5
@@ -1299,7 +1299,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Ako sortiramo intervale prema njihovom početnom vremenu (`start`), onda se svaki interval može preklapati samo sa neposredno prethodnim spojem. Dva intervala `[a, b]` i `[c, d]` se preklapaju ako je `c <= b`. Tada ih spajamo u `[a, Math.max(b, d)]`.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Sortiranje + Linearno spajanje",
-      "code": "/**\n * @param {number[][]} intervals\n * @return {number[][]}\n */\nfunction merge(intervals) {\n  if (intervals.length <= 1) return intervals;\n  \n  // 1. Sortiramo intervale po početnoj tački\n  intervals.sort((a, b) => a[0] - b[0]);\n  \n  const merged = [intervals[0]];\n  \n  for (let i = 1; i < intervals.length; i++) {\n    const current = intervals[i];\n    const lastMerged = merged[merged.length - 1];\n    \n    // Proveravamo da li postoji preklapanje (trenutni start <= prethodni end)\n    if (current[0] <= lastMerged[1]) {\n      // Spajamo proširenjem kraja prethodnog intervala\n      lastMerged[1] = Math.max(lastMerged[1], current[1]);\n    } else {\n      // Nema preklapanja, dodajemo novi interval\n      merged.push(current);\n    }\n  }\n  \n  return merged;\n}",
+      "code": "/**\n * @param {number[][]} intervals\n * @return {number[][]}\n */\nfunction merge(intervals) {\n  if (intervals.length <= 1) return intervals;\n  \n  // 1. Sort intervals by start time\n  intervals.sort((a, b) => a[0] - b[0]);\n  \n  const merged = [intervals[0]];\n  \n  for (let i = 1; i < intervals.length; i++) {\n    const current = intervals[i];\n    const lastMerged = merged[merged.length - 1];\n    \n    // Check if overlap exists (current.start <= lastMerged.end)\n    if (current[0] <= lastMerged[1]) {\n      // Merge by expanding the end of previous interval\n      lastMerged[1] = Math.max(lastMerged[1], current[1]);\n    } else {\n      // No overlap, push new interval\n      merged.push(current);\n    }\n  }\n  \n  return merged;\n}",
       "timeComplexity": "O(n log n) — Zbog sortiranja niza intervala.",
       "spaceComplexity": "O(n) — Memorija za skladištenje rezultujućeg niza.",
       "explanation": "Sortiranje omogućava da jednim prolazom O(n) rešimo problem poredeći uvek samo poslednji spojeni interval u listi.",
@@ -1312,7 +1312,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Standardno preklapanje",
+        "name": "Standard overlap",
         "inputParams": [
           [
             [
@@ -1352,7 +1352,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Dodirivanje na granici",
+        "name": "Boundary touching",
         "inputParams": [
           [
             [
@@ -1376,7 +1376,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-3",
-        "name": "Jedan interval unutar drugog",
+        "name": "Nested interval",
         "inputParams": [
           [
             [
@@ -1440,7 +1440,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Koristimo closure za čuvanje reference na identifikator trenutnog tajmera (`timerId`). Svaki put kada se debounced funkcija pozove, prvo pozivamo `clearTimeout(timerId)`, a zatim postavljamo novi `setTimeout` koji će nakon `t` milisekundi izvršiti originalnu funkciju sa prosleđenim parametrima.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Debounce sa Closure i Rest parametrima",
-      "code": "/**\n * @param {Function} fn\n * @param {number} t milliseconds\n * @return {Function}\n */\nfunction debounce(fn, t) {\n  let timerId = null;\n  \n  return function(...args) {\n    // 1. Poništavamo prethodno planirani poziv ako postoji\n    if (timerId !== null) {\n      clearTimeout(timerId);\n    }\n    \n    // 2. Postavljamo novi tajmer\n    timerId = setTimeout(() => {\n      fn.apply(this, args);\n    }, t);\n  };\n}",
+      "code": "/**\n * @param {Function} fn\n * @param {number} t milliseconds\n * @return {Function}\n */\nfunction debounce(fn, t) {\n  let timerId = null;\n  \n  return function(...args) {\n    // 1. Cancel previous pending timer if exists\n    if (timerId !== null) {\n      clearTimeout(timerId);\n    }\n    \n    // 2. Set new timer\n    timerId = setTimeout(() => {\n      fn.apply(this, args);\n    }, t);\n  };\n}",
       "timeComplexity": "O(1) — Postavljanje i čišćenje tajmera je O(1).",
       "spaceComplexity": "O(1) — Čuva se samo jedna referenca na timerId u closure-u.",
       "explanation": "Korišćenje `fn.apply(this, args)` ili `fn(...args)` obezbeđuje pravilno prosleđivanje konteksta `this` i svih argumenata originalnoj funkciji.",
@@ -1453,13 +1453,13 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Jedan poziv",
+        "name": "Single invocation",
         "inputParams": [
           50
         ],
-        "inputStr": "debounce(fn, 50ms) -> pozvano jednom",
-        "expectedOutput": "Izvršeno",
-        "expectedStr": "Funkcija se izvršava nakon 50ms"
+        "inputStr": "debounce(fn, 50ms) -> called once",
+        "expectedOutput": "Executed",
+        "expectedStr": "Function executes after 50ms"
       }
     ],
     "runFunctionName": "debounce",
@@ -1507,7 +1507,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Kreiramo novi `Promise((resolve, reject) => ...)`. Održavamo niz `results` i brojač `resolvedCount = 0`. Za svaku funkciju pozivamo `.then()` i smeštamo rezultat na NJEN TAČAN INDEKS `i` (`results[i] = res`). Kada `resolvedCount === functions.length`, pozivamo `resolve(results)`. Ako bilo koja funkcija baci grešku u `.catch()`, odmah pozivamo `reject(err)`.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Ručna implementacija Promise.all",
-      "code": "/**\n * @param {Array<Function>} functions\n * @return {Promise<any>}\n */\nfunction promiseAll(functions) {\n  return new Promise((resolve, reject) => {\n    // Ako je niz funkcija prazan, odmah se razrešava praznim nizom\n    if (functions.length === 0) {\n      resolve([]);\n      return;\n    }\n    \n    const results = new Array(functions.length);\n    let completedCount = 0;\n    \n    functions.forEach((fn, index) => {\n      // Pozivamo funkciju i osiguravamo da radimo sa Promise-om\n      Promise.resolve(fn())\n        .then((val) => {\n          // Čuvamo na tačnom indeksu, a ne push-ovanjem na kraj!\n          results[index] = val;\n          completedCount++;\n          \n          // Kada su svi završeni, razrešavamo glavni Promise\n          if (completedCount === functions.length) {\n            resolve(results);\n          }\n        })\n        .catch((err) => {\n          // Prva greška odmah obara ceo Promise.all\n          reject(err);\n        });\n    });\n  });\n}",
+      "code": "/**\n * @param {Array<Function>} functions\n * @return {Promise<any>}\n */\nfunction promiseAll(functions) {\n  return new Promise((resolve, reject) => {\n    // If array is empty, resolve immediately with empty array\n    if (functions.length === 0) {\n      resolve([]);\n      return;\n    }\n    \n    const results = new Array(functions.length);\n    let completedCount = 0;\n    \n    functions.forEach((fn, index) => {\n      // Execute function and wrap with Promise.resolve\n      Promise.resolve(fn())\n        .then((val) => {\n          // Store at original index, not pushing to end!\n          results[index] = val;\n          completedCount++;\n          \n          // When all promises resolve, resolve outer promise\n          if (completedCount === functions.length) {\n            resolve(results);\n          }\n        })\n        .catch((err) => {\n          // First rejection rejects entire promiseAll\n          reject(err);\n        });\n    });\n  });\n}",
       "timeComplexity": "O(N) — Gde je N broj asinhronih funkcija. Sve se pokreću paralelno u isto vreme.",
       "spaceComplexity": "O(N) — Niz za čuvanje rezultata.",
       "explanation": "Ključno pravilo: rezultati se moraju sačuvati na `results[index] = val`, jer asinhroni zadaci mogu završiti u bilo kom redosledu (npr. drugi pre prvog), ali izlaz mora pratiti redosled unosa.",
@@ -1520,11 +1520,11 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Dve paralelne funkcije",
+        "name": "Two parallel functions",
         "inputParams": [],
         "inputStr": "promiseAll([fn1, fn2])",
-        "expectedOutput": "Niz rezultata [res1, res2]",
-        "expectedStr": "Paralelno izvršavanje u tačnom redosledu"
+        "expectedOutput": "Array of results [res1, res2]",
+        "expectedStr": "Parallel execution in original order"
       }
     ],
     "runFunctionName": "promiseAll",
@@ -1579,7 +1579,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Kompozicija funkcija u matematici $(f \\circ g)(x) = f(g(x))$ znači da se najdesnija funkcija izvršava prva, a njen izlaz postaje ulaz za funkciju sa njene leve strane. U JavaScript-u, ugrađena metoda `Array.prototype.reduceRight()` je savršeno dizajnirana za ovaj obrazac.",
     "optimalSolution": {
       "title": "Optimalno rešenje: reduceRight",
-      "code": "/**\n * @param {Function[]} functions\n * @return {Function}\n */\nfunction compose(functions) {\n  return function(x) {\n    // reduceRight prolazi kroz niz s desna na levo\n    return functions.reduceRight((acc, fn) => fn(acc), x);\n  };\n}",
+      "code": "/**\n * @param {Function[]} functions\n * @return {Function}\n */\nfunction compose(functions) {\n  return function(x) {\n    // reduceRight iterates through functions array from right to left\n    return functions.reduceRight((acc, fn) => fn(acc), x);\n  };\n}",
       "timeComplexity": "O(n) — Gde je n broj funkcija u nizu.",
       "spaceComplexity": "O(1) — Nema dodatne alokacije memorije.",
       "explanation": "`reduceRight` prolazi kroz niz od poslednjeg indeksa ka nultom, primenjujući svaku funkciju na akumuliranu vrednost `acc`, počevši od početnog `x`.",
@@ -1609,7 +1609,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Prazan niz funkcija",
+        "name": "Empty functions array",
         "inputParams": [
           42
         ],
@@ -1660,7 +1660,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "U drugim jezicima (C++, Java) LRU se implementira pomoću Doubly Linked List i Hash Mape. U JavaScript-u, `Map` objekat po ECMAScript specifikaciji **garantovano čuva redosled umetanja (insertion order)**! Ako obrišemo ključ i ponovo ga postavimo (`map.delete(key); map.set(key, value);`), taj ključ se pomera na sam KRAJ mape (najskorije korišćen). Prvi element u mapi (`map.keys().next().value`) je automatski najmanje skoro korišćen.",
     "optimalSolution": {
       "title": "Optimalno rešenje u JavaScript-u: Map Insertion Order",
-      "code": "/**\n * @param {number} capacity\n */\nclass LRUCache {\n  constructor(capacity) {\n    this.capacity = capacity;\n    this.cache = new Map();\n  }\n\n  /** \n   * @param {number} key\n   * @return {number}\n   */\n  get(key) {\n    if (!this.cache.has(key)) {\n      return -1;\n    }\n    \n    // Osvežavamo poziciju ključa: brišemo ga i ponovo upisujemo na kraj\n    const value = this.cache.get(key);\n    this.cache.delete(key);\n    this.cache.set(key, value);\n    \n    return value;\n  }\n\n  /** \n   * @param {number} key \n   * @param {number} value\n   * @return {void}\n   */\n  put(key, value) {\n    // Ako ključ već postoji, uklanjamo staru poziciju\n    if (this.cache.has(key)) {\n      this.cache.delete(key);\n    }\n    \n    // Upisujemo novu vrednost na kraj (najnovije korišćen)\n    this.cache.set(key, value);\n    \n    // Ako smo premašili kapacitet, izbacujemo prvi element (najstariji)\n    if (this.cache.size > this.capacity) {\n      const oldestKey = this.cache.keys().next().value;\n      this.cache.delete(oldestKey);\n    }\n  }\n}",
+      "code": "/**\n * @param {number} capacity\n */\nclass LRUCache {\n  constructor(capacity) {\n    this.capacity = capacity;\n    this.cache = new Map();\n  }\n\n  /** \n   * @param {number} key\n   * @return {number}\n   */\n  get(key) {\n    if (!this.cache.has(key)) {\n      return -1;\n    }\n    \n    // Refresh key position: delete and re-insert at end\n    const value = this.cache.get(key);\n    this.cache.delete(key);\n    this.cache.set(key, value);\n    \n    return value;\n  }\n\n  /** \n   * @param {number} key \n   * @param {number} value\n   * @return {void}\n   */\n  put(key, value) {\n    // If key exists, delete old position\n    if (this.cache.has(key)) {\n      this.cache.delete(key);\n    }\n    \n    // Insert new value at end (most recently used)\n    this.cache.set(key, value);\n    \n    // If capacity exceeded, evict the first element (least recently used)\n    if (this.cache.size > this.capacity) {\n      const oldestKey = this.cache.keys().next().value;\n      this.cache.delete(oldestKey);\n    }\n  }\n}",
       "timeComplexity": "O(1) za get i O(1) za put — Map operacije has, get, set i delete rade u O(1).",
       "spaceComplexity": "O(capacity) — Keš nikada ne premašuje definisani kapacitet.",
       "explanation": "Ovo je jedno od najlepših specifičnih JS rešenja na intervjuima jer koristi zvaničnu garanciju ECMA-262 specifikacije o redosledu `Map` iteratora.",
@@ -1673,13 +1673,13 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "Kapacitet 2 sa evikcijom",
+        "name": "Capacity 2 with eviction",
         "inputParams": [
           2
         ],
         "inputStr": "LRUCache cap=2: put(1,1), put(2,2), get(1), put(3,3)",
-        "expectedOutput": "Validan rad keša",
-        "expectedStr": "get(2) vraća -1 jer je ključ 2 izbačen"
+        "expectedOutput": "Valid cache operation",
+        "expectedStr": "get(2) returns -1 because key 2 was evicted"
       }
     ],
     "runFunctionName": "LRUCache",
@@ -1733,7 +1733,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Održavamo tri reference: `prev` (inicijalno null), `curr` (trenutni čvor) i privremeni `next`. U svakom koraku pamtimo `next = curr.next`, preusmeravamo pokazivač `curr.next = prev`, a zatim pomeramo `prev = curr` i `curr = next`. Kada `curr` postane null, `prev` je nova glava obrnute liste.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Iterativno sa tri pokazivača",
-      "code": "/**\n * Definition for singly-linked list.\n * function ListNode(val, next) {\n *     this.val = (val===undefined ? 0 : val)\n *     this.next = (next===undefined ? null : next)\n * }\n */\n/**\n * @param {ListNode} head\n * @return {ListNode}\n */\nfunction reverseList(head) {\n  let prev = null;\n  let curr = head;\n  \n  while (curr !== null) {\n    const nextTemp = curr.next; // 1. Pamtimo sledeći čvor pre raskidanja veze\n    curr.next = prev;           // 2. Obrćemo pokazivač unazad\n    prev = curr;                // 3. Pomeramo prev napred\n    curr = nextTemp;            // 4. Pomeramo curr napred\n  }\n  \n  return prev; // prev je novi početak (glava) obrnute liste\n}",
+      "code": "/**\n * Definition for singly-linked list.\n * function ListNode(val, next) {\n *     this.val = (val===undefined ? 0 : val)\n *     this.next = (next===undefined ? null : next)\n * }\n */\n/**\n * @param {ListNode} head\n * @return {ListNode}\n */\nfunction reverseList(head) {\n  let prev = null;\n  let curr = head;\n  \n  while (curr !== null) {\n    const nextTemp = curr.next; // 1. Save next node before breaking link\n    curr.next = prev;           // 2. Reverse pointer backwards\n    prev = curr;                // 3. Move prev forward\n    curr = nextTemp;            // 4. Move curr forward\n  }\n  \n  return prev; // prev is the new head of reversed list\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz listu gde je n broj čvorova.",
       "spaceComplexity": "O(1) — Menjaju se samo pokazivači u postojećim objektima (in-place).",
       "explanation": "Iterativni pristup je bezbedniji u JS-u od rekurzivnog jer za dugačke liste (n > 10,000) rekurzija može izazvati Stack Overflow.",
@@ -1768,7 +1768,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Prazna lista",
+        "name": "Empty list",
         "inputParams": [
           []
         ],
@@ -1828,7 +1828,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Kreiramo lažni početni čvor (`dummy = { val: 0, next: null }`) i pokazivač `tail = dummy`. Upoređujemo `list1.val` i `list2.val`. Manji čvor vezujemo za `tail.next` i pomeramo odgovarajući pokazivač. Kada jedna lista ostane prazna, preostali deo druge liste jednostavno prikačimo na kraj.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Dummy Node Iterativno",
-      "code": "/**\n * @param {ListNode} list1\n * @param {ListNode} list2\n * @return {ListNode}\n */\nfunction mergeTwoLists(list1, list2) {\n  // Dummy node eliminiše potrebu za posebnim if uslovima za glavu liste\n  const dummy = { val: -1, next: null };\n  let tail = dummy;\n  \n  while (list1 !== null && list2 !== null) {\n    if (list1.val <= list2.val) {\n      tail.next = list1;\n      list1 = list1.next;\n    } else {\n      tail.next = list2;\n      list2 = list2.next;\n    }\n    tail = tail.next;\n  }\n  \n  // Prikačimo preostali neprazni rep direktno u O(1)\n  tail.next = list1 !== null ? list1 : list2;\n  \n  return dummy.next;\n}",
+      "code": "/**\n * @param {ListNode} list1\n * @param {ListNode} list2\n * @return {ListNode}\n */\nfunction mergeTwoLists(list1, list2) {\n  // Dummy node eliminates edge cases for list head\n  const dummy = { val: -1, next: null };\n  let tail = dummy;\n  \n  while (list1 !== null && list2 !== null) {\n    if (list1.val <= list2.val) {\n      tail.next = list1;\n      list1 = list1.next;\n    } else {\n      tail.next = list2;\n      list2 = list2.next;\n    }\n    tail = tail.next;\n  }\n  \n  // Attach remaining non-empty tail in O(1)\n  tail.next = list1 !== null ? list1 : list2;\n  \n  return dummy.next;\n}",
       "timeComplexity": "O(n + m) — Gde su n i m dužine lista.",
       "spaceComplexity": "O(1) — Koristi se samo dummy čvor i pokazivač tail.",
       "explanation": "Dummy Node pattern je standardni industrijski obrazac za algoritme sa povezanim listama jer potpuno eliminiše dosadne `if (head === null)` grane.",
@@ -1841,7 +1841,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "testCases": [
       {
         "id": "tc-1",
-        "name": "[1,2,4] i [1,3,4]",
+        "name": "[1,2,4] and [1,3,4]",
         "inputParams": [
           [
             1,
@@ -1867,7 +1867,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Jedna prazna lista",
+        "name": "One empty list",
         "inputParams": [
           [],
           [
@@ -1932,7 +1932,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Za svaki čvor u stablu potrebno je zameniti njegovo levo i desno dete, a zatim rekurzivno ponoviti isti postupak za levo i desno podstablo. Bazni slučaj je kada je čvor `null`.",
     "optimalSolution": {
       "title": "Optimalno rešenje: DFS Rekurzija",
-      "code": "/**\n * Definition for a binary tree node.\n * function TreeNode(val, left, right) {\n *     this.val = (val===undefined ? 0 : val)\n *     this.left = (left===undefined ? null : left)\n *     this.right = (right===undefined ? null : right)\n * }\n */\n/**\n * @param {TreeNode} root\n * @return {TreeNode}\n */\nfunction invertTree(root) {\n  if (root === null) {\n    return null;\n  }\n  \n  // 1. Zamenjujemo levo i desno dete koristeći JS destrukturiranje\n  const temp = root.left;\n  root.left = root.right;\n  root.right = temp;\n  \n  // 2. Rekurzivno invertujemo levo i desno podstablo\n  invertTree(root.left);\n  invertTree(root.right);\n  \n  return root;\n}",
+      "code": "/**\n * Definition for a binary tree node.\n * function TreeNode(val, left, right) {\n *     this.val = (val===undefined ? 0 : val)\n *     this.left = (left===undefined ? null : left)\n *     this.right = (right===undefined ? null : right)\n * }\n */\n/**\n * @param {TreeNode} root\n * @return {TreeNode}\n */\nfunction invertTree(root) {\n  if (root === null) {\n    return null;\n  }\n  \n  // 1. Swap left and right children using JS destructuring\n  const temp = root.left;\n  root.left = root.right;\n  root.right = temp;\n  \n  // 2. Recursively invert left and right subtrees\n  invertTree(root.left);\n  invertTree(root.right);\n  \n  return root;\n}",
       "timeComplexity": "O(n) — Poseti se svaki čvor u stablu tačno jednom.",
       "spaceComplexity": "O(h) — Gde je h visina stabla (memorija na Call Stack-u). U najgorem slučaju O(n), za balanso stablo O(log n).",
       "explanation": "Ovo je čuveni zadatak koji je Max Howell (tvorac Homebrew alata) popularizovao kada ga je Google odbio na intervjuu.",
@@ -2035,7 +2035,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Za svaki element `i`, proizvod svih ostalih brojeva jednak je: `(proizvod svih elemenata levo od i) * (proizvod svih elemenata desno od i)`. Prvo u nizu `result` izračunamo prefiks proizvode s leva na desno. Zatim u drugom prolazu s desna na levo množimo akumuliranim sufiks proizvodom.",
     "optimalSolution": {
       "title": "Optimalno rešenje: Dva prolaza sa O(1) dodatne memorije",
-      "code": "/**\n * @param {number[]} nums\n * @return {number[]}\n */\nfunction productExceptSelf(nums) {\n  const n = nums.length;\n  const result = new Array(n);\n  \n  // 1. Prolaz s leva na desno: result[i] sadrži proizvod svih elemenata LEVO od i\n  result[0] = 1;\n  for (let i = 1; i < n; i++) {\n    result[i] = result[i - 1] * nums[i - 1];\n  }\n  \n  // 2. Prolaz s desna na levo: množimo akumuliranim proizvodom sa DESNE strane\n  let rightProduct = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    result[i] = result[i] * rightProduct;\n    rightProduct *= nums[i];\n  }\n  \n  return result;\n}",
+      "code": "/**\n * @param {number[]} nums\n * @return {number[]}\n */\nfunction productExceptSelf(nums) {\n  const n = nums.length;\n  const result = new Array(n);\n  \n  // 1. Left-to-right pass: result[i] contains product of all elements to the LEFT of i\n  result[0] = 1;\n  for (let i = 1; i < n; i++) {\n    result[i] = result[i - 1] * nums[i - 1];\n  }\n  \n  // 2. Right-to-left pass: multiply with accumulated product from RIGHT side\n  let rightProduct = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    result[i] = result[i] * rightProduct;\n    rightProduct *= nums[i];\n  }\n  \n  return result;\n}",
       "timeComplexity": "O(n) — Dva linearna prolaza kroz niz dužine n.",
       "spaceComplexity": "O(1) — Rezultujući niz se ne računa kao dodatna memorija po zahtevu zadatka.",
       "explanation": "Izbegavanjem deljenja (/), algoritam bez problema rukuje nulama u nizu bez deljenja sa nulom (`DivisionByZeroError`).",
@@ -2068,7 +2068,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       },
       {
         "id": "tc-2",
-        "name": "Sadrži nulu",
+        "name": "Contains zero",
         "inputParams": [
           [
             -1,
@@ -2134,7 +2134,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
     "intuition": "Za svaku kuću imamo dva izbora:\n1. Opljačkamo trenutnu kuću (`nums[i] + profit od kuće i-2`)\n2. Preskočimo trenutnu kuću (`profit od kuće i-1`).\nDakle: `dp[i] = max(dp[i-1], nums[i] + dp[i-2])`. Pošto nam trebaju samo dve prethodne vrednosti, optimizujemo prostor na O(1).",
     "optimalSolution": {
       "title": "Optimalno rešenje: DP sa O(1) memorijom",
-      "code": "/**\n * @param {number[]} nums\n * @return {number}\n */\nfunction rob(nums) {\n  if (nums.length === 0) return 0;\n  if (nums.length === 1) return nums[0];\n  \n  let robPrev2 = 0; // Maksimalan plen do kuće i-2\n  let robPrev1 = 0; // Maksimalan plen do kuće i-1\n  \n  for (let i = 0; i < nums.length; i++) {\n    // Novi maksimum je veći od (preskakanja trenutne) ili (pljačkanja trenutne + i-2)\n    const currentMax = Math.max(robPrev1, nums[i] + robPrev2);\n    robPrev2 = robPrev1;\n    robPrev1 = currentMax;\n  }\n  \n  return robPrev1;\n}",
+      "code": "/**\n * @param {number[]} nums\n * @return {number}\n */\nfunction rob(nums) {\n  if (nums.length === 0) return 0;\n  if (nums.length === 1) return nums[0];\n  \n  let robPrev2 = 0; // Max profit up to house i-2\n  let robPrev1 = 0; // Max profit up to house i-1\n  \n  for (let i = 0; i < nums.length; i++) {\n    // New maximum is max of (skipping current) or (robbing current + i-2)\n    const currentMax = Math.max(robPrev1, nums[i] + robPrev2);\n    robPrev2 = robPrev1;\n    robPrev1 = currentMax;\n  }\n  \n  return robPrev1;\n}",
       "timeComplexity": "O(n) — Jedan prolaz kroz niz kuća.",
       "spaceComplexity": "O(1) — Konstantan broj promenljivih.",
       "explanation": "Prelazak stanja `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` se svodi na dve jednostavne promenljive, identično optimizaciji Fibonačijevog niza.",

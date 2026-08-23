@@ -26,8 +26,6 @@ interface HeaderProps {
   setSearchQuery: (query: string) => void;
   selectedCategory: string;
   setSelectedCategory: (cat: string) => void;
-  selectedDifficulty: string;
-  setSelectedDifficulty: (diff: string) => void;
   bookmarkedCount: number;
   showOnlyBookmarks: boolean;
   setShowOnlyBookmarks: (show: boolean) => void;
@@ -42,8 +40,6 @@ export const Header: React.FC<HeaderProps> = ({
   setSearchQuery,
   selectedCategory,
   setSelectedCategory,
-  selectedDifficulty,
-  setSelectedDifficulty,
   bookmarkedCount,
   showOnlyBookmarks,
   setShowOnlyBookmarks,
@@ -61,15 +57,8 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'prototypes-oop', label: m.cat_prototypes_oop() },
     { id: 'arrays-objects', label: m.cat_arrays_objects() },
     { id: 'math-numbers', label: m.cat_math_numbers() },
-    { id: 'syntax-asi', label: m.cat_syntax_asi() }
-  ];
-
-  const difficultyOptions: { id: string; label: string }[] = [
-    { id: 'All', label: m.diff_all() },
-    { id: 'Beginner', label: m.diff_beginner() },
-    { id: 'Intermediate', label: m.diff_intermediate() },
-    { id: 'Advanced', label: m.diff_advanced() },
-    { id: 'WTJS Quirks', label: m.diff_expert() }
+    { id: 'syntax-asi', label: m.cat_syntax_asi() },
+    { id: 'async-promises', label: m.cat_async_promises() }
   ];
 
   const navItems = [
@@ -98,9 +87,6 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2">
               <span className="font-serif font-bold text-base tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
                 {m.brand_title()}
-              </span>
-              <span className="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#F59E0B]/15 dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FCD34D] font-bold border border-[#F59E0B]/30">
-                ES2024
               </span>
             </div>
           </div>
@@ -218,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="max-w-7xl mx-auto px-3 sm:px-6 space-y-2.5">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
               {/* Search Bar */}
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1">
                 <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8C8C82] dark:text-[#71717A]" />
                 <input
                   type="text"
@@ -235,26 +221,6 @@ export const Header: React.FC<HeaderProps> = ({
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
-              </div>
-
-              {/* Difficulty Options */}
-              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-                {difficultyOptions.map((diff) => {
-                  const isSelected = selectedDifficulty === diff.id;
-                  return (
-                    <button
-                      key={diff.id}
-                      onClick={() => setSelectedDifficulty(diff.id)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition cursor-pointer whitespace-nowrap flex-shrink-0 ${
-                        isSelected
-                          ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] font-bold shadow-xs'
-                          : 'bg-[#FFFFFF] dark:bg-[#202023] text-[#575750] dark:text-[#A1A1AA] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46]'
-                      }`}
-                    >
-                      {diff.label}
-                    </button>
-                  );
-                })}
               </div>
             </div>
 

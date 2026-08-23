@@ -35,7 +35,6 @@ export default function App() {
   const [playgroundCode, setPlaygroundCode] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('js_quirks_bookmarks');
@@ -104,11 +103,6 @@ export default function App() {
       return false;
     }
 
-    // Difficulty
-    if (selectedDifficulty !== 'All' && topic.difficulty !== selectedDifficulty) {
-      return false;
-    }
-
     // Bookmarks only
     if (showOnlyBookmarks && !bookmarks.includes(topic.id)) {
       return false;
@@ -127,8 +121,6 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
-        selectedDifficulty={selectedDifficulty}
-        setSelectedDifficulty={setSelectedDifficulty}
         bookmarkedCount={bookmarks.length}
         showOnlyBookmarks={showOnlyBookmarks}
         setShowOnlyBookmarks={setShowOnlyBookmarks}
@@ -152,12 +144,11 @@ export default function App() {
                 </p>
               </div>
 
-              {(searchQuery || selectedCategory !== 'all' || selectedDifficulty !== 'All' || showOnlyBookmarks) && (
+              {(searchQuery || selectedCategory !== 'all' || showOnlyBookmarks) && (
                 <button
                   onClick={() => {
                     setSearchQuery('');
                     setSelectedCategory('all');
-                    setSelectedDifficulty('All');
                     setShowOnlyBookmarks(false);
                   }}
                   className="text-xs text-[#B45309] dark:text-[#F59E0B] font-medium hover:underline cursor-pointer"
@@ -176,7 +167,6 @@ export default function App() {
                   onClick={() => {
                     setSearchQuery('');
                     setSelectedCategory('all');
-                    setSelectedDifficulty('All');
                     setShowOnlyBookmarks(false);
                   }}
                   className="px-4 py-2 bg-[#1A1A1A] dark:bg-[#27272A] hover:bg-[#333330] dark:hover:bg-[#3F3F46] text-xs font-semibold rounded-lg text-[#F9F9F7] dark:text-[#F4F4F5] transition cursor-pointer"
@@ -256,7 +246,7 @@ export default function App() {
             </span>
             <span className="text-[#1A1A1A] dark:text-[#F4F4F5] font-serif font-bold">{m.brand_title()}</span>
             <span className="text-[#D4D4CE] dark:text-[#3F3F46]">|</span>
-            <span>{locale === 'sr' ? 'Usklađeno sa ECMAScript 2024+ Specifikacijom' : 'Aligned with ECMAScript 2024+ Specification'}</span>
+            <span>{locale === 'sr' ? 'Usklađeno sa ECMAScript 2026 Specifikacijom' : 'Aligned with ECMAScript 2026 Specification'}</span>
           </div>
 
           <div className="flex items-center gap-4 text-[#73736C] dark:text-[#A1A1AA] font-mono text-[11px]">

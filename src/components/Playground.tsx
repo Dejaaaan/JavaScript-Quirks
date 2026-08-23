@@ -88,6 +88,38 @@ console.log("Is difference < Number.EPSILON?:", Math.abs(sum - 0.3) < Number.EPS
 const maxSafe = Number.MAX_SAFE_INTEGER;
 console.log("MAX_SAFE_INTEGER:", maxSafe);
 console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
+    },
+    {
+      name: locale === 'sr' ? 'ES2026/ES2024: Object.groupBy i Promise.withResolvers' : 'ES2026/ES2024: Object.groupBy & Promise.withResolvers',
+      code: `// 1. Native Object.groupBy (ES2024+)
+const inventory = [
+  { name: 'Apple', type: 'fruit', qty: 10 },
+  { name: 'Banana', type: 'fruit', qty: 0 },
+  { name: 'Carrot', type: 'vegetable', qty: 15 },
+  { name: 'Broccoli', type: 'vegetable', qty: 8 }
+];
+
+if (typeof Object.groupBy === 'function') {
+  const grouped = Object.groupBy(inventory, (item) => item.type);
+  console.log("Object.groupBy result:", grouped);
+} else {
+  console.log("Object.groupBy fallback demo");
+}
+
+// 2. Promise.withResolvers (ES2024+)
+if (typeof Promise.withResolvers === 'function') {
+  const { promise, resolve, reject } = Promise.withResolvers();
+  promise.then((val) => console.log("Promise.withResolvers received:", val));
+  resolve("Resolved cleanly without new Promise constructor callback!");
+} else {
+  console.log("Promise.withResolvers is supported in modern ES runtimes");
+}
+
+// 3. Immutable Array methods (toSorted, toReversed, toSpliced, with)
+const original = [3, 1, 4, 1, 5];
+const sorted = original.toSorted();
+console.log("Original array (unmutated):", original);
+console.log("toSorted array:", sorted);`
     }
   ];
 
@@ -151,11 +183,11 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
       </div>
 
       {/* Main Grid: Code Editor on Left, Console Output on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         {/* Editor Container (7 cols) */}
-        <div className="lg:col-span-7 bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] pb-3">
+        <div className="lg:col-span-7 bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col min-h-[580px] h-full justify-between">
+          <div className="flex flex-col flex-1 min-h-0 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] pb-3 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] inline-block"></span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] inline-block"></span>
@@ -186,10 +218,10 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
               </div>
             </div>
 
-            {/* Live Syntax-Highlighted Editor */}
-            <div className="rounded-xl border border-[#27272A] dark:border-[#3F3F46] bg-[#18181B] dark:bg-[#121214] flex overflow-hidden shadow-inner focus-within:border-[#F59E0B] focus-within:ring-1 focus-within:ring-[#F59E0B] transition">
+            {/* Live Syntax-Highlighted Editor that fills the entire container */}
+            <div className="rounded-xl border border-[#27272A] dark:border-[#3F3F46] bg-[#18181B] dark:bg-[#121214] flex flex-1 min-h-[460px] overflow-hidden shadow-inner focus-within:border-[#F59E0B] focus-within:ring-1 focus-within:ring-[#F59E0B] transition">
               {/* Line Numbers Gutter */}
-              <div className="select-none py-3 px-2.5 text-right font-mono text-xs text-[#52525B] bg-[#141416] dark:bg-[#0D0D0E] border-r border-[#27272A] dark:border-[#27272A] flex flex-col shrink-0 min-w-[2.5rem] leading-[1.65rem]">
+              <div className="select-none py-3 px-2.5 text-right font-mono text-xs text-[#52525B] bg-[#141416] dark:bg-[#0D0D0E] border-r border-[#27272A] dark:border-[#27272A] flex flex-col shrink-0 min-w-[2.75rem] leading-[1.65rem] overflow-hidden">
                 {lines.map((_, i) => (
                   <span key={i} className="block text-[11px] font-mono leading-[1.65rem] opacity-75">
                     {i + 1}
@@ -198,19 +230,19 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
               </div>
 
               {/* Editable Code Area */}
-              <div className="flex-1 overflow-x-auto min-h-[320px] max-h-[480px] overflow-y-auto">
+              <div className="flex-1 overflow-x-auto overflow-y-auto h-full flex flex-col">
                 <Editor
                   value={code}
                   onValueChange={(val) => setCode(val)}
                   highlight={(c) => Prism.highlight(c, Prism.languages.javascript, 'javascript')}
                   padding={12}
-                  className="font-mono text-xs"
+                  className="font-mono text-xs flex-1"
                   placeholder={localize('// Upišite ili nalepite vaš JavaScript kod ovde...', '// Type or paste your JavaScript code here...')}
                   style={{
                     fontFamily: 'var(--font-mono, ui-monospace, monospace)',
                     fontSize: '12px',
                     lineHeight: '1.65rem',
-                    minHeight: '320px',
+                    minHeight: '100%',
                     color: '#F4F4F5',
                     backgroundColor: 'transparent',
                     outline: 'none',
@@ -222,9 +254,9 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
           </div>
 
           {/* Action Bar */}
-          <div className="flex items-center justify-between pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] mt-2">
+          <div className="flex items-center justify-between pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] mt-3 shrink-0">
             <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic">
-              {localize('Podržava ES2024+, async/await i standardne console funkcije', 'Supports ES2024+, async/await and standard console functions')}
+              {localize('Podržava ES2026, async/await i standardne console funkcije', 'Supports ES2026, async/await and standard console functions')}
             </span>
             <button
               onClick={handleRun}
@@ -238,9 +270,9 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
         </div>
 
         {/* Console & Result Container (5 cols) */}
-        <div className="lg:col-span-5 bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] pb-3">
+        <div className="lg:col-span-5 bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col min-h-[580px] h-full justify-between">
+          <div className="flex flex-col flex-1 min-h-0 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] pb-3 shrink-0">
               <span className="text-xs font-serif font-bold uppercase tracking-wider text-[#1A1A1A] dark:text-[#F4F4F5] flex items-center gap-1.5">
                 <Terminal className="w-4 h-4 text-[#047857] dark:text-[#34D399]" />
                 {m.play_console_output()}
@@ -254,9 +286,9 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
             </div>
 
             {/* Console Log Stream */}
-            <div className="min-h-[260px] max-h-[360px] overflow-y-auto bg-[#141413] dark:bg-[#09090B] rounded-xl p-4 border border-[#2B2B28] dark:border-[#27272A] font-mono text-xs space-y-2">
+            <div className="flex-1 min-h-[460px] overflow-y-auto bg-[#141413] dark:bg-[#09090B] rounded-xl p-4 border border-[#2B2B28] dark:border-[#27272A] font-mono text-xs space-y-2">
               {!result ? (
-                <div className="text-[#73736C] dark:text-[#71717A] italic text-center my-16 font-serif">
+                <div className="text-[#73736C] dark:text-[#71717A] italic text-center my-28 font-serif">
                   {m.play_no_output()}
                 </div>
               ) : result.logs.length === 0 && !result.returnValue && !result.error ? (
@@ -298,7 +330,7 @@ console.log("maxSafe + 1 === maxSafe + 2:", maxSafe + 1 === maxSafe + 2);`
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] text-[11px] text-[#73736C] dark:text-[#A1A1AA] flex items-center justify-between mt-2">
+          <div className="pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] text-[11px] text-[#73736C] dark:text-[#A1A1AA] flex items-center justify-between mt-3 shrink-0">
             <span>{localize('Izvršeno u izolovanom okruženju pretraživača', 'Executed in isolated browser environment')}</span>
             <button
               onClick={() => setResult(null)}

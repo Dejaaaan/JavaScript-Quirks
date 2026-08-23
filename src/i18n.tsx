@@ -4,6 +4,71 @@ import { createMessagesProxy, type MessageFunctions, type MessageKey } from './m
 
 export type AppLocale = 'sr' | 'en';
 
+export function detectUserLocale(): AppLocale {
+  if (typeof window === 'undefined') {
+    return 'sr';
+  }
+
+  // 1. Provera URL Query parametra (?lang=en ili ?lang=sr)
+  try {
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlLang = searchParams.get('lang')?.toLowerCase();
+    if (urlLang === 'en' || urlLang === 'sr') {
+      try {
+        localStorage.setItem('PARAGLIDE_LOCALE', urlLang);
+      } catch {}
+      return urlLang;
+    }
+  } catch {}
+
+  // 2. Provera prethodnog eksplicitnog izbora u localStorage
+  try {
+    const saved = localStorage.getItem('PARAGLIDE_LOCALE');
+    if (saved === 'en' || saved === 'sr') {
+      return saved;
+    }
+  } catch {}
+
+  // 3. Detekcija iz pretraživača (navigator.languages / navigator.language)
+  try {
+    const browserLanguages = navigator.languages && navigator.languages.length > 0 
+      ? navigator.languages 
+      : [navigator.language || ''];
+
+    for (const lang of browserLanguages) {
+      if (!lang) continue;
+      const normalized = lang.toLowerCase().trim();
+      const primaryLang = normalized.split(/[-_]/)[0];
+
+      // Ako je domaći/regionalni jezik
+      if (['sr', 'hr', 'bs', 'cnr', 'sh'].includes(primaryLang)) {
+        return 'sr';
+      }
+
+      // Ako je engleski ili bilo koji drugi međunarodni jezik
+      if (primaryLang === 'en') {
+        return 'en';
+      }
+    }
+
+    // Za ostale strane jezike koji nisu srpski/regionalni, engleski je pogodniji default
+    const firstLang = (browserLanguages[0] || '').toLowerCase().split(/[-_]/)[0];
+    if (firstLang && !['sr', 'hr', 'bs', 'cnr', 'sh'].includes(firstLang)) {
+      return 'en';
+    }
+  } catch {}
+
+  // 4. Bazični fallback
+  try {
+    const paraglideLocale = getLocale();
+    if (paraglideLocale === 'en' || paraglideLocale === 'sr') {
+      return paraglideLocale;
+    }
+  } catch {}
+
+  return 'sr';
+}
+
 interface I18nContextType {
   locale: AppLocale;
   setLocale: (locale: AppLocale) => void;
@@ -16,21 +81,11 @@ const I18nContext = createContext<I18nContextType | null>(null);
 
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [locale, setLocaleState] = useState<AppLocale>(() => {
+    const detected = detectUserLocale();
     try {
-      const saved = localStorage.getItem('PARAGLIDE_LOCALE');
-      if (saved === 'en' || saved === 'sr') {
-        try { setParaglideLocale(saved, { reload: false }); } catch {}
-        return saved;
-      }
-      try {
-        const initial = getLocale();
-        return (initial === 'en' ? 'en' : 'sr');
-      } catch {
-        return 'sr';
-      }
-    } catch {
-      return 'sr';
-    }
+      setParaglideLocale(detected, { reload: false });
+    } catch {}
+    return detected;
   });
 
   const handleSetLocale = (newLocale: AppLocale) => {
@@ -81,12 +136,7 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useI18n = (): I18nContextType => {
   const context = useContext(I18nContext);
   if (!context) {
-    let currentLocale: AppLocale = 'sr';
-    try {
-      currentLocale = (getLocale() === 'en' ? 'en' : 'sr') as AppLocale;
-    } catch {
-      currentLocale = 'sr';
-    }
+    const currentLocale: AppLocale = detectUserLocale();
     const fallbackMessages = createMessagesProxy(() => currentLocale);
     return {
       locale: currentLocale,
@@ -102,13 +152,7 @@ export const useI18n = (): I18nContextType => {
 };
 
 export const m = createMessagesProxy(() => {
-  try {
-    const saved = localStorage.getItem('PARAGLIDE_LOCALE');
-    if (saved === 'en' || saved === 'sr') return saved;
-    return (getLocale() === 'en' ? 'en' : 'sr');
-  } catch {
-    return 'sr';
-  }
+  return detectUserLocale();
 });
 
 export { getLocale, setParaglideLocale };

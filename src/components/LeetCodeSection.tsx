@@ -843,7 +843,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                       </div>
 
                       {/* Editable Code */}
-                      <div className="flex-1 overflow-x-auto min-h-[220px]">
+                      <div className="flex-1 overflow-x-auto min-h-[340px]">
                         <Editor
                           value={currentCode}
                           onValueChange={(val) => handleCodeChange(val)}
@@ -855,7 +855,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                             fontFamily: 'var(--font-mono, ui-monospace, monospace)',
                             fontSize: '12px',
                             lineHeight: '1.65rem',
-                            minHeight: '100%',
+                            minHeight: '340px',
                             color: '#F4F4F5',
                             backgroundColor: 'transparent',
                             outline: 'none',

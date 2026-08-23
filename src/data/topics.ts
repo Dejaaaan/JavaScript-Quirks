@@ -57,7 +57,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "coercion-math",
         "title": "Matematička i String konverzija",
         "description": "Uočite razliku između preopterećenog operatora + i numeričkih operatora (-, *, /)",
-        "code": "console.log('\"5\" + 3  =>', \"5\" + 3);  // String konkatenacija -> \"53\"\nconsole.log('\"5\" - 3  =>', \"5\" - 3);  // Konvertuje u number -> 2\nconsole.log('\"5\" * \"2\" =>', \"5\" * \"2\"); // 10\nconsole.log('true + 1  =>', true + 1); // true postaje 1 -> 2\nconsole.log('null + 1  =>', null + 1); // null postaje 0 -> 1\nconsole.log('undefined + 1 =>', undefined + 1); // undefined postaje NaN -> NaN",
+        "code": "console.log('\"5\" + 3  =>', \"5\" + 3);  // String concatenation -> \"53\"\nconsole.log('\"5\" - 3  =>', \"5\" - 3);  // Coerces to number -> 2\nconsole.log('\"5\" * \"2\" =>', \"5\" * \"2\"); // 10\nconsole.log('true + 1  =>', true + 1); // true becomes 1 -> 2\nconsole.log('null + 1  =>', null + 1); // null becomes 0 -> 1\nconsole.log('undefined + 1 =>', undefined + 1); // undefined becomes NaN -> NaN",
         "visualType": "coercion",
         "titleEn": "Math and String Coercion",
         "descriptionEn": "Observe the difference between overloaded + and numeric arithmetic operators (-, *, /)"
@@ -66,7 +66,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "coercion-arrays-objects",
         "title": "Nizovi i objekti u aritmetici",
         "description": "Kako se objekti i nizovi razrešavaju preko metoda .valueOf() i .toString()",
-        "code": "console.log('[] + []       =>', JSON.stringify([] + [])); // \"\"\nconsole.log('[] + {}       =>', [] + {}); // \"[object Object]\"\nconsole.log('[1, 2] + [3]  =>', [1, 2] + [3]); // \"1,23\"\nconsole.log('+[]           =>', +[]); // Unarni plus konvertuje prazan niz u 0\nconsole.log('+!+[]         =>', +!+[]); // 1\nconsole.log('!+[] + !+[]   =>', !+[] + !+[]); // 2",
+        "code": "console.log('[] + []       =>', JSON.stringify([] + [])); // \"\"\nconsole.log('[] + {}       =>', [] + {}); // \"[object Object]\"\nconsole.log('[1, 2] + [3]  =>', [1, 2] + [3]); // \"1,23\"\nconsole.log('+[]           =>', +[]); // Unary plus converts empty array to 0\nconsole.log('+!+[]         =>', +!+[]); // 1\nconsole.log('!+[] + !+[]   =>', !+[] + !+[]); // 2",
         "visualType": "coercion",
         "titleEn": "Arrays and Objects in Arithmetic",
         "descriptionEn": "How objects and arrays resolve via .valueOf() and .toString() methods"
@@ -84,9 +84,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Provera jednakosti (Labava == naspram Striktne ===)",
-        "badCode": "// ❌ RIZIČNO: Korišćenje labave jednakosti (==)\nfunction checkDiscount(couponCode) {\n  // Ako korisnik unese 0 ili false, labava jednakost pravi neočekivane propuste!\n  if (couponCode == false) {\n    console.log(\"Kupon nije primenjen\");\n  }\n  \n  const total = \"100\";\n  if (total == 100) { // Prolazi iako su tipovi različiti (string i number)\n    return Number(total) * 0.9;\n  }\n}",
+        "badCode": "// ❌ RISKY: Using loose equality (==)\nfunction checkDiscount(couponCode) {\n  // If user enters 0 or false, loose equality causes unexpected bugs!\n  if (couponCode == false) {\n    console.log(\"Coupon not applied\");\n  }\n  \n  const total = \"100\";\n  if (total == 100) { // Passes even though types differ (string and number)\n    return Number(total) * 0.9;\n  }\n}",
         "badExplanation": "Labava jednakost (==) prolazi kroz 11 koraka apstraktnog algoritma konverzije. Poređenja \"\" == 0, [] == false ili \"0\" == false daju true, što stvara skrivene sigurnosne i logičke bug-ove.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Uvek koristite striktnu jednakost (===) i eksplicitnu konverziju\nfunction checkDiscount(couponCode: string | null) {\n  if (couponCode === null || couponCode === \"\") {\n    console.log(\"Kupon nije primenjen\");\n    return;\n  }\n  \n  const total = 100;\n  if (typeof total === \"number\" && total === 100) {\n    return total * 0.9;\n  }\n}",
+        "goodCode": "// ✅ BEST PRACTICE: Always use strict equality (===) and explicit type conversion\nfunction checkDiscount(couponCode: string | null) {\n  if (couponCode === null || couponCode === \"\") {\n    console.log(\"Coupon not applied\");\n    return;\n  }\n  \n  const total = 100;\n  if (typeof total === \"number\" && total === 100) {\n    return total * 0.9;\n  }\n}",
         "goodExplanation": "Striktna jednakost (===) nikada ne vrši konverziju tipova. Ukoliko tipovi nisu identični, odmah vraća false bez ikakvih sporednih efekata.",
         "pitfall": "Implicitna konverzija tipova u uslovima (if) koja dovodi do pogrešnih truthy/falsy evaluacija.",
         "titleEn": "Equality Checking (Loose == vs Strict ===)",
@@ -96,9 +96,9 @@ const RAW_TOPICS: JSTopic[] = [
       },
       {
         "title": "Parsiranje i validacija brojeva",
-        "badCode": "// ❌ RIZIČNO: Globalna funkcija isNaN()\nconsole.log(isNaN(\"hello\")); // true\nconsole.log(isNaN(undefined)); // true (prvo konvertuje undefined u NaN!)\nconsole.log(isNaN({})); // true",
+        "badCode": "// ❌ RISKY: Global isNaN() function\nconsole.log(isNaN(\"hello\")); // true\nconsole.log(isNaN(undefined)); // true (coerces undefined to NaN first!)\nconsole.log(isNaN({})); // true",
         "badExplanation": "Globalna funkcija `isNaN()` prvo prinudno konvertuje argument u Number pre provere. Zato `isNaN(\"hello\")` ili `isNaN({})` vraćaju `true` iako same vrednosti u startu nisu tipa `NaN`.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Koristite Number.isNaN() ili Number.isFinite()\nconsole.log(Number.isNaN(\"hello\")); // false (nema prinudne konverzije!)\nconsole.log(Number.isNaN(NaN)); // true\nconsole.log(Number.isFinite(123)); // true\nconsole.log(Number.isFinite(\"123\")); // false (striktno proverava i tip)",
+        "goodCode": "// ✅ BEST PRACTICE: Use Number.isNaN() or Number.isFinite()\nconsole.log(Number.isNaN(\"hello\")); // false (no forced coercion!)\nconsole.log(Number.isNaN(NaN)); // true\nconsole.log(Number.isFinite(123)); // true\nconsole.log(Number.isFinite(\"123\")); // false (strictly checks type)",
         "goodExplanation": "Metoda `Number.isNaN()` uvedena u ES6 standardu striktno proverava da li je prosleđena vrednost tipa Number i jednaka `NaN`, bez ikakve implicitne konverzije.",
         "pitfall": "Slučajno korišćenje globalne isNaN() funkcije za validaciju korisničkog unosa.",
         "titleEn": "Number Parsing and Validation",
@@ -110,8 +110,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Python",
-        "jsCode": "console.log(\"5\" + 3);  // Izlaz: \"53\"\nconsole.log(\"5\" - 3);  // Izlaz: 2\nconsole.log([] == false); // Izlaz: true",
-        "otherCode": "# Python\nprint(\"5\" + 3)  # TypeError: can only concatenate str to str\nprint(\"5\" - 3)  # TypeError: unsupported operand type(s)\nprint([] == False) # Izlaz: False (striktno poređenje vrednosti/identiteta)",
+        "jsCode": "console.log(\"5\" + 3);  // Output: \"53\"\nconsole.log(\"5\" - 3);  // Output: 2\nconsole.log([] == false); // Output: true",
+        "otherCode": "# Python\nprint(\"5\" + 3)  # TypeError: can only concatenate str to str\nprint(\"5\" - 3)  # TypeError: unsupported operand type(s)\nprint([] == False) # Output: False (strict value/identity comparison)",
         "jsBehavior": "JavaScript automatski vrši konverziju tipova operanada kako bi sprečio rušenje skripte u ranim browser-ima.",
         "otherBehavior": "Python je strogo tipiziran jezik koji zabranjuje implicitne aritmetičke operacije između stringova i brojeva.",
         "keyDifference": "Dinamički + Slabo tipiziran (JS) naspram Dinamički + Strogo tipiziran (Python).",
@@ -123,8 +123,8 @@ const RAW_TOPICS: JSTopic[] = [
       },
       {
         "language": "Java",
-        "jsCode": "console.log(null == 0); // false\nconsole.log(null >= 0); // true (>= konvertuje null u 0 preko ToNumber!)",
-        "otherCode": "// Java\n// Integer x = null;\n// x == 0; // Baca NullPointerException pri unboxing-u!\n// Nije moguće porediti nekompatibilne tipove bez greške kompajlera",
+        "jsCode": "console.log(null == 0); // false\nconsole.log(null >= 0); // true (>= coerces null to 0 via ToNumber!)",
+        "otherCode": "// Java\n// Integer x = null;\n// x == 0; // Throws NullPointerException upon unboxing!\n// Incompatible types cannot be compared without compiler error",
         "jsBehavior": "Relacioni operator `>=` konvertuje `null` u `0` preko apstraktne operacije `ToNumber()`, dok labava jednakost `==` to ne čini.",
         "otherBehavior": "Java nameće statičku proveru tipova u compile-time fazi, a unboxing null vrednosti baca NullPointerException.",
         "keyDifference": "Implicitna relacija u JS-u naspram striktnog compile-time tipiziranja u Javi.",
@@ -195,7 +195,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "classic-microtask-race",
         "title": "Redosled izvršavanja Microtask vs Macrotask",
         "description": "Pratite tačan redosled sinhronog koda, setTimeout callback-a i Promise.then zadataka",
-        "code": "console.log('1: Početak skripte (Sinhrono)');\n\nsetTimeout(() => {\n  console.log('2: setTimeout (Macrotask)');\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('3: Promise 1 (Microtask)');\n}).then(() => {\n  console.log('4: Promise 2 (Microtask)');\n});\n\nqueueMicrotask(() => {\n  console.log('5: queueMicrotask (Microtask)');\n});\n\nconsole.log('6: Kraj skripte (Sinhrono)');",
+        "code": "console.log('1: Script start (Synchronous)');\n\nsetTimeout(() => {\n  console.log('2: setTimeout (Macrotask)');\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('3: Promise 1 (Microtask)');\n}).then(() => {\n  console.log('4: Promise 2 (Microtask)');\n});\n\nqueueMicrotask(() => {\n  console.log('5: queueMicrotask (Microtask)');\n});\n\nconsole.log('6: Script end (Synchronous)');",
         "visualType": "event-loop",
         "titleEn": "Execution Order: Microtasks vs Macrotasks",
         "descriptionEn": "Track the exact sequencing of synchronous code, setTimeout callbacks, and Promise.then tasks"
@@ -204,7 +204,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "nested-async-order",
         "title": "Odmotavanje toka Async/Await funkcija",
         "description": "Kako await pauzira funkciju i preostali kod raspoređuje u Microtask red",
-        "code": "async function async1() {\n  console.log('async1 početak');\n  await async2();\n  console.log('async1 nastavak (Microtask)');\n}\n\nasync function async2() {\n  console.log('async2 sinhrono izvršavanje');\n}\n\nconsole.log('skripta start');\nsetTimeout(() => console.log('setTimeout callback (Macrotask)'), 0);\nasync1();\nnew Promise((resolve) => {\n  console.log('promise konstruktor (Sinhrono!)');\n  resolve();\n}).then(() => {\n  console.log('promise.then callback (Microtask)');\n});\nconsole.log('skripta kraj');",
+        "code": "async function async1() {\n  console.log('async1 start');\n  await async2();\n  console.log('async1 resume (Microtask)');\n}\n\nasync function async2() {\n  console.log('async2 synchronous execution');\n}\n\nconsole.log('script start');\nsetTimeout(() => console.log('setTimeout callback (Macrotask)'), 0);\nasync1();\nnew Promise((resolve) => {\n  console.log('promise constructor (Synchronous!)');\n  resolve();\n}).then(() => {\n  console.log('promise.then callback (Microtask)');\n});\nconsole.log('script end');",
         "visualType": "event-loop",
         "titleEn": "Unwinding Async/Await Execution Flow",
         "descriptionEn": "How await pauses function execution and queues subsequent expressions into the Microtask queue"
@@ -213,9 +213,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Izvršavanje teških proračuna bez zamrzavanja UI-ja",
-        "badCode": "// ❌ RIZIČNO: Blokiranje jedine programske niti (Call Stack)\nfunction processMillionItems(items) {\n  console.log(\"Započinje težak proračun...\");\n  const start = Date.now();\n  while (Date.now() - start < 3000) {\n    // Sinhrono čekanje od 3 sekunde (busy-wait loop)\n    // Browser je potpuno zamrznut! Nema klikova, animacija, niti renderovanja!\n  }\n  console.log(\"Završeno\");\n}",
+        "badCode": "// ❌ RISKY: Blocking the single main thread (Call Stack)\nfunction processMillionItems(items) {\n  console.log(\"Starting heavy computation...\");\n  const start = Date.now();\n  while (Date.now() - start < 3000) {\n    // Synchronous busy-wait loop for 3 seconds\n    // Browser is completely frozen! No clicks, animations, or rendering!\n  }\n  console.log(\"Done\");\n}",
         "badExplanation": "Pošto je JS jednonitan, dugačke sinhrone petlje u potpunosti okupiraju Call Stack. Event Loop ne može da obradi renderovanje stranice, klikove korisnika niti asinhrone događaje, što dovodi do zaleđivanja interfejsa.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Prepuštanje kontrole Event Loop-u (Yielding) ili Web Workers\nasync function processInChunks(items, chunkSize = 1000) {\n  for (let i = 0; i < items.length; i += chunkSize) {\n    // Obrada segmenta (chunk-a)\n    const chunk = items.slice(i, i + chunkSize);\n    chunk.forEach(item => /* proračun */ null);\n    \n    // Prepuštanje kontrole browser-u za render frejma i obradu događaja\n    await new Promise(resolve => setTimeout(resolve, 0));\n  }\n  console.log(\"Sve je obrađeno glatko bez zamrzavanja UI-ja\");\n}",
+        "goodCode": "// ✅ BEST PRACTICE: Yielding to the Event Loop or using Web Workers\nasync function processInChunks(items, chunkSize = 1000) {\n  for (let i = 0; i < items.length; i += chunkSize) {\n    // Process chunk\n    const chunk = items.slice(i, i + chunkSize);\n    chunk.forEach(item => /* computation */ null);\n    \n    // Yield control to browser for frame render and event handling\n    await new Promise(resolve => setTimeout(resolve, 0));\n  }\n  console.log(\"Processed smoothly without freezing the UI\");\n}",
         "goodExplanation": "Korišćenje `setTimeout(resolve, 0)` ili `requestIdleCallback` omogućava browser-u da iscrta frejmove i odgovori na akcije korisnika između obrađenih segmenata podataka.",
         "pitfall": "Blokiranje glavne niti (Main Thread) intenzivnim CPU proračunima umesto deljenja na segmente ili korišćenja Web Workers.",
         "titleEn": "Running Heavy Computations Without Freezing the UI",
@@ -227,8 +227,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Go",
-        "jsCode": "// JS: Jednonitni Event Loop model\nsetTimeout(() => console.log(\"Završeno\"), 1000);\n// CPU nastavlja rad na glavnoj niti",
-        "otherCode": "// Go: Višenitne preemtivne Goroutines\ngo func() {\n    time.Sleep(1 * time.Second)\n    fmt.Println(\"Završeno\")\n}()\n// Goroutine-e rade na pravim OS nitima uz M:N scheduler",
+        "jsCode": "// JS: Single-threaded Event Loop model\nsetTimeout(() => console.log(\"Done\"), 1000);\n// CPU continues execution on main thread",
+        "otherCode": "// Go: Multi-threaded preemptive Goroutines\ngo func() {\n    time.Sleep(1 * time.Second)\n    fmt.Println(\"Done\")\n}()\n// Goroutines run on real OS threads with M:N scheduler",
         "jsBehavior": "Jednonitni model reda događaja sa neblokirajućim I/O mehanizmom. Konkurentnost se bazira na asinhronim callback-ovima i Promise-ima.",
         "otherBehavior": "Go koristi lagane zelene niti (Goroutines) koje se paralelno raspoređuju preko višejezgarnih CPU niti uz preemtivno prebacivanje konteksta.",
         "keyDifference": "Jednonitni neblokirajući Event Loop naspram prave višenitne konkurentnosti (Goroutines).",
@@ -299,7 +299,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "lost-context-demo",
         "title": "Klasična zamka gubitka \"this\" konteksta",
         "description": "Izdvajanje reference metode iz objekta prekida njeno implicitno this vezivanje",
-        "code": "const user = {\n  name: 'Ada Lovelace',\n  greet() {\n    return 'Pozdrav, ja sam ' + this.name;\n  }\n};\n\nconsole.log('Direktan poziv:', user.greet());\n\n// Izdvajanje reference metode:\nconst detachedGreet = user.greet;\ntry {\n  console.log('Izdvojen poziv:', detachedGreet());\n} catch(e) {\n  console.log('Greška izdvojenog poziva:', e.message);\n}\n\n// Rešavanje uz eksplicitni .bind():\nconst boundGreet = user.greet.bind(user);\nconsole.log('Vezani (bound) poziv:', boundGreet());",
+        "code": "const user = {\n  name: 'Ada Lovelace',\n  greet() {\n    return 'Hello, I am ' + this.name;\n  }\n};\n\nconsole.log('Direct call:', user.greet());\n\n// Detaching method reference:\nconst detachedGreet = user.greet;\ntry {\n  console.log('Detached call:', detachedGreet());\n} catch(e) {\n  console.log('Detached call error:', e.message);\n}\n\n// Fixing with explicit .bind():\nconst boundGreet = user.greet.bind(user);\nconsole.log('Bound call:', boundGreet());",
         "visualType": "this-binding",
         "titleEn": "The Classic \"Lost this Context\" Trap",
         "descriptionEn": "Detaching a method reference from its parent object breaks its implicit this binding"
@@ -308,7 +308,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "arrow-vs-regular-this",
         "title": "Arrow funkcije naspram standardnih funkcija",
         "description": "Arrow funkcije leksički preuzimaju vrednost `this` iz okružujućeg opsega u trenutku definisanja",
-        "code": "const timerObj = {\n  seconds: 0,\n  regularTimer() {\n    function tick() {\n      // U non-strict modu this je window/global; u strict modu je undefined\n      console.log('Standardna funkcija this:', typeof this, this === timerObj);\n    }\n    tick();\n  },\n  arrowTimer() {\n    const tick = () => {\n      // Leksički nasleđuje this iz arrowTimer opsega\n      console.log('Arrow funkcija this:', this.seconds, this === timerObj);\n    };\n    tick();\n  }\n};\n\ntimerObj.regularTimer();\ntimerObj.arrowTimer();",
+        "code": "const timerObj = {\n  seconds: 0,\n  regularTimer() {\n    function tick() {\n      // In non-strict mode this is window/global; in strict mode it is undefined\n      console.log('Regular function this:', typeof this, this === timerObj);\n    }\n    tick();\n  },\n  arrowTimer() {\n    const tick = () => {\n      // Lexically inherits this from arrowTimer scope\n      console.log('Arrow function this:', this.seconds, this === timerObj);\n    };\n    tick();\n  }\n};\n\ntimerObj.regularTimer();\ntimerObj.arrowTimer();",
         "visualType": "this-binding",
         "titleEn": "Arrow Functions vs Regular Functions",
         "descriptionEn": "Arrow functions lexically inherit this from their enclosing scope at declaration time"
@@ -317,9 +317,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Prosleđivanje metoda objekta kao Callback funkcija",
-        "badCode": "// ❌ RIZIČNO: Direktno prosleđivanje reference metode\nclass Counter {\n  count = 0;\n  increment() {\n    this.count++;\n    console.log(\"Trenutno stanje:\", this.count);\n  }\n}\n\nconst c = new Counter();\nsetTimeout(c.increment, 100); \n// Izlaz u browser-u: TypeError: Cannot read properties of undefined (this je izgubljen!)",
+        "badCode": "// ❌ RISKY: Directly passing method reference\nclass Counter {\n  count = 0;\n  increment() {\n    this.count++;\n    console.log(\"Current count:\", this.count);\n  }\n}\n\nconst c = new Counter();\nsetTimeout(c.increment, 100); \n// Output in browser: TypeError: Cannot read properties of undefined (this is lost!)",
         "badExplanation": "`setTimeout` izvršava prosleđeni callback kao samostalnu funkciju `callback()`, resetujući `this` na globalni objekat ili undefined u strict modu.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Korišćenje arrow polja u klasi ili eksplicitnog bind-a\nclass Counter {\n  count = 0;\n  \n  // Arrow polje klase automatski vezuje this za instancu\n  increment = () => {\n    this.count++;\n    console.log(\"Trenutno stanje:\", this.count);\n  };\n}\n\nconst c = new Counter();\nsetTimeout(c.increment, 100); // Radi besprekorno!",
+        "goodCode": "// ✅ BEST PRACTICE: Using class arrow property or explicit bind\nclass Counter {\n  count = 0;\n  \n  // Class arrow property automatically binds this to instance\n  increment = () => {\n    this.count++;\n    console.log(\"Current count:\", this.count);\n  };\n}\n\nconst c = new Counter();\nsetTimeout(c.increment, 100); // Works perfectly!",
         "goodExplanation": "Arrow svojstva klase vezuju se za instancu tokom inicijalizacije konstruktora, čineći ih potpuno bezbednim za prosleđivanje kao callback funkcije.",
         "pitfall": "Gubitak konteksta (this) pri prosleđivanju metoda kao event listener-a ili tajmera.",
         "titleEn": "Passing Object Methods as Callback Functions",
@@ -331,8 +331,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Python",
-        "jsCode": "const obj = {\n  val: 42,\n  getVal() { return this.val; }\n};\nconst fn = obj.getVal;\nfn(); // 'this' se gubi -> undefined ili TypeError",
-        "otherCode": "# Python\nclass MyClass:\n    def __init__(self):\n        self.val = 42\n    def get_val(self):\n        return self.val\n\nobj = MyClass()\nfn = obj.get_val\nprint(fn()) # Izlaz: 42 (Bound method automatski čuva self instancu!)",
+        "jsCode": "const obj = {\n  val: 42,\n  getVal() { return this.val; }\n};\nconst fn = obj.getVal;\nfn(); // 'this' is lost -> undefined or TypeError",
+        "otherCode": "# Python\nclass MyClass:\n    def __init__(self):\n        self.val = 42\n    def get_val(self):\n        return self.val\n\nobj = MyClass()\nfn = obj.get_val\nprint(fn()) # Output: 42 (Bound method automatically retains self instance!)",
         "jsBehavior": "Metode u JS-u su obične reference na funkcije smeštene u svojstvima objekta; način poziva (call-site) diktira `this`.",
         "otherBehavior": "Python pri pristupu preko tačke automatski kreira \"Bound Method\" objekat koji trajno enkapsulira pokazivač na `self` instancu.",
         "keyDifference": "Dinamički `this` određen pozivom (JS) naspram automatski vezane instance (Python).",
@@ -402,7 +402,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "var-in-loops-trap",
         "title": "Čuvena zamka \"var unutar setTimeout petlje\"",
         "description": "Zašto var ispisuje 3, 3, 3 dok let ispravno ispisuje 0, 1, 2",
-        "code": "console.log('--- Korišćenje var (deljeni funkcijski opseg) ---');\nfor (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log('var i:', i), 10);\n}\n\nsetTimeout(() => {\n  console.log('--- Korišćenje let (sveže blokovsko vezivanje po iteraciji) ---');\n  for (let j = 0; j < 3; j++) {\n    setTimeout(() => console.log('let j:', j), 10);\n  }\n}, 50);",
+        "code": "console.log('--- Using var (shared function scope) ---');\nfor (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log('var i:', i), 10);\n}\n\nsetTimeout(() => {\n  console.log('--- Using let (fresh block binding per iteration) ---');\n  for (let j = 0; j < 3; j++) {\n    setTimeout(() => console.log('let j:', j), 10);\n  }\n}, 50);",
         "visualType": "scope-hoisting",
         "titleEn": "The Famous \"var inside setTimeout Loop\" Trap",
         "descriptionEn": "Why var logs 3, 3, 3 while let correctly logs 0, 1, 2"
@@ -411,7 +411,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "tdz-hoisting-demo",
         "title": "Temporal Dead Zone (TDZ) naspram Hoisting-a",
         "description": "Promenljive sa let/const postoje u opsegu pre linije deklaracije, ali pristup njima baca ReferenceError",
-        "code": "console.log('var podignuta vrednost:', typeof hoistedVar, hoistedVar);\nvar hoistedVar = 'Ja sam inicijalizovan';\n\ntry {\n  console.log('let unutar TDZ-a:', tdzVar);\n} catch (err) {\n  console.log('Uhvaćena TDZ greška:', err.message);\n}\nlet tdzVar = 'Sada sam inicijalizovan';\nconsole.log('let nakon deklaracije:', tdzVar);",
+        "code": "console.log('var hoisted value:', typeof hoistedVar, hoistedVar);\nvar hoistedVar = 'I am initialized';\n\ntry {\n  console.log('let inside TDZ:', tdzVar);\n} catch (err) {\n  console.log('Caught TDZ error:', err.message);\n}\nlet tdzVar = 'Now I am initialized';\nconsole.log('let after declaration:', tdzVar);",
         "visualType": "scope-hoisting",
         "titleEn": "Temporal Dead Zone (TDZ) vs Hoisting",
         "descriptionEn": "Variables with let/const exist in scope before their declaration line, but accessing them throws ReferenceError"
@@ -420,9 +420,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Deklaracija promenljivih (var naspram const/let)",
-        "badCode": "// ❌ RIZIČNO: Korišćenje zastarelog 'var'\nfunction computeStats(values) {\n  if (values.length > 0) {\n    var average = 50; // \"Curi\" van if bloka!\n  }\n  console.log(\"Prosek:\", average); // 50 (dostupno van bloka!)\n  \n  for (var i = 0; i < 3; i++) {}\n  console.log(\"i je procurelo:\", i); // 3 (iscurilo u funkciju)\n}",
+        "badCode": "// ❌ RISKY: Using legacy 'var'\nfunction computeStats(values) {\n  if (values.length > 0) {\n    var average = 50; // Leaks outside if block!\n  }\n  console.log(\"Average:\", average); // 50 (accessible outside block!)\n  \n  for (var i = 0; i < 3; i++) {}\n  console.log(\"i leaked:\", i); // 3 (leaked into function)\n}",
         "badExplanation": "Ključna reč `var` ima opseg na nivou funkcije ili globalnog objekta i potpuno ignoriše blokovske zagrade `{}`.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Koristite const podrazumevano, let samo kod ponovne dodele\nfunction computeStats(values: number[]) {\n  let average = 0;\n  if (values.length > 0) {\n    const sum = values.reduce((a, b) => a + b, 0);\n    average = sum / values.length;\n  }\n  // sum ovde nije dostupan jer je blokovski zaštićen!\n  return average;\n}",
+        "goodCode": "// ✅ BEST PRACTICE: Default to const, use let only when reassigning\nfunction computeStats(values: number[]) {\n  let average = 0;\n  if (values.length > 0) {\n    const sum = values.reduce((a, b) => a + b, 0);\n    average = sum / values.length;\n  }\n  // sum is not accessible here as it is block scoped!\n  return average;\n}",
         "goodExplanation": "`let` i `const` imaju striktan blokovski opseg i štite kod od slučajnih curenja promenljivih i neočekivanih prepisivanja stanja.",
         "pitfall": "Nenamerno curenje promenljivih i kolizije imena usled korišćenja var.",
         "titleEn": "Variable Declarations (var vs const/let)",
@@ -434,8 +434,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Rust",
-        "jsCode": "// U JS-u objekti deklarisani sa const i dalje mogu mutirati svoja svojstva!\nconst config = { port: 8080 };\nconfig.port = 9000; // Uspešno menja svojstvo!",
-        "otherCode": "// U Rust-u promenljive su podrazumevano potpuno nepromenljive (immutable)\nlet config = Config { port: 8080 };\n// config.port = 9000; // Compile Error!\n// Mora se eksplicitno navesti: let mut config = ...",
+        "jsCode": "// In JS, objects declared with const can still mutate their properties!\nconst config = { port: 8080 };\nconfig.port = 9000; // Successfully mutates property!",
+        "otherCode": "// In Rust, bindings are immutable by default\nlet config = Config { port: 8080 };\n// config.port = 9000; // Compile Error!\n// Must explicitly declare: let mut config = ...",
         "jsBehavior": "U JS-u `const` štiti samo pokazivač promenljive na objekat, dok su unutrašnja svojstva objekta i dalje promenljiva.",
         "otherBehavior": "Rust nameće duboku nepromenljivost i na nivou memorijske vrednosti i na nivou vezivanja već u fazi kompajliranja.",
         "keyDifference": "Zaštita reference (JS) naspram duboke nepromenljivosti vrednosti (Rust).",
@@ -506,7 +506,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "prototype-chain-traversal",
         "title": "Kretanje kroz lanac prototipova (Prototype Chain)",
         "description": "Pogledajte kako pretraga svojstva putuje uzbrdo kroz prototipove sve dok ne dostigne terminalni null",
-        "code": "const grandParent = { familyName: 'Curie', origin: 'Poljska' };\nconst parent = Object.create(grandParent);\nparent.profession = 'Fizičar';\n\nconst child = Object.create(parent);\nchild.name = 'Irène';\n\nconsole.log('child.name =>', child.name); // Sopstveno svojstvo\nconsole.log('child.profession =>', child.profession); // Pronađeno na parent objektu\nconsole.log('child.familyName =>', child.familyName); // Pronađeno na grandparent objektu\nconsole.log('child.nonExistent =>', child.nonExistent); // Dostiže null -> undefined\n\nconsole.log('Object.getPrototypeOf(child) === parent:', Object.getPrototypeOf(child) === parent);\nconsole.log('Object.getPrototypeOf(parent) === grandParent:', Object.getPrototypeOf(parent) === grandParent);",
+        "code": "const grandParent = { familyName: 'Curie', origin: 'Poland' };\nconst parent = Object.create(grandParent);\nparent.profession = 'Physicist';\n\nconst child = Object.create(parent);\nchild.name = 'Irène';\n\nconsole.log('child.name =>', child.name); // Own property\nconsole.log('child.profession =>', child.profession); // Found on parent object\nconsole.log('child.familyName =>', child.familyName); // Found on grandparent object\nconsole.log('child.nonExistent =>', child.nonExistent); // Reaches null -> undefined\n\nconsole.log('Object.getPrototypeOf(child) === parent:', Object.getPrototypeOf(child) === parent);\nconsole.log('Object.getPrototypeOf(parent) === grandParent:', Object.getPrototypeOf(parent) === grandParent);",
         "visualType": "prototype",
         "titleEn": "Prototype Chain Traversal",
         "descriptionEn": "Observe property lookup traveling up prototypes until reaching terminal null"
@@ -515,7 +515,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "class-vs-prototype",
         "title": "ES6 klase \"ispod haube\"",
         "description": "Klase u JS-u su zapravo konstruktorske funkcije povezane sa prototipskim objektima",
-        "code": "class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n  speak() {\n    return this.name + ' se oglašava.';\n  }\n}\n\nconsole.log('typeof Animal:', typeof Animal); // \"function\"\nconsole.log('Animal.prototype.speak:', Animal.prototype.speak.toString());\n\nconst dog = new Animal('Rex');\nconsole.log('dog.__proto__ === Animal.prototype:', Object.getPrototypeOf(dog) === Animal.prototype);\nconsole.log('dog.speak():', dog.speak());",
+        "code": "class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n  speak() {\n    return this.name + ' makes a sound.';\n  }\n}\n\nconsole.log('typeof Animal:', typeof Animal); // \"function\"\nconsole.log('Animal.prototype.speak:', Animal.prototype.speak.toString());\n\nconst dog = new Animal('Rex');\nconsole.log('dog.__proto__ === Animal.prototype:', Object.getPrototypeOf(dog) === Animal.prototype);\nconsole.log('dog.speak():', dog.speak());",
         "visualType": "prototype",
         "titleEn": "ES6 Classes Under the Hood",
         "descriptionEn": "Classes in JS are constructor functions linked to prototype objects"
@@ -524,9 +524,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Pretraga rečnika (Object naspram Map naspram Object.create(null))",
-        "badCode": "// ❌ RIZIČNO: Korišćenje običnog objekta {} za korisničke ključeve\nfunction isSafeWord(word) {\n  const dictionary = { \"apple\": true, \"banana\": true };\n  \n  // Šta ako korisnik unese \"toString\" ili \"constructor\"?\n  return dictionary[word] === true; // dictionary[\"toString\"] vraća ugrađenu funkciju toString()!\n}",
+        "badCode": "// ❌ RISKY: Using plain object {} for user-supplied keys\nfunction isSafeWord(word) {\n  const dictionary = { \"apple\": true, \"banana\": true };\n  \n  // What if user passes \"toString\" or \"constructor\"?\n  return dictionary[word] === true; // dictionary[\"toString\"] returns native toString() method!\n}",
         "badExplanation": "Obični objekti nasleđuju ugrađene metode poput `toString`, `valueOf` i `constructor` sa `Object.prototype`. Provera ključeva bez `Object.hasOwn()` može izazvati lažno pozitivne rezultate ili sigurnosne ranjivosti (Prototype Pollution).",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Koristite Map ili Object.create(null)\nfunction isSafeWord(word: string) {\n  const dictionary = new Map<string, boolean>([\n    [\"apple\", true],\n    [\"banana\", true]\n  ]);\n  return dictionary.has(word);\n}\n\n// Ili čist rečnik bez prototipa:\nconst cleanDict = Object.create(null);\ncleanDict[\"apple\"] = true;\n// cleanDict[\"toString\"] je striktno undefined!",
+        "goodCode": "// ✅ BEST PRACTICE: Use Map or Object.create(null)\nfunction isSafeWord(word: string) {\n  const dictionary = new Map<string, boolean>([\n    [\"apple\", true],\n    [\"banana\", true]\n  ]);\n  return dictionary.has(word);\n}\n\n// Or a prototype-free dictionary:\nconst cleanDict = Object.create(null);\ncleanDict[\"apple\"] = true;\n// cleanDict[\"toString\"] is strictly undefined!",
         "goodExplanation": "`Map` ili `Object.create(null)` nemaju nasleđeni prototip, što garantuje potpuno bezbednu pretragu proizvoljnih korisničkih ključeva bez kolizija sa ugrađenim metodama.",
         "pitfall": "Kolizija prototipa i bezbednosni rizici pri korišćenju običnih objekata kao hash mapa.",
         "titleEn": "Dictionary Lookup (Object vs Map vs Object.create(null))",
@@ -538,8 +538,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Java",
-        "jsCode": "// JS: Objekti mogu dinamički dodavati metode u runtime-u!\nconst dog = { name: \"Sparky\" };\ndog.bark = () => \"Av av!\";",
-        "otherCode": "// Java: Klase su fiksne i nepromenljive strukture definisane u compile-time-u\nclass Dog {\n    String name;\n    // Nije moguće dinamički dodati novu metodu na instancu tokom izvršavanja\n}",
+        "jsCode": "// JS: Objects can dynamically add methods at runtime!\nconst dog = { name: \"Sparky\" };\ndog.bark = () => \"Woof woof!\";",
+        "otherCode": "// Java: Classes are rigid compile-time blueprints\nclass Dog {\n    String name;\n    // Cannot dynamically attach new methods to instances at runtime\n}",
         "jsBehavior": "Objekti su dinamički memorijski skupovi svojstava sa živim pokazivačem prototipske delegacije.",
         "otherBehavior": "Java klase se kompajliraju u byte-code sa striktnim VTable mehanizmom razrešavanja metoda.",
         "keyDifference": "Prototipska delegacija i dinamička proširivost naspram klasičnog statičkog nasleđivanja.",
@@ -609,7 +609,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "array-sort-trap",
         "title": "Zamka podrazumevanog sort() metoda",
         "description": "Zašto [10, 2, 1, 20].sort() ne sortira brojeve po veličini",
-        "code": "const numbers = [10, 2, 1, 20, 5, 100];\nconsole.log('Podrazumevani .sort() izlaz:');\nconsole.log([...numbers].sort()); \n// [\"1\", \"10\", \"100\", \"2\", \"20\", \"5\"] jer svaki broj prvo pretvara u string!\n\nconsole.log('Ispravan numerički komparator .sort((a, b) => a - b):');\nconsole.log([...numbers].sort((a, b) => a - b));",
+        "code": "const numbers = [10, 2, 1, 20, 5, 100];\nconsole.log('Default .sort() output:');\nconsole.log([...numbers].sort()); \n// [\"1\", \"10\", \"100\", \"2\", \"20\", \"5\"] because every number is converted to string!\n\nconsole.log('Correct numeric comparator .sort((a, b) => a - b):');\nconsole.log([...numbers].sort((a, b) => a - b));",
         "visualType": "custom-console",
         "titleEn": "Default sort() Method Trap",
         "descriptionEn": "Why [10, 2, 1, 20].sort() fails to sort numbers by magnitude"
@@ -618,7 +618,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "sparse-arrays-holes",
         "title": "Sparse nizovi (Prazna mesta vs Undefined)",
         "description": "Array(3) kreira 3 prazna mesta. .map() i .forEach() preskaču prazna mesta!",
-        "code": "const sparse = new Array(3); // 3 prazna slota (empty slots)\nconst explicit = [undefined, undefined, undefined];\n\nconsole.log('sparse niz:', sparse);\nconsole.log('eksplicitni niz:', explicit);\n\nconsole.log('sparse.map(x => 1):', sparse.map(() => 1)); // I dalje 3 prazna slota!\nconsole.log('explicit.map(x => 1):', explicit.map(() => 1)); // [1, 1, 1]\n\n// Operator \"delete\" stvara rupu u nizu!\nconst arr = [1, 2, 3];\ndelete arr[1];\nconsole.log('arr nakon delete arr[1]:', arr, 'dužina (length):', arr.length);",
+        "code": "const sparse = new Array(3); // 3 empty slots\nconst explicit = [undefined, undefined, undefined];\n\nconsole.log('sparse array:', sparse);\nconsole.log('explicit array:', explicit);\n\nconsole.log('sparse.map(x => 1):', sparse.map(() => 1)); // Still 3 empty slots!\nconsole.log('explicit.map(x => 1):', explicit.map(() => 1)); // [1, 1, 1]\n\n// \"delete\" operator creates a hole!\nconst arr = [1, 2, 3];\ndelete arr[1];\nconsole.log('arr after delete arr[1]:', arr, 'length:', arr.length);",
         "visualType": "custom-console",
         "titleEn": "Sparse Arrays (Empty Slots vs Undefined)",
         "descriptionEn": "Array(3) creates 3 empty holes. .map() and .forEach() skip empty slots!"
@@ -627,7 +627,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "cloning-objects-modern",
         "title": "Kloniranje objekata: Spread naspram structuredClone",
         "description": "Poređenje plitkog spread operatora, JSON serijalizacije i modernog structuredClone API-ja",
-        "code": "const original = {\n  name: 'Alex',\n  created: new Date(),\n  nested: { role: 'Admin' },\n  map: new Map([['key', 'val']])\n};\n\n// 1. Plitka kopija (Shallow Copy)\nconst shallow = { ...original };\nshallow.nested.role = 'SuperAdmin'; // Menja i original.nested podatak!\n\n// 2. Moderno duboko kloniranje (ES2022+ structuredClone)\nconst deep = structuredClone(original);\ndeep.nested.role = 'Guest';\n\nconsole.log('original.nested.role:', original.nested.role); // SuperAdmin (plitka kopija ga je izmenila)\nconsole.log('deep.nested.role:', deep.nested.role); // Guest (potpuno nezavisan objekat!)\nconsole.log('deep.created je instanca Date objekta:', deep.created instanceof Date);",
+        "code": "const original = {\n  name: 'Alex',\n  created: new Date(),\n  nested: { role: 'Admin' },\n  map: new Map([['key', 'val']])\n};\n\n// 1. Shallow Copy\nconst shallow = { ...original };\nshallow.nested.role = 'SuperAdmin'; // Mutates original.nested too!\n\n// 2. Modern Deep Clone (ES2022+ structuredClone)\nconst deep = structuredClone(original);\ndeep.nested.role = 'Guest';\n\nconsole.log('original.nested.role:', original.nested.role); // SuperAdmin (shallow copy mutated it)\nconsole.log('deep.nested.role:', deep.nested.role); // Guest (completely independent object!)\nconsole.log('deep.created is instanceof Date:', deep.created instanceof Date);",
         "visualType": "custom-console",
         "titleEn": "Cloning Objects: Spread vs structuredClone",
         "descriptionEn": "Comparing shallow spread, JSON serialization, and modern structuredClone"
@@ -636,9 +636,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Sortiranje numeričkih nizova",
-        "badCode": "// ❌ RIZIČNO: Pozivanje .sort() bez funkcije poređenja (komparatora)\nconst prices = [100, 25, 5, 80, 10];\nprices.sort();\nconsole.log(prices); // [10, 100, 25, 5, 80] -> Potpuno pogrešan redosled!",
+        "badCode": "// ❌ RISKY: Calling .sort() without a comparator function\nconst prices = [100, 25, 5, 80, 10];\nprices.sort();\nconsole.log(prices); // [10, 100, 25, 5, 80] -> Completely wrong order!",
         "badExplanation": "Po default-u, `Array.prototype.sort()` pretvara elemente u stringove i poredi njihove UTF-16 kodne jedinice po abecednom redu, stavljajući 100 pre 25.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Uvek navedite eksplicitni komparator ili koristite toSorted()\nconst prices = [100, 25, 5, 80, 10];\n// U ES2023+: toSorted() vraća novi sortirani niz bez menjanja originalnog\nconst sortedPrices = prices.toSorted((a, b) => a - b);\nconsole.log(sortedPrices); // [5, 10, 25, 80, 100]",
+        "goodCode": "// ✅ BEST PRACTICE: Always supply an explicit comparator or use toSorted()\nconst prices = [100, 25, 5, 80, 10];\n// In ES2023+: toSorted() returns a new sorted array without mutating original\nconst sortedPrices = prices.toSorted((a, b) => a - b);\nconsole.log(sortedPrices); // [5, 10, 25, 80, 100]",
         "goodExplanation": "Navođenjem `(a, b) => a - b` obezbeđujete pravo matematičko poređenje. Metoda `toSorted()` sprečava mutaciju originalnog niza.",
         "pitfall": "Slučajno alfabetsko sortiranje numeričkih nizova.",
         "titleEn": "Sorting Numeric Arrays",
@@ -650,8 +650,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Python",
-        "jsCode": "const list = [10, 2, 1];\nlist.sort(); // Izlaz: [1, 10, 2] (abecedno/string sortiranje)",
-        "otherCode": "# Python\nlst = [10, 2, 1]\nlst.sort() # Izlaz: [1, 2, 10] (prirodno numeričko sortiranje)",
+        "jsCode": "const list = [10, 2, 1];\nlist.sort(); // Output: [1, 10, 2] (lexicographical string sort)",
+        "otherCode": "# Python\nlst = [10, 2, 1]\nlst.sort() # Output: [1, 2, 10] (natural numeric sort)",
         "jsBehavior": "JS podrazumevano sortira nizove pretvarajući svaku stavku u String ukoliko nije prosleđena funkcija poređenja.",
         "otherBehavior": "Python sortira elemente na osnovu njihovih prirodnih operatora poređenja (`<`).",
         "keyDifference": "Podrazumevano string sortiranje (JS) naspram tipskog poređenja vrednosti (Python).",
@@ -722,7 +722,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "float-math-demo",
         "title": "Problem preciznosti: 0.1 + 0.2",
         "description": "Saznajte zašto binarni format pokretnog zareza daje 0.30000000000000004",
-        "code": "console.log('0.1 + 0.2 === 0.3 =>', 0.1 + 0.2 === 0.3); // false\nconsole.log('0.1 + 0.2 stvarna vrednost =>', 0.1 + 0.2); // 0.30000000000000004\n\n// Ispravno poređenje decimalnih brojeva uz Number.EPSILON:\nfunction areAlmostEqual(a, b) {\n  return Math.abs(a - b) < Number.EPSILON;\n}\nconsole.log('areAlmostEqual(0.1 + 0.2, 0.3) =>', areAlmostEqual(0.1 + 0.2, 0.3)); // true",
+        "code": "console.log('0.1 + 0.2 === 0.3 =>', 0.1 + 0.2 === 0.3); // false\nconsole.log('0.1 + 0.2 actual value =>', 0.1 + 0.2); // 0.30000000000000004\n\n// Correct decimal comparison using Number.EPSILON:\nfunction areAlmostEqual(a, b) {\n  return Math.abs(a - b) < Number.EPSILON;\n}\nconsole.log('areAlmostEqual(0.1 + 0.2, 0.3) =>', areAlmostEqual(0.1 + 0.2, 0.3)); // true",
         "visualType": "custom-console",
         "titleEn": "Precision Pitfall: 0.1 + 0.2",
         "descriptionEn": "Learn why binary floating point arithmetic yields 0.30000000000000004"
@@ -731,7 +731,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "max-safe-int-demo",
         "title": "Number.MAX_SAFE_INTEGER i BigInt",
         "description": "Prekoračenje granice 2^53 - 1 gubi preciznost bez ikakve greške. BigInt rešava ovaj problem.",
-        "code": "const maxSafe = Number.MAX_SAFE_INTEGER; // 9007199254740991 (2^53 - 1)\nconsole.log('MAX_SAFE_INTEGER:', maxSafe);\nconsole.log('maxSafe + 1 === maxSafe + 2:', maxSafe + 1 === maxSafe + 2); // true!\n\n// Rešenje: Koristite BigInt za proizvoljno velike cele brojeve (ID-jevi, kriptografija, finansije)\nconst bigA = 9007199254740991n;\nconsole.log('bigA + 1n === bigA + 2n:', bigA + 1n === bigA + 2n); // false (tačno i precizno!)\nconsole.log('bigA + 100n:', (bigA + 100n).toString());",
+        "code": "const maxSafe = Number.MAX_SAFE_INTEGER; // 9007199254740991 (2^53 - 1)\nconsole.log('MAX_SAFE_INTEGER:', maxSafe);\nconsole.log('maxSafe + 1 === maxSafe + 2:', maxSafe + 1 === maxSafe + 2); // true!\n\n// Solution: Use BigInt for arbitrarily large integers (IDs, cryptography, finance)\nconst bigA = 9007199254740991n;\nconsole.log('bigA + 1n === bigA + 2n:', bigA + 1n === bigA + 2n); // false (exact and precise!)\nconsole.log('bigA + 100n:', (bigA + 100n).toString());",
         "visualType": "custom-console",
         "titleEn": "Number.MAX_SAFE_INTEGER & BigInt",
         "descriptionEn": "Exceeding 2^53 - 1 loses precision silently. BigInt resolves this completely."
@@ -740,7 +740,7 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Obrada novčanih i finansijskih transakcija",
-        "badCode": "// ❌ RIZIČNO: Korišćenje običnih decimalnih brojeva za novac\nfunction calculateCartTotal(pricePerItem, quantity, taxRate) {\n  const subtotal = pricePerItem * quantity; // npr. 19.99 * 3 = 59.970000000000006\n  const total = subtotal + (subtotal * taxRate);\n  return total; // 64.76760000000001\n}",
+        "badCode": "// ❌ RISKY: Using standard floating-point numbers for money\nfunction calculateCartTotal(pricePerItem, quantity, taxRate) {\n  const subtotal = pricePerItem * quantity; // e.g. 19.99 * 3 = 59.970000000000006\n  const total = subtotal + (subtotal * taxRate);\n  return total; // 64.76760000000001\n}",
         "badExplanation": "Greške zaokruživanja u formatu pokretnog zareza stvaraju odstupanja u parama i centima, što može dovesti do netačnih finansijskih obračuna.",
         "goodCode": "// ✅ NAJBOLJA PRAKSA: Čuvajte novac u celim jedinicama (parama/centima) ili namenskoj biblioteci\nfunction calculateCartTotal(priceInCents: number, quantity: number, taxBasisPoints: number) {\n  const subtotalCents = priceInCents * quantity;\n  const taxCents = Math.round((subtotalCents * taxBasisPoints) / 10000);\n  const totalCents = subtotalCents + taxCents;\n  \n  return {\n    totalCents,\n    formatted: (totalCents / 100).toFixed(2)\n  };\n}",
         "goodExplanation": "Rad sa celim brojevima (npr. centi ili pare umesto dinara/evra) eliminiše greške zaokruživanja binarnog pokretnog zareza.",
@@ -754,8 +754,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Rust",
-        "jsCode": "// U JS-u svi brojevi su podrazumevano 64-bitni float\nconst x = 5 / 2; // Izlaz: 2.5",
-        "otherCode": "// U Rust-u celobrojno deljenje zadržava celobrojni tip\nlet x: i32 = 5 / 2; // Izlaz: 2 (odsečeno)\nlet y: f64 = 5.0 / 2.0; // Izlaz: 2.5",
+        "jsCode": "// In JS all numbers are 64-bit float by default\nconst x = 5 / 2; // Output: 2.5",
+        "otherCode": "// In Rust integer division preserves integer type\nlet x: i32 = 5 / 2; // Output: 2 (truncated)\nlet y: f64 = 5.0 / 2.0; // Output: 2.5",
         "jsBehavior": "Svi osnovni brojevi u JS-u su IEEE 754 64-bitni float dvostruke tačnosti.",
         "otherBehavior": "Rust ima striktno definisane mašinske tipove: i8, u32, i64, f32, f64, isize.",
         "keyDifference": "Univerzalni float64 tip (JS) naspram eksplicitnih primitivnih mašinskih tipova (Rust).",
@@ -825,7 +825,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "return-asi-trap",
         "title": "Zamka novog reda nakon ključne reči return",
         "description": "Zašto postavljanje objekta u novi red ispod return naredbe vraća undefined",
-        "code": "function badGetConfig() {\n  return\n  {\n    status: 'active'\n  };\n}\n\nfunction goodGetConfig() {\n  return {\n    status: 'active'\n  };\n}\n\nconsole.log('badGetConfig() izlaz =>', badGetConfig()); // undefined! (jer je JS dodao ; odmah iza return)\nconsole.log('goodGetConfig() izlaz =>', goodGetConfig()); // { status: \"active\" }",
+        "code": "function badGetConfig() {\n  return\n  {\n    status: 'active'\n  };\n}\n\nfunction goodGetConfig() {\n  return {\n    status: 'active'\n  };\n}\n\nconsole.log('badGetConfig() output =>', badGetConfig()); // undefined! (JS inserted ; after return)\nconsole.log('goodGetConfig() output =>', goodGetConfig()); // { status: \"active\" }",
         "visualType": "custom-console",
         "titleEn": "The return Newline Trap",
         "descriptionEn": "Why placing an object on a new line below return yields undefined"
@@ -834,7 +834,7 @@ const RAW_TOPICS: JSTopic[] = [
         "id": "parenthesis-hazard",
         "title": "Opasnost linija koje počinju zagradama ( i [",
         "description": "Ukoliko izostavljate tačka-zarez, linije koje počinju sa ( ili [ tumače se kao pozivi prethodne linije",
-        "code": "const a = 1 + 2\nconst b = 3\n\n// Ako se kod napiše bez tačka-zapete:\n// let x = a + b\n// (function() {})()\n// JS ovo tumači kao: let x = (a + b)(function() {})() -> TypeError: (a + b) is not a function!\n\nconsole.log('Uvek budite oprezni sa linijama koje počinju sa ( ili [ ako izostavljate tačka-zarez.');",
+        "code": "const a = 1 + 2\nconst b = 3\n\n// If written without semicolons:\n// let x = a + b\n// (function() {})()\n// JS parses this as: let x = (a + b)(function() {})() -> TypeError: (a + b) is not a function!\n\nconsole.log('Always be careful with lines starting with ( or [ if omitting semicolons.');",
         "visualType": "custom-console",
         "titleEn": "Hazard with Lines Starting with ( and [",
         "descriptionEn": "When semicolons are omitted, lines starting with ( or [ are parsed as calls on previous expressions"
@@ -843,9 +843,9 @@ const RAW_TOPICS: JSTopic[] = [
     "comparisons": [
       {
         "title": "Završetak naredbi i višelinijski return",
-        "badCode": "// ❌ RIZIČNO: Razdvajanje return-a i vrednosti u novi red\nfunction createUser(name) {\n  return\n    {\n      id: Math.random(),\n      name: name\n    };\n}",
+        "badCode": "// ❌ RISKY: Splitting return and value onto a new line\nfunction createUser(name) {\n  return\n    {\n      id: Math.random(),\n      name: name\n    };\n}",
         "badExplanation": "ASI pravilo nalaže da se iza `return` naredbe na prelomu reda automatski umetne tačka-zarez (`return;`), dok objekat ispod ostaje nedostižan kod.",
-        "goodCode": "// ✅ NAJBOLJA PRAKSA: Zadržite otvorenu vitičastu zagradu u istoj liniji ili obuhvatite običnim zagradama\nfunction createUser(name: string) {\n  return {\n    id: Math.random(),\n    name: name\n  };\n  \n  // Ili u JSX-u:\n  // return (\n  //   <div>...</div>\n  // );\n}",
+        "goodCode": "// ✅ BEST PRACTICE: Keep opening curly brace on the same line or wrap in parentheses\nfunction createUser(name: string) {\n  return {\n    id: Math.random(),\n    name: name\n  };\n  \n  // Or in JSX:\n  // return (\n  //   <div>...</div>\n  // );\n}",
         "goodExplanation": "Postavljanjem otvorene zagrade `{` ili `(` u istu liniju sa `return` sprečava se automatsko umetanje tačka-zapete.",
         "pitfall": "Skriveni bagovi gde funkcija tiho vraća undefined usled prelomljenog reda.",
         "titleEn": "Statement Termination & Multiline Return",
@@ -857,8 +857,8 @@ const RAW_TOPICS: JSTopic[] = [
     "languageComparisons": [
       {
         "language": "Python",
-        "jsCode": "// U JS-u uvlačenje nije bitno, ali ASI reaguje na nove redove\nfunction test() {\n  return\n  42;\n}\nconsole.log(test()); // undefined",
-        "otherCode": "# U Python-u uvlačenje (indentation) definiše blokove\ndef test():\n    return (\n        42\n    )\nprint(test()) # Izlaz: 42",
+        "jsCode": "// In JS indentation does not matter, but ASI triggers on newlines\nfunction test() {\n  return\n  42;\n}\nconsole.log(test()); // undefined",
+        "otherCode": "# In Python indentation defines blocks\ndef test():\n    return (\n        42\n    )\nprint(test()) # Output: 42",
         "jsBehavior": "Sintaksa sa vitičastim zagradama C stila uz heurističko automatsko umetanje tačka-zapete.",
         "otherBehavior": "Python koristi gramatiku baziranu na uvlačenju redova i eksplicitnom nastavljanju izraza kroz otvorene zagrade.",
         "keyDifference": "ASI heuristika (JS) naspram gramatike uvlačenja koda (Python).",
@@ -872,6 +872,101 @@ const RAW_TOPICS: JSTopic[] = [
     "titleEn": "Automatic Semicolon Insertion (ASI) & Syntax Traps",
     "subtitleEn": "The return newline trap, parenthesis hazards, and the comma operator",
     "summaryEn": "JavaScript features Automatic Semicolon Insertion (ASI), automatically placing semicolons at line breaks where code would otherwise produce syntax errors. However, restricted productions like `return` treat a subsequent newline as an immediate statement terminator, silently returning `undefined`."
+  },
+  {
+    "id": "async-promises-es2026",
+    "title": "Asinhroni JavaScript i ES2026 Alati (Promise.try, withResolvers, using)",
+    "subtitle": "Evolucija asinhronosti: od Callback Hell-a do savremenog upravljanja resursima i greškama",
+    "category": "async-promises",
+    "difficulty": "Advanced",
+    "tags": [
+      "ES2026",
+      "Promise.try",
+      "Promise.withResolvers",
+      "using / await using",
+      "Async/Await",
+      "Microtasks"
+    ],
+    "summary": "Asinhroni JavaScript je u verzijama ES2024 do ES2026 dobio moćne standardizovane primitive: Promise.withResolvers() rešava potrebu za spoljnim izvlačenjem callback funkcija, Promise.try() sinhronizuje obradu grešaka u hibridnim funkcijama, dok `await using` uvodi automatsko oslobađanje resursa preko Symbol.asyncDispose.",
+    "deepDive": {
+      "title": "Novi obrasci asinhronosti u savremenom ECMAScript-u",
+      "summary": "Kako najnoviji standardi eliminišu višedecenijske frustracije u radu sa Promise objektima:",
+      "keyPoints": [
+        {
+          "term": "1. Promise.withResolvers() (ES2024)",
+          "detail": "Umesto deklarisanja `let res; new Promise(r => res = r)`, ovaj metod odmah vraća `{ promise, resolve, reject }`. Savršeno za integraciju sa WebSocket, EventListener ili Streams API-jem.",
+          "termEn": "1. Promise.withResolvers() (ES2024)",
+          "detailEn": "Instead of declaring mutable outer variables, this static method returns `{ promise, resolve, reject }` directly. Ideal for WebSocket, EventListener, and stream integrations."
+        },
+        {
+          "term": "2. Promise.try(fn) (ES2025/ES2026)",
+          "detail": "Omogućava bezbedno pozivanje bilo koje funkcije. Ako funkcija baci sinhroni throw (npr. JSON.parse greška), Promise.try ga automatski presreće i vraća rejected Promise.",
+          "termEn": "2. Promise.try(fn) (ES2025/ES2026)",
+          "detailEn": "Wraps any function invocation safely. If the function throws synchronously (e.g. JSON.parse error), Promise.try captures it as a rejected Promise without unhandled crashes."
+        },
+        {
+          "term": "3. Explicit Resource Management: using i await using (ES2026)",
+          "detail": "Kada blok koda završi izvršavanje, promenljive deklarisane sa `using` automatski pokreću `Symbol.dispose` ili `Symbol.asyncDispose`, oslobađajući memoriju, file handle-ove i mrežne konekcije.",
+          "termEn": "3. Explicit Resource Management: using & await using (ES2026)",
+          "detailEn": "When a block scope exits, variables declared with `using` or `await using` automatically trigger cleanup handlers via `Symbol.dispose` or `Symbol.asyncDispose`."
+        },
+        {
+          "term": "4. Kombinatori: Promise.allSettled i Promise.any",
+          "detail": "Promise.allSettled čeka sve rezultate bez prekidanja na prvoj grešci, dok Promise.any vraća prvi uspešno razrešen Promise ili AggregateError ako su svi odbijeni.",
+          "termEn": "4. Combinators: Promise.allSettled & Promise.any",
+          "detailEn": "Promise.allSettled awaits all outcomes without fast-failing on initial rejections, while Promise.any returns the first successfully fulfilled promise or an AggregateError."
+        }
+      ],
+      "mentalModel": "Moderan ES2026 asinhroni kod eliminiše glomazne konstruktorske omotače i pruža deklarativno upravljanje asinhronim resursima.",
+      "titleEn": "Modern Asynchronous Patterns in ES2026",
+      "summaryEn": "How modern ECMAScript standards eliminate decades of Promise constructor boilerplate and error fragmentation:",
+      "mentalModelEn": "Modern ES2026 async patterns eliminate cumbersome constructor closures and provide declarative lifecycle resource management."
+    },
+    "ecmaSpecNote": "ECMA-262 §27.2 Promise Objects & Explicit Resource Management Proposal",
+    "visualType": "event-loop",
+    "codePresets": [
+      {
+        "id": "promise-with-resolvers-demo",
+        "title": "Promise.withResolvers i Promise.try",
+        "description": "Dekonstrukcija resolve/reject funkcija i bezbedno hvatanje sinhronih grešaka u asinhronim tokovima",
+        "code": "// 1. Promise.withResolvers (ES2024+)\nif (typeof Promise.withResolvers === 'function') {\n  const { promise, resolve, reject } = Promise.withResolvers();\n  \n  setTimeout(() => {\n    resolve('Data fetched from asynchronous background task');\n  }, 100);\n  \n  promise.then(msg => console.log('Resolved with:', msg));\n} else {\n  console.log('Promise.withResolvers is standard in modern ES runtimes');\n}\n\n// 2. Safe error boundary pattern with Promise.try\nfunction parseSafe(rawJson) {\n  if (typeof Promise.try === 'function') {\n    return Promise.try(() => JSON.parse(rawJson));\n  }\n  return new Promise(resolve => resolve(JSON.parse(rawJson)));\n}\n\nparseSafe('{\"valid\": true}').then(data => console.log('Parsed JSON:', data));\nparseSafe('invalid json string').catch(err => console.log('Handled cleanly in catch:', err.message));",
+        "visualType": "event-loop",
+        "titleEn": "Promise.withResolvers and Promise.try",
+        "descriptionEn": "Direct destructuring of resolve/reject handlers and unified synchronous/asynchronous error boundaries"
+      }
+    ],
+    "comparisons": [
+      {
+        "title": "Kreiranje Promise objekata van konstruktora",
+        "badCode": "// ❌ OLD BOILERPLATE: Hoisting resolve into outer scope\nlet resolveHandler;\nlet rejectHandler;\nconst deferred = new Promise((resolve, reject) => {\n  resolveHandler = resolve;\n  rejectHandler = reject;\n});\n\n// Fragile outer mutable state\nbutton.onclick = () => resolveHandler(\"Clicked\");",
+        "badExplanation": "Deklarisanje promenljivih van `new Promise` konstruktora je nečitko, sklono greškama i otežava statičku analizu tipova.",
+        "goodCode": "// ✅ MODERN ES2024-ES2026: Promise.withResolvers()\nconst { promise, resolve, reject } = Promise.withResolvers();\n\nbutton.onclick = () => resolve(\"Clicked\");",
+        "goodExplanation": "`Promise.withResolvers()` odmah vraća i Promise instancu i kontrolne funkcije u jednoj čistoj liniji koda.",
+        "pitfall": "Komplikovano kreiranje Deferred objekata u TypeScript/JavaScript aplikacijama.",
+        "titleEn": "Promise Construction Outside Callback Closures",
+        "badExplanationEn": "Hoisting resolve functions outside `new Promise` closures is verbose and error-prone.",
+        "goodExplanationEn": "`Promise.withResolvers()` returns the promise and control handlers in a single expressive line.",
+        "pitfallEn": "Manual deferred promise patterns with outer mutable variables."
+      }
+    ],
+    "languageComparisons": [
+      {
+        "language": "Rust",
+        "jsCode": "// JS ES2026: using and Promise.withResolvers\nconst { promise, resolve } = Promise.withResolvers();",
+        "otherCode": "// Rust: Drop trait & tokio::sync::oneshot\nlet (tx, rx) = tokio::sync::oneshot::channel();\n{\n    let resource = ManagedResource::new();\n    // Automatically dropped/disposed at end of scope\n}",
+        "jsBehavior": "JavaScript u ES2026 uvodi punu paritetnost sa automatskim oslobađanjem resursa (using) i jednostavnijim kreiranjem task-ova.",
+        "otherBehavior": "Rust poseduje ugrađeni deterministički Drop mehanizam koji oslobađa resurse čim varijabla izađe iz opsega.",
+        "keyDifference": "Duh modernog JavaScripta koji usvaja dokazane obrasce upravljanja resursima (RAII) i asinhronošću.",
+        "whyJsDoesThis": "Kako bi se sprečila curenja memorije i file/socket ručica u složenim serverskim i veb aplikacijama.",
+        "jsBehaviorEn": "JavaScript achieves parity with declarative resource disposal (using) and streamlined task completion channels.",
+        "otherBehaviorEn": "Rust utilizes a deterministic compile-time Drop trait freeing resources immediately when exiting scope.",
+        "keyDifferenceEn": "Modern JS incorporating proven RAII resource lifecycle patterns into an async garbage-collected language.",
+        "whyJsDoesThisEn": "To eliminate file descriptor, socket, and memory leaks across long-lived async runtimes."
+      }
+    ],
+    "titleEn": "Async JavaScript & ES2026 Tools (Promise.try, withResolvers, using)",
+    "subtitleEn": "Async evolution: from Callback Hell to modern resource and error management",
+    "summaryEn": "Modern ECMAScript (ES2024–ES2026) introduces powerful async primitives: Promise.withResolvers() eliminates deferred boilerplate, Promise.try() harmonizes error boundaries, and `await using` automates resource disposal via Symbol.asyncDispose."
   }
 ];
 

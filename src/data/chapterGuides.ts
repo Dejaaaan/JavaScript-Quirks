@@ -26,7 +26,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: 'ToPrimitive(input, preferredType)',
           description: 'Kada se objekat ili niz nađe u operaciji sa primitivom, JS poziva [Symbol.toPrimitive](hint). Ako to ne postoji, poziva .valueOf(), a ako to ne vrati primitiv, poziva .toString(). Za nizove [1, 2].toString() daje "1,2", a [].toString() daje "".',
           descriptionEn: 'When an object/array encounters a primitive operation, JS checks `[Symbol.toPrimitive](hint)`. If absent, it invokes `.valueOf()`, and if that fails to return a primitive, it calls `.toString()`. Arrays serialize via `.join(\',\')`, so `[1, 2].toString()` becomes `"1,2"` and `[].toString()` becomes `""`.',
-          codeSnippet: '[1, 2].valueOf() // [1, 2] (objekat)\n[1, 2].toString() // "1,2" (primitivni string)'
+          codeSnippet: '[1, 2].valueOf() // [1, 2] (object)\n[1, 2].toString() // "1,2" (primitive string)'
         },
         {
           stepNumber: 2,
@@ -34,7 +34,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: 'Dual Nature of the Addition (+) Operator',
           description: 'Operator + proverava: ako je makar jedan operand (nakon ToPrimitive) String, cela operacija prelazi u konkatenaciju (spajanje stringova). Svi ostali operatori (-, *, /, %) forsiraju ToNumber algoritam.',
           descriptionEn: 'The `+` operator checks: if either operand after ToPrimitive is a String, string concatenation occurs. All other arithmetic operators (`-`, `*`, `/`, `%`) aggressively invoke `ToNumber`.',
-          codeSnippet: '"5" + 3 // "53" (jer je levi string)\n"5" - 3 // 2 (jer minus forsira broj)'
+          codeSnippet: '"5" + 3 // "53" (left operand is a string)\n"5" - 3 // 2 (subtraction forces number)'
         },
         {
           stepNumber: 3,
@@ -42,7 +42,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '11-Step Abstract Equality Algorithm (==)',
           description: 'Ako poredite Number i String, String postaje Number. Ako poredite Boolean sa bilo čim, Boolean se PRVO pretvara u Number (true -> 1, false -> 0). Izraz [] == ![] je true jer ![] prvo postaje false, pa se upoređuju [] i false -> 0 == 0 -> true.',
           descriptionEn: 'Comparing Number and String coerces String to Number. Comparing Boolean with anything converts Boolean to Number first (`true -> 1`, `false -> 0`). `[] == ![]` is true because `![]` evaluates to `false`, then `[]` and `false` both coerce to `0 == 0 -> true`.',
-          codeSnippet: '[] == ![] \n// 1. ![] je false\n// 2. [] == false\n// 3. ToNumber(false) -> 0, ToPrimitive([]) -> ""\n// 4. "" == 0 -> ToNumber("") -> 0 == 0 -> true'
+          codeSnippet: '[] == ![] \n// 1. ![] is false\n// 2. [] == false\n// 3. ToNumber(false) -> 0, ToPrimitive([]) -> ""\n// 4. "" == 0 -> ToNumber("") -> 0 == 0 -> true'
         },
         {
           stepNumber: 4,
@@ -50,7 +50,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: 'Isolated Pair: null and undefined',
           description: 'U labavoj jednakosti (==), null i undefined su jednaki samo jedno drugom i ničemu drugom na svetu (null == undefined je true, ali null == 0 je false). Ali kod relacionih operatora (>=, <=) null se pretvara u 0!',
           descriptionEn: 'Under `==`, `null` and `undefined` only equal each other and nothing else. However, relational operators (`>=`, `<=`) convert `null` to `0` via `ToNumber`, making `null >= 0` evaluate to `true`!',
-          codeSnippet: 'null == 0   // false (specijalno pravilo labave jednakosti)\nnull >= 0   // true (jer ToNumber(null) === 0)\nnull > 0    // false (0 > 0 je false)'
+          codeSnippet: 'null == 0   // false (special loose equality rule)\nnull >= 0   // true (because ToNumber(null) === 0)\nnull > 0    // false (0 > 0 is false)'
         }
       ]
     },
@@ -62,7 +62,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'Values `0`, `""`, `false`, `null`, `undefined`, and `NaN` are all falsy. Writing `if (score)` treats `0` as nonexistent.',
         impact: 'Korisnici sa 0 poena ili praznim tekstom bivaju blokirani ili dobijaju default vrednost umesto unete.',
         impactEn: 'Users with 0 score or valid empty inputs get overwritten with fallback defaults.',
-        codeSnippet: 'function setScore(score) {\n  // ❌ Bug: ako je score 0, dodeliće 100!\n  const finalScore = score || 100;\n  // ✅ Ispravno: Nullish coalescing\n  const safeScore = score ?? 100;\n}'
+        codeSnippet: 'function setScore(score) {\n  // ❌ Bug: if score is 0, assigns 100!\n  const finalScore = score || 100;\n  // ✅ Correct: Nullish coalescing\n  const safeScore = score ?? 100;\n}'
       },
       {
         title: 'Sigurnosni propusti kod labave provere kupona ili ID-eva',
@@ -71,7 +71,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'Comparing `input == false` or `token == 0` allows unexpected inputs like `""`, `"0"`, or `[]` to pass validation.',
         impact: 'Bypass autorizacije ili pogrešno aktiviranje administratorskih opcija.',
         impactEn: 'Authentication bypass or accidental privilege granting.',
-        codeSnippet: 'const userRole = "";\nif (userRole == 0) { /* ❌ neočekivano prolazi! */ }'
+        codeSnippet: 'const userRole = "";\nif (userRole == 0) { /* ❌ unexpectedly passes! */ }'
       }
     ],
     solutions: [
@@ -177,7 +177,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'Chaining recursive `Promise.resolve().then(...)` or `queueMicrotask` prevents the queue from ever emptying.',
         impact: 'Browser se kompletno zamrzava, korisnički klikovi se ne registruju i setTimeout se nikada ne izvršava.',
         impactEn: 'The browser freezes completely, user interactions stall, and timers never execute.',
-        codeSnippet: 'function freeze() {\n  Promise.resolve().then(freeze); // ❌ UI se zauvek zamrzava!\n}'
+        codeSnippet: 'function freeze() {\n  Promise.resolve().then(freeze); // ❌ UI freezes indefinitely!\n}'
       },
       {
         title: 'Teške matematičke operacije na glavnoj niti',
@@ -186,7 +186,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'A synchronous loop with millions of iterations holds the Call Stack hostage.',
         impact: 'Dropovani frejmovi, jank animacije i "Page Unresponsive" popup prozor.',
         impactEn: 'Dropped frames, stuttering UI animations, and "Page Unresponsive" browser dialogs.',
-        codeSnippet: '// ❌ Blokira sve na 3 sekunde\nfor (let i = 0; i < 1e9; i++) { /* heavy math */ }'
+        codeSnippet: '// ❌ Blocks the thread for several seconds\nfor (let i = 0; i < 1e9; i++) { /* heavy math */ }'
       }
     ],
     solutions: [
@@ -240,7 +240,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '1. new Binding (Constructors - Highest Priority)',
           description: 'Kada se funkcija pozove sa `new MyFunc()`, kreira se potpuno nov prazan objekat, njegov [[Prototype]] se postavlja na MyFunc.prototype, a `this` se unutar funkcije vezuje za taj novi objekat.',
           descriptionEn: 'Calling `new MyFunc()` allocates a fresh empty object, links its prototype to `MyFunc.prototype`, and binds `this` to that newly minted instance.',
-          codeSnippet: 'const user = new User("Nikola"); // this je novokreirani user'
+          codeSnippet: 'const user = new User("Alex"); // this is the newly created user instance'
         },
         {
           stepNumber: 2,
@@ -248,7 +248,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '2. Explicit Binding (.call, .apply, .bind)',
           description: 'Metode `.call(context, a, b)` i `.apply(context, [a, b])` odmah pozivaju funkciju i prinudno postavljaju `context` kao `this`. Metoda `.bind(context)` vraća novu omotačku funkciju sa trajno zacementiranim `this`.',
           descriptionEn: '`.call(context, ...args)` and `.apply(context, [args])` execute immediately forcing `context` as `this`. `.bind(context)` returns a new wrapper function with `this` permanently locked.',
-          codeSnippet: 'showName.call({ name: "Ana" }); // this je { name: "Ana" }'
+          codeSnippet: 'showName.call({ name: "Anna" }); // this is { name: "Anna" }'
         },
         {
           stepNumber: 3,
@@ -256,7 +256,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '3. Implicit Binding (Object Preceding the Dot)',
           description: 'Kada pozovete `user.getName()`, objekat neposredno ispred tačke (`user`) postaje `this`. Ako otkačite referencu u promenljivu (`const fn = user.getName; fn()`), implicitno vezivanje se GUBI!',
           descriptionEn: 'Calling `user.getName()` assigns the object before the dot (`user`) as `this`. Detaching the function reference (`const fn = user.getName; fn()`) loses the implicit binding!',
-          codeSnippet: 'user.getName(); // this === user\nconst detached = user.getName;\ndetached(); // ❌ this je window / undefined!'
+          codeSnippet: 'user.getName(); // this === user\nconst detached = user.getName;\ndetached(); // ❌ this is window / undefined!'
         },
         {
           stepNumber: 4,
@@ -264,7 +264,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '4. Default Binding (Standalone Call Fallback)',
           description: 'Ako funkciju pozovete samostalno `fn()`, u standardnom režimu `this` je globalni objekat (`window` ili `globalThis`). U striktnom režimu ("use strict"), `this` ostaje `undefined`.',
           descriptionEn: 'Calling a standalone `fn()` in non-strict mode sets `this` to the global object (`window`/`globalThis`). In strict mode (`"use strict"`), `this` safely remains `undefined`.',
-          codeSnippet: 'function show() { console.log(this); }\nshow(); // window (ili undefined u strict mode)'
+          codeSnippet: 'function show() { console.log(this); }\nshow(); // window (or undefined in strict mode)'
         }
       ]
     },
@@ -276,7 +276,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'Passing `obj.handleClick` as a callback passes only the bare function reference, which gets invoked standalone by the timer/DOM dispatcher.',
         impact: '`this.state` ili `this.name` bacaju "TypeError: Cannot read properties of undefined".',
         impactEn: 'Crashes with `TypeError: Cannot read properties of undefined`.',
-        codeSnippet: 'class Button {\n  render() {\n    // ❌ this je unutar timeout-a window/undefined!\n    setTimeout(this.logClick, 100);\n  }\n}'
+        codeSnippet: 'class Button {\n  render() {\n    // ❌ this inside timeout is window/undefined!\n    setTimeout(this.logClick, 100);\n  }\n}'
       }
     ],
     solutions: [
@@ -294,7 +294,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
       {
         title: 'Arrow funkcije se ne mogu naterati da promene "this"',
         titleEn: 'Arrow Functions Cannot Be Bound with .call / .bind',
-        codeSnippet: 'const arrow = () => console.log(this);\narrow.call({ name: "Petar" }); // Ignoriše argument!',
+        codeSnippet: 'const arrow = () => console.log(this);\narrow.call({ name: "Peter" }); // Silently ignores argument!',
         explanation: 'Poziv .call, .apply ili .bind na arrow funkciji je potpuno ignorisan jer arrow funkcija nema sopstveni binding slot u Environment Record-u.',
         explanationEn: 'Calling `.call`, `.apply`, or `.bind` on an arrow function silently ignores the context argument because arrow functions lack a `[[ThisBindingStatus]]` slot.'
       }
@@ -338,7 +338,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '2. Temporal Dead Zone (TDZ)',
           description: 'TDZ je vremenski interval od trenutka ulaska u blok do trenutka kada engine izvrši liniju sa `let` ili `const`. Svaki pokušaj čitanja u tom intervalu baca ReferenceError.',
           descriptionEn: 'The TDZ is the temporal window between entering a block scope and evaluating the `let`/`const` declaration line. Accessing it throws a ReferenceError.',
-          codeSnippet: '{\n  // Pocetak TDZ-a za let promenljivu\n  // console.log(value); // ❌ ReferenceError\n  let value = "hello"; // Kraj TDZ-a\n}'
+          codeSnippet: '{\n  // Start of TDZ for let variable\n  // console.log(value); // ❌ ReferenceError\n  let value = "hello"; // End of TDZ\n}'
         },
         {
           stepNumber: 3,
@@ -358,7 +358,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: '`var i` shares a single mutable binding across all iterations. By the time timers fire, the loop has completed with `i = 3`.',
         impact: 'Sva tri timeout callback-a ispisuju broj 3 umesto 0, 1, 2.',
         impactEn: 'All timer callbacks print `3, 3, 3` instead of `0, 1, 2`.',
-        codeSnippet: 'for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100); // Ispisuje: 3, 3, 3\n}\n// ✅ Rešenje sa let:\nfor (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100); // Ispisuje: 0, 1, 2\n}'
+        codeSnippet: 'for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100); // Prints: 3, 3, 3\n}\n// ✅ Solution with let:\nfor (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100); // Prints: 0, 1, 2\n}'
       }
     ],
     solutions: [
@@ -376,7 +376,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
       {
         title: 'Funkcijske deklaracije mogu da se pozovu pre nego što su napisane',
         titleEn: 'Function Declarations Hoist with Their Full Body',
-        codeSnippet: 'sayHi(); // "Zdravo!" radi bez problema\nfunction sayHi() { console.log("Zdravo!"); }',
+        codeSnippet: 'sayHi(); // "Hello!" works before definition\nfunction sayHi() { console.log("Hello!"); }',
         explanation: 'Za razliku od funkcijskih izraza (const fn = () => {}), regularne deklaracije `function name() {}` se u fazi kreiranja kompletno učitavaju u memoriju.',
         explanationEn: 'Unlike function expressions (`const f = () => {}`), declarations hoist with their complete executable body.'
       }
@@ -412,7 +412,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '1. Reading Properties (Delegation Lookup)',
           description: 'Kada pristupite `obj.prop`, engine prvo proverava sopstvena svojstva (Own Properties). Ako ne nađe, prati `obj.__proto__`, pa `obj.__proto__.__proto__`, sve dok ne stigne do `Object.prototype.__proto__` koji je `null`.',
           descriptionEn: 'Accessing `obj.prop` checks own properties first, then traverses `obj.__proto__` until reaching terminal `Object.prototype.__proto__` (which is `null`).',
-          codeSnippet: 'const arr = [1, 2];\narr.hasOwnProperty("map"); // false (map je na Array.prototype)\nArray.prototype.hasOwnProperty("map"); // true'
+          codeSnippet: 'const arr = [1, 2];\narr.hasOwnProperty("map"); // false (map is on Array.prototype)\nArray.prototype.hasOwnProperty("map"); // true'
         },
         {
           stepNumber: 2,
@@ -420,7 +420,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '2. Writing Properties (Property Shadowing)',
           description: 'Kada napišete `obj.prop = 42`, JavaScript NE MENJA prototip, već kreira novo sopstveno svojstvo direktno na instanci `obj`, čime se prototip štiti od mutacije.',
           descriptionEn: 'Assigning `obj.prop = 42` creates an "own" property on `obj` rather than mutating the shared prototype object.',
-          codeSnippet: 'const dog = Object.create({ legs: 4 });\ndog.legs = 3; // Kreira dog.legs, prototip ostaje 4'
+          codeSnippet: 'const dog = Object.create({ legs: 4 });\ndog.legs = 3; // Creates own dog.legs, prototype stays 4'
         },
         {
           stepNumber: 3,
@@ -440,7 +440,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'Plain `{}` inherits methods from `Object.prototype`. Accessing `obj["toString"]` returns a function rather than `undefined`.',
         impact: 'Sigurnosni bagovi i pogrešne logičke grane.',
         impactEn: 'Security holes and logic errors in user data lookup.',
-        codeSnippet: 'const dict = {};\nif ("toString" in dict) { /* ❌ true iako ključ nismo uneli! */ }'
+        codeSnippet: 'const dict = {};\nif ("toString" in dict) { /* ❌ true even though key was never added! */ }'
       }
     ],
     solutions: [
@@ -502,7 +502,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: 'HOLEY_ELEMENTS (Performance Degradation)',
           description: 'Ako napravite rupu sa `delete arr[1]` ili `arr[100] = 5`, niz prelazi u HOLEY režim. Svako čitanje sada mora da proverava prototip i usporava izvršavanje i do 10x.',
           descriptionEn: 'Creating holes via `delete arr[1]` or `arr[100] = 5` downgrades it to HOLEY mode, forcing prototype lookups on missed indices.',
-          codeSnippet: 'delete dense[1]; // ⚠️ Prelazi u HOLEY režim'
+          codeSnippet: 'delete dense[1]; // ⚠️ Transitions into HOLEY mode'
         },
         {
           stepNumber: 3,
@@ -522,7 +522,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: '`delete arr[0]` leaves `<empty slot>` without reducing `arr.length`.',
         impact: 'Metode `.map()` i `.forEach()` preskaču prazne slotove, stvarajući neočekivane bagove.',
         impactEn: 'Iterators skip holes, causing off-by-one errors.',
-        codeSnippet: 'const arr = [1, 2, 3];\ndelete arr[1];\nconsole.log(arr.length); // 3 (nije 2!)'
+        codeSnippet: 'const arr = [1, 2, 3];\ndelete arr[1];\nconsole.log(arr.length); // 3 (not 2!)'
       }
     ],
     solutions: [
@@ -540,7 +540,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
       {
         title: 'Array(3) kreira 3 rupe a ne 3 undefined vrednosti',
         titleEn: 'Array(3) Creates 3 Holes, Not 3 Undefineds',
-        codeSnippet: 'Array(3).map(() => 1) // Vraća [empty x 3] jer map preskače rupe!',
+        codeSnippet: 'Array(3).map(() => 1) // Returns [empty x 3] because map skips holes!',
         explanation: 'Da biste popunili novi niz, morate pozvati Array(3).fill(0) ili Array.from({ length: 3 }).',
         explanationEn: 'To populate an array, use `Array(3).fill(0)` or `Array.from({ length: 3 })`.'
       }
@@ -604,7 +604,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: '`0.1 + 0.2 === 0.30000000000000004`. Comparing `if (total === 0.3)` causes checkout validation failures.',
         impact: 'Finansijska neslaganja, greške u naplati i knjigovodstveni problemi.',
         impactEn: 'Balance sheet discrepancies and failed transactional assertions.',
-        codeSnippet: 'const total = 0.1 + 0.2;\nif (total === 0.3) { /* ❌ nikada se ne izvršava! */ }'
+        codeSnippet: 'const total = 0.1 + 0.2;\nif (total === 0.3) { /* ❌ never executes! */ }'
       },
       {
         title: 'Gubitak 64-bitnih ID-eva iz baza podataka (npr. Twitter / Snowflake IDs)',
@@ -613,7 +613,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: '`JSON.parse()` silently converts large 64-bit IDs into standard Numbers, rounding off trailing digits.',
         impact: 'Pogrešan korisnik ili entitet biva ažuriran u bazi podataka.',
         impactEn: 'Wrong database records modified due to ID collisions.',
-        codeSnippet: 'const id = 1234567890123456789; // Pretvara se u 1234567890123456770'
+        codeSnippet: 'const id = 1234567890123456789; // Coerced to 1234567890123456770'
       }
     ],
     solutions: [
@@ -667,7 +667,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '1. Restricted Productions',
           description: 'Nijedan prelazak u novi red nije dozvoljen neposredno posle: `return`, `throw`, `yield`, `break`, `continue`, niti ispred `++` i `--`. Ako pređete u novi red, JS bezuslovno ubacuje `;` odmah iza ključne reči!',
           descriptionEn: 'No newline is permitted after `return`, `throw`, `yield`, `break`, `continue`, or before `++`/`--`. A newline triggers immediate semicolon insertion right after the keyword!',
-          codeSnippet: 'function getUser() {\n  return\n  {\n    name: "Marko"\n  };\n}\n// JS ovo parsira kao: return; { name: "Marko" }; -> Vraća undefined!'
+          codeSnippet: 'function getUser() {\n  return\n  {\n    name: "Alex"\n  };\n}\n// JS parses this as: return; { name: "Alex" }; -> Returns undefined!'
         },
         {
           stepNumber: 2,
@@ -675,7 +675,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
           titleEn: '2. Hazard with Lines Starting with ( or [',
           description: 'Ako ne stavljate tačku-zarez, a sledeća linija počinje sa `(` ili `[`, JS NEĆE ubaciti `;`. Umesto toga, protumačiće sledeću liniju kao poziv funkcije ili indeksni pristup prethodnoj liniji!',
           descriptionEn: 'If semicolons are omitted and the next line begins with `(` or `[`, JS will NOT insert a semicolon. It parses the next line as a function call or array index on the previous line!',
-          codeSnippet: 'const a = b + c\n(d + e).print()\n// JS parsira kao: const a = b + c(d + e).print() -> TypeError!'
+          codeSnippet: 'const a = b + c\n(d + e).print()\n// JS parses this as: const a = b + c(d + e).print() -> TypeError!'
         },
         {
           stepNumber: 3,
@@ -695,7 +695,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
         causeEn: 'Placing the opening curly brace `{` on a new line below `return`.',
         impact: 'Funkcija tiho vraća `undefined`, a objekat ispod ostaje mrtav kod koji se nikada ne izvršava.',
         impactEn: 'Function silently returns `undefined`, leaving the object payload as dead unreachable code.',
-        codeSnippet: 'function getConfig() {\n  return // ❌ ASI ubacuje ; ovde!\n  {\n    port: 3000\n  };\n}'
+        codeSnippet: 'function getConfig() {\n  return // ❌ ASI inserts ; here!\n  {\n    port: 3000\n  };\n}'
       }
     ],
     solutions: [
@@ -713,7 +713,7 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
       {
         title: 'Operator zarez (Comma Operator) vraća poslednji izraz',
         titleEn: 'The Comma Operator Evaluates to the Last Operand',
-        codeSnippet: 'let a = (1, 2, 3); // a postaje 3',
+        codeSnippet: 'let a = (1, 2, 3); // a becomes 3',
         explanation: 'Operator zarez izvršava sve izraze sa leva na desno i vraća rezultat poslednjeg.',
         explanationEn: 'The comma operator evaluates all sub-expressions left-to-right and returns the final value.'
       }
@@ -722,5 +722,78 @@ export const CHAPTER_GUIDES: Record<string, ChapterGuide> = {
     mentalModelEn: 'Never leave `return` alone on a line without an opening brace or parenthesis, and never start a line with `(` or `[` without preceding semicolons.',
     goldenRule: 'Zlatno pravilo: Koristite automatski formater (Prettier) i držite otvarajuće zagrade `{`, `(` na istoj liniji sa kontrolnim naredbama.',
     goldenRuleEn: 'Golden Rule: Use an automated formatter (Prettier) and always keep opening `{` or `(` on the same line as `return`.'
+  },
+  'async-promises-es2026': {
+    overview: 'Asinhroni JavaScript je pretrpeo ogromnu evoluciju: od Callback Hell-a iz ranih dana, preko ES6 Promise-a i ES2017 async/await sintakse, pa sve do modernih ES2024-ES2026 alata kao što su Promise.withResolvers(), Promise.try(), i eksplicitno upravljanje resursima (using / await using sa Symbol.asyncDispose).',
+    overviewEn: 'Asynchronous JavaScript has undergone tremendous evolution: from early Callback Hell, to ES6 Promises and ES2017 async/await, up to modern ES2024-ES2026 primitives such as Promise.withResolvers(), Promise.try(), and explicit resource management (using / await using with Symbol.asyncDispose).',
+    analogy: 'Zamislite prelazak sa naručivanja u restoranu gde morate stalno da proveravate kuhinju (polling/callbacks), na pager koji pišti kada je hrana gotova (Promises), do ličnog asistenta koji sve donosi automatski i sam vraća poslužavnik u perionicu (await using).',
+    analogyEn: 'Think of transitioning from repeatedly walking up to a kitchen counter to check food (callbacks), to a buzzing pager when ready (Promises), to a personal valet that serves dinner and automatically returns clean dishes to storage (await using).',
+    historyAndOrigin: {
+      title: 'Od Callback Hell-a do ES2026 Standarda',
+      titleEn: 'From Callback Hell to ES2026 Standard',
+      description: 'Pre Promise-a, asinhroni kod se pisao ugnežđavanjem callback funkcija (Pyramid of Doom), što je činilo obradu grešaka i paralelizaciju izuzetno podložnom bagovima. ES6 je standardizovao Promise, a zatim su dodate metode poput Promise.allSettled() (ES2020), Promise.any() (ES2021), Promise.withResolvers() (ES2024) i Promise.try() (ES2025/ES2026).',
+      descriptionEn: 'Before Promises, asynchronous logic relied on nested callbacks (Pyramid of Doom), making error propagation and concurrency fragile. ES6 standardized Promises, followed by Promise.allSettled() (ES2020), Promise.any() (ES2021), Promise.withResolvers() (ES2024), and Promise.try() (ES2025/ES2026).',
+      whyItExists: 'Uklanjanje boilerplate konstruktora `new Promise((resolve, reject) => ...)` i sinhronizacija hvatanja grešaka bez nepotrebnih try/catch blokova.',
+      whyItExistsEn: 'Eliminating the cumbersome `new Promise((resolve, reject) => ...)` boilerplate and harmonizing synchronous/asynchronous error handling.'
+    },
+    underTheHood: {
+      title: 'Kako Promise.withResolvers i Promise.try rade u mašini',
+      titleEn: 'Under the Hood: Promise.withResolvers & Promise.try Mechanics',
+      summary: 'Interni mehanizam kreiranja Promise objekata i delegacije u Microtask red:',
+      summaryEn: 'Internal mechanics of Promise construction and microtask scheduling:',
+      steps: [
+        {
+          stepNumber: 1,
+          title: 'Promise.withResolvers() dekonstrukcija',
+          titleEn: 'Promise.withResolvers() Destructuring',
+          description: 'Izvlači `resolve` i `reject` funkcije direktno u lokalni opseg bez kreiranja anonimne callback closures funkcije unutar konstruktora.',
+          descriptionEn: 'Extracts `resolve` and `reject` capabilities directly into scope without allocating a nested constructor executor closure.',
+          codeSnippet: 'const { promise, resolve, reject } = Promise.withResolvers();'
+        },
+        {
+          stepNumber: 2,
+          title: 'Promise.try(fn) unifikacija grešaka',
+          titleEn: 'Promise.try(fn) Unified Error Handling',
+          description: 'Ako funkcija baci sinhroni `throw new Error()`, Promise.try je automatski pretvara u odbijeni (rejected) Promise umesto rušenja Call Stack-a.',
+          descriptionEn: 'If a callback throws a synchronous exception, Promise.try catches it and returns a rejected Promise rather than crashing the Call Stack.',
+          codeSnippet: 'Promise.try(() => JSON.parse(invalidJson)).catch(err => console.log("Caught:", err));'
+        }
+      ]
+    },
+    pitfalls: [
+      {
+        title: 'Nepovezane greške u Promise konstruktorima',
+        titleEn: 'Unhandled Synchronous Exceptions Before Async Boundaries',
+        cause: 'Pozivanje funkcije koja baci sinhroni izuzetak pre nego što vrati Promise.',
+        causeEn: 'Invoking a function that throws synchronously before returning a Promise.',
+        impact: 'Zahteva duplirani try/catch blok oko koda koji već ima .catch() lanac.',
+        impactEn: 'Requires duplicate try/catch blocks around code that already has .catch() chains.',
+        codeSnippet: 'function parseAndFetch(str) {\n  const data = JSON.parse(str); // Throws synchronously!\n  return fetch(data.url);\n}'
+      }
+    ],
+    solutions: [
+      {
+        title: 'Koristite Promise.try i Promise.withResolvers u ES2024-ES2026',
+        titleEn: 'Leverage Promise.try & Promise.withResolvers in ES2024-ES2026',
+        solution: 'Omotajte potencijalno sinhrone/asinhrone operacije sa Promise.try i koristite Promise.withResolvers za event callback-ove.',
+        solutionEn: 'Wrap hybrid sync/async functions with Promise.try and use Promise.withResolvers for event listeners.',
+        recommendation: 'Izbegavajte ručno deklarisanje `let resolvePromise` promenljivih van Promise opsega.',
+        recommendationEn: 'Avoid hoisting mutable `let resolvePromise` variables outside Promise constructor closures.',
+        codeSnippet: 'const fetchSafe = (str) => Promise.try(() => fetch(JSON.parse(str).url));'
+      }
+    ],
+    funFacts: [
+      {
+        title: 'Eksplicitno upravljanje resursima: await using',
+        titleEn: 'Explicit Resource Management: await using',
+        codeSnippet: 'async function processFile() {\n  await using file = await openFileHandle();\n  // Automatically closed when exiting scope!\n}',
+        explanation: 'Standard ES2026 uvodi `using` i `await using` koji automatski pozivaju `[Symbol.dispose]` ili `[Symbol.asyncDispose]` na kraju bloka.',
+        explanationEn: 'ES2026 standardizes `using` and `await using` which invoke `[Symbol.dispose]` or `[Symbol.asyncDispose]` upon scope exit.'
+      }
+    ],
+    mentalModel: 'Posmatrajte Promise kao kontejner buduće vrednosti sa integrisanim Microtask kanalom, dok moderni ES2026 metodi eliminišu sav stari boilerplate kod.',
+    mentalModelEn: 'View Promises as future value containers with integrated microtask channels, where modern ES2026 features remove all legacy constructor boilerplate.',
+    goldenRule: 'Zlatno pravilo: Koristite Promise.withResolvers() za događaje i Promise.try() za funkcije koje mogu baciti i sinhrone i asinhrone greške.',
+    goldenRuleEn: 'Golden Rule: Use Promise.withResolvers() for event listeners and Promise.try() for hybrid synchronous/asynchronous error boundaries.'
   }
 };

@@ -39,6 +39,7 @@ import { LEETCODE_PROBLEMS } from '../data/leetcodeProblems';
 import { LeetCodeProblem, LeetCodeDifficulty, LeetCodeCategory } from '../types';
 import { CodeBlock } from './CodeBlock';
 import { FormattedText } from './FormattedText';
+import { AdBanner } from './AdBanner';
 import { useI18n } from '../i18n';
 
 interface LeetCodeSectionProps {
@@ -403,36 +404,36 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E5DF] dark:border-[#27272A] pb-5">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#B45309]/10 text-[#B45309] dark:bg-[#F59E0B]/20 dark:text-[#FCD34D] border border-[#B45309]/20 dark:border-[#F59E0B]/30">
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#B45309]/10 text-[#78350F] dark:bg-[#F59E0B]/20 dark:text-[#FCD34D] border border-[#B45309]/20 dark:border-[#F59E0B]/30">
                 {m.lc_badge_interview()}
               </span>
-              <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-mono">
+              <span className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-medium">
                 {m.lc_badge_count({ count: LEETCODE_PROBLEMS.length })}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight">
               {m.lc_main_title()}
             </h1>
-            <p className="text-xs sm:text-sm text-[#73736C] dark:text-[#A1A1AA] font-serif italic mt-1 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#3F3F3C] dark:text-[#D4D4D8] font-serif italic mt-1 max-w-3xl leading-relaxed">
               {m.lc_main_desc()}
             </p>
           </div>
 
           {/* Progress Tracker Card */}
-          <div className="bg-[#F9F9F7] dark:bg-[#202023] p-3.5 rounded-xl border border-[#E5E5DF] dark:border-[#3F3F46] min-w-[200px] flex flex-col gap-2">
+          <div className="bg-[#F9F9F7] dark:bg-[#202023] p-3.5 rounded-xl border border-[#D4D4CE] dark:border-[#3F3F46] min-w-[200px] flex flex-col gap-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">{m.lc_your_progress()}</span>
-              <span className="font-mono font-bold text-[#B45309] dark:text-[#F59E0B]">
+              <span className="font-mono font-bold text-[#78350F] dark:text-[#F59E0B]">
                 {solvedCount} / {LEETCODE_PROBLEMS.length} ({progressPercent}%)
               </span>
             </div>
             <div className="w-full bg-[#E5E5DF] dark:bg-[#27272A] h-2 rounded-full overflow-hidden">
               <div 
-                className="bg-[#B45309] dark:bg-[#F59E0B] h-full rounded-full transition-all duration-500"
+                className="bg-[#78350F] dark:bg-[#F59E0B] h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-[10px] text-[#73736C] dark:text-[#A1A1AA] text-right">
+            <span className="text-[10px] text-[#3F3F3C] dark:text-[#D4D4D8] text-right font-medium">
               {m.lc_saved_local()}
             </span>
           </div>
@@ -454,6 +455,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
               <button
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#73736C] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] font-bold cursor-pointer"
+                aria-label={locale === 'sr' ? 'Poništi pretragu' : 'Clear search'}
               >
                 ✕
               </button>
@@ -512,7 +514,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
         {/* Left Column: Problem List Directory (height strictly driven by the right-hand column) */}
         <div className="lg:col-span-4 flex flex-col min-h-[420px] lg:min-h-0 bg-[#FAF9F5] dark:bg-[#202023] rounded-2xl p-4 border border-[#E5E5DF] dark:border-[#27272A] shadow-xs">
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#E5E5DF] dark:border-[#27272A] flex-shrink-0">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#73736C] dark:text-[#A1A1AA]">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#3F3F3C] dark:text-[#D4D4D8]">
               {locale === 'sr' ? `Prikazano: ${filteredProblems.length} zadataka` : `Showing: ${filteredProblems.length} problems`}
             </span>
           </div>
@@ -545,8 +547,9 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                             e.stopPropagation();
                             toggleSolved(problem.id);
                           }}
-                          className="text-[#8C8C82] hover:text-[#047857] dark:hover:text-[#34D399] transition cursor-pointer"
+                          className="text-[#575750] hover:text-[#047857] dark:text-[#A1A1AA] dark:hover:text-[#34D399] transition cursor-pointer"
                           title={isSolved ? (locale === 'sr' ? 'Označi kao nerešeno' : 'Mark as unsolved') : (locale === 'sr' ? 'Označi kao rešeno' : 'Mark as solved')}
+                          aria-label={isSolved ? (locale === 'sr' ? `Označi zadatak #${problem.number} kao nerešeno` : `Mark challenge #${problem.number} as unsolved`) : (locale === 'sr' ? `Označi zadatak #${problem.number} kao rešeno` : `Mark challenge #${problem.number} as solved`)}
                         >
                           {isSolved ? (
                             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 fill-emerald-100 dark:fill-emerald-950" />
@@ -554,7 +557,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                             <Circle className="w-4 h-4" />
                           )}
                         </button>
-                        <span className="font-mono text-xs font-bold text-[#73736C] dark:text-[#A1A1AA]">
+                        <span className="font-mono text-xs font-bold text-[#3F3F3C] dark:text-[#D4D4D8]">
                           #{problem.number}
                         </span>
                       </div>
@@ -566,9 +569,9 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                       {displayTitle}
                     </h3>
 
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E5E5DF]/60 dark:border-[#27272A] text-[11px] text-[#73736C] dark:text-[#A1A1AA]">
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E5E5DF]/60 dark:border-[#27272A] text-[11px] text-[#3F3F3C] dark:text-[#D4D4D8] font-medium">
                       <span className="font-mono truncate">{problem.pattern}</span>
-                      <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-1 text-[#B45309] dark:text-[#F59E0B]' : 'opacity-40'}`} />
+                      <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-1 text-[#B45309] dark:text-[#F59E0B]' : 'opacity-60'}`} />
                     </div>
                   </div>
                 );
@@ -576,8 +579,8 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
 
               {filteredProblems.length === 0 && (
                 <div className="p-8 text-center bg-[#FFFFFF] dark:bg-[#18181B] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] space-y-2">
-                  <AlertTriangle className="w-8 h-8 text-[#A3A39A] dark:text-[#52525B] mx-auto" />
-                  <p className="text-xs text-[#73736C] dark:text-[#A1A1AA]">{m.lc_no_problems_found()}</p>
+                  <AlertTriangle className="w-8 h-8 text-[#575750] dark:text-[#A1A1AA] mx-auto" />
+                  <p className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-medium">{m.lc_no_problems_found()}</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
@@ -646,7 +649,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                     href={currentProblem.leetcodeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg border border-[#E5E5DF] dark:border-[#3F3F46] bg-white dark:bg-[#27272A] text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white transition flex items-center justify-center min-w-[38px] min-h-[38px]"
+                    className="p-2 rounded-lg border border-[#D4D4CE] dark:border-[#3F3F46] bg-white dark:bg-[#27272A] text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white transition flex items-center justify-center min-w-[38px] min-h-[38px]"
                     title={m.lc_open_leetcode()}
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -659,7 +662,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                 <button
                   onClick={handlePrevProblem}
                   disabled={currentIndex <= 0}
-                  className="flex items-center gap-1 text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none transition font-medium cursor-pointer"
+                  className="flex items-center gap-1 text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none transition font-medium cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>{m.lc_prev_problem()}</span>
@@ -667,7 +670,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
 
                 <div className="flex items-center gap-1">
                   {currentProblem.tags.map((tag) => (
-                    <span key={tag} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EBEBE5] dark:bg-[#27272A] text-[#575750] dark:text-[#A1A1AA]">
+                    <span key={tag} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EBEBE5] dark:bg-[#27272A] text-[#3F3F3C] dark:text-[#D4D4D8] font-medium">
                       {tag}
                     </span>
                   ))}
@@ -676,7 +679,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                 <button
                   onClick={handleNextProblem}
                   disabled={currentIndex >= filteredProblems.length - 1}
-                  className="flex items-center gap-1 text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none transition font-medium cursor-pointer"
+                  className="flex items-center gap-1 text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none transition font-medium cursor-pointer"
                 >
                   <span>{m.lc_next_problem()}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -690,8 +693,8 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                 onClick={() => setActiveTab('optimal')}
                 className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeTab === 'optimal'
-                    ? 'border-[#B45309] dark:border-[#F59E0B] text-[#B45309] dark:text-[#F59E0B]'
-                    : 'border-transparent text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white'
+                    ? 'border-[#B45309] dark:border-[#F59E0B] text-[#78350F] dark:text-[#F59E0B]'
+                    : 'border-transparent text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white'
                 }`}
               >
                 <Code2 className="w-3.5 h-3.5" />
@@ -702,8 +705,8 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                 onClick={() => setActiveTab('problem')}
                 className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeTab === 'problem'
-                    ? 'border-[#B45309] dark:border-[#F59E0B] text-[#B45309] dark:text-[#F59E0B]'
-                    : 'border-transparent text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white'
+                    ? 'border-[#B45309] dark:border-[#F59E0B] text-[#78350F] dark:text-[#F59E0B]'
+                    : 'border-transparent text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" />
@@ -715,8 +718,8 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                   onClick={() => setActiveTab('comparison')}
                   className={`py-3 px-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                     activeTab === 'comparison'
-                      ? 'border-[#B45309] dark:border-[#F59E0B] text-[#B45309] dark:text-[#F59E0B]'
-                      : 'border-transparent text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-white'
+                      ? 'border-[#B45309] dark:border-[#F59E0B] text-[#78350F] dark:text-[#F59E0B]'
+                      : 'border-transparent text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-white'
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
@@ -733,27 +736,27 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                   {/* Complexity Quick Metric Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div className="p-3.5 rounded-xl bg-[#F9F9F7] dark:bg-[#202023] border border-[#E5E5DF] dark:border-[#27272A] space-y-1">
-                      <div className="flex items-center gap-1.5 text-xs text-[#73736C] dark:text-[#A1A1AA] font-mono">
-                        <Clock className="w-3.5 h-3.5 text-[#B45309] dark:text-[#F59E0B]" />
+                      <div className="flex items-center gap-1.5 text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-medium">
+                        <Clock className="w-3.5 h-3.5 text-[#78350F] dark:text-[#F59E0B]" />
                         <span>{m.lc_time_complexity()}</span>
                       </div>
                       <div className="font-mono text-sm font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
                         {currentProblem.optimalSolution.timeComplexity.split('—')[0].trim()}
                       </div>
-                      <p className="text-xs text-[#575750] dark:text-[#A1A1AA] leading-snug">
+                      <p className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] leading-snug">
                         {currentProblem.optimalSolution.timeComplexity.split('—')[1] || currentProblem.optimalSolution.timeComplexity}
                       </p>
                     </div>
 
                     <div className="p-3.5 rounded-xl bg-[#F9F9F7] dark:bg-[#202023] border border-[#E5E5DF] dark:border-[#27272A] space-y-1">
-                      <div className="flex items-center gap-1.5 text-xs text-[#73736C] dark:text-[#A1A1AA] font-mono">
+                      <div className="flex items-center gap-1.5 text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-medium">
                         <Cpu className="w-3.5 h-3.5 text-[#047857] dark:text-[#34D399]" />
                         <span>{m.lc_space_complexity()}</span>
                       </div>
                       <div className="font-mono text-sm font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
                         {currentProblem.optimalSolution.spaceComplexity.split('—')[0].trim()}
                       </div>
-                      <p className="text-xs text-[#575750] dark:text-[#A1A1AA] leading-snug">
+                      <p className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] leading-snug">
                         {currentProblem.optimalSolution.spaceComplexity.split('—')[1] || currentProblem.optimalSolution.spaceComplexity}
                       </p>
                     </div>
@@ -763,16 +766,16 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5E5DF] dark:border-[#27272A] pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold text-[#73736C] dark:text-[#A1A1AA] uppercase tracking-wider flex items-center gap-1.5">
-                          <Edit3 className="w-3.5 h-3.5 text-[#B45309] dark:text-[#F59E0B]" />
+                        <span className="text-xs font-mono font-bold text-[#3F3F3C] dark:text-[#D4D4D8] uppercase tracking-wider flex items-center gap-1.5">
+                          <Edit3 className="w-3.5 h-3.5 text-[#78350F] dark:text-[#F59E0B]" />
                           <span>{locale === 'en' ? 'Interactive JavaScript Solution' : 'Interaktivno JavaScript Rešenje'}</span>
                         </span>
                         {isCodeModified ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-[#B45309] dark:text-[#FCD34D] border border-amber-500/20">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-[#78350F] dark:text-[#FCD34D] border border-amber-500/20">
                             {locale === 'en' ? '● Custom Edited' : '● Izmenjeno'}
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#EBEBE5] dark:bg-[#27272A] text-[#73736C] dark:text-[#A1A1AA]">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#EBEBE5] dark:bg-[#27272A] text-[#3F3F3C] dark:text-[#D4D4D8]">
                             {locale === 'en' ? 'Optimal Default' : 'Optimalno podrazumevano'}
                           </span>
                         )}
@@ -782,7 +785,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
                         {currentProblem.bruteForceSolution && (
                           <button
                             onClick={handleLoadBruteForce}
-                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#FAF9F5] dark:bg-[#202023] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#FAF9F5] dark:bg-[#202023] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#D4D4CE] dark:border-[#3F3F46] text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] flex items-center gap-1 transition cursor-pointer"
                             title={locale === 'en' ? 'Load naive approach to test its runtime' : 'Učitaj naivno rešenje za poređenje'}
                           >
                             <Layers className="w-3 h-3 text-rose-500" />
@@ -1292,6 +1295,12 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
           </div>
         </div>
       </div>
+
+      {/* Strategic Bottom Placement for LeetCode workspace */}
+      <AdBanner
+        format="horizontal"
+        label={locale === 'sr' ? 'Sponzorisani alati za pripremu intervjua' : 'Sponsored Interview Prep & Cloud Tools'}
+      />
     </div>
   );
 };

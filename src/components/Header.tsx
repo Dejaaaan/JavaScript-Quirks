@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Code2, 
   Sparkles, 
@@ -14,9 +14,10 @@ import {
   Moon,
   Flame,
   Languages,
+  ChevronDown,
+  Check,
   X
 } from 'lucide-react';
-import { CategoryId, DifficultyLevel } from '../types';
 import { useI18n } from '../i18n';
 
 interface HeaderProps {
@@ -47,6 +48,32 @@ export const Header: React.FC<HeaderProps> = ({
   setIsDarkMode
 }) => {
   const { locale, setLocale, m } = useI18n();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside or escape key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setLangDropdownOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setLangDropdownOpen(false);
+      }
+    };
+
+    if (langDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [langDropdownOpen]);
 
   const categories: { id: string; label: string }[] = [
     { id: 'all', label: m.filter_all_categories() },
@@ -58,52 +85,83 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'arrays-objects', label: m.cat_arrays_objects() },
     { id: 'math-numbers', label: m.cat_math_numbers() },
     { id: 'syntax-asi', label: m.cat_syntax_asi() },
-    { id: 'async-promises', label: m.cat_async_promises() }
+    { id: 'async-promises', label: m.cat_async_promises() },
   ];
 
   const navItems = [
-    { id: 'topics', label: m.nav_topics(), icon: Code2, color: 'text-[#B45309] dark:text-[#FCD34D]' },
-    { id: 'coercion', label: m.nav_coercion(), icon: Sparkles, color: 'text-[#D97706] dark:text-[#FCD34D]' },
-    { id: 'event-loop', label: m.nav_event_loop(), icon: Zap, color: 'text-[#D97706] dark:text-[#FCD34D]' },
-    { id: 'playground', label: m.nav_playground(), icon: Terminal, color: 'text-[#059669] dark:text-[#34D399]' },
-    { id: 'leetcode', label: m.nav_leetcode(), icon: Flame, color: 'text-[#EA580C] dark:text-[#FB923C]' },
-    { id: 'quiz', label: m.nav_quiz(), icon: HelpCircle, color: 'text-[#DC2626] dark:text-[#F87171]' },
-    { id: 'matrix', label: m.nav_matrix(), icon: Globe, color: 'text-[#4F46E5] dark:text-[#A5B4FC]' }
-  ] as const;
+    { id: 'topics' as const, label: m.nav_topics(), icon: BookOpen, color: 'text-[#4338CA] dark:text-[#818CF8]' },
+    { id: 'coercion' as const, label: m.nav_coercion(), icon: Sparkles, color: 'text-[#B45309] dark:text-[#F59E0B]' },
+    { id: 'event-loop' as const, label: m.nav_event_loop(), icon: Layers, color: 'text-[#047857] dark:text-[#34D399]' },
+    { id: 'playground' as const, label: m.nav_playground(), icon: Terminal, color: 'text-[#6D28D9] dark:text-[#A78BFA]' },
+    { id: 'leetcode' as const, label: m.nav_leetcode(), icon: Code2, color: 'text-[#D97706] dark:text-[#FBBF24]' },
+    { id: 'quiz' as const, label: m.nav_quiz(), icon: HelpCircle, color: 'text-[#BE185D] dark:text-[#F472B6]' },
+    { id: 'matrix' as const, label: m.nav_matrix(), icon: Globe, color: 'text-[#0284C7] dark:text-[#38BDF8]' },
+  ];
+
+  const handleSelectLanguage = (newLocale: 'en' | 'sr') => {
+    setLocale(newLocale);
+    setLangDropdownOpen(false);
+  };
 
   return (
-    <header id="main-header" className="sticky top-0 z-50 bg-[#FFFFFF]/95 dark:bg-[#121214]/95 backdrop-blur-md border-b border-[#E5E5DF] dark:border-[#27272A] text-[#1A1A1A] dark:text-[#F4F4F5] shadow-[0_1px_4px_rgba(0,0,0,0.03)] transition-colors duration-200">
-      {/* Unified Compact Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-[#E5E5DF] dark:border-[#27272A] bg-[#FAF9F5]/95 dark:bg-[#121214]/95 backdrop-blur-md transition-colors">
+      {/* Top Standard & Spec Banner */}
+      <div className="bg-[#1A1A1A] text-[#F59E0B] px-4 py-1 text-[11px] font-mono flex items-center justify-between border-b border-[#27272A]">
+        <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse"></span>
+            <span className="font-bold tracking-wider">{m.top_masthead_title()}</span>
+            <span className="text-[#73736C] hidden sm:inline">•</span>
+            <span className="text-[#A1A1AA] hidden sm:inline text-[10px]">{m.top_masthead_subtitle()}</span>
+          </div>
+          <div className="flex items-center gap-3 text-[10px] text-[#A1A1AA]">
+            <span className="bg-[#27272A] px-2 py-0.5 rounded font-mono text-[#F4F4F5] border border-[#3F3F46]">
+              {m.top_standard()}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 gap-3">
-          {/* Brand Logo & Title */}
+          {/* Logo & Title */}
           <div 
             onClick={() => setActiveView('topics')}
-            className="flex items-center gap-2.5 cursor-pointer select-none flex-shrink-0 group"
+            className="flex items-center gap-2.5 cursor-pointer flex-shrink-0 group"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] dark:bg-[#F59E0B] border border-[#333330] dark:border-[#D97706] flex items-center justify-center text-[#F59E0B] dark:text-[#18181B] font-mono font-black text-sm shadow-xs transition-transform group-hover:scale-105">
+            <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F59E0B] dark:text-[#18181B] font-mono font-bold flex items-center justify-center text-sm shadow-xs group-hover:scale-105 transition-transform">
               JS
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-serif font-bold text-base tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
-                {m.brand_title()}
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-serif font-bold text-base sm:text-lg tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
+                  {m.brand_title()}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#EBEBE5] dark:bg-[#27272A] text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-semibold">
+                  {m.brand_badge()}
+                </span>
+              </div>
+              <span className="text-[10px] text-[#40403C] dark:text-[#D4D4D8] hidden md:block leading-tight">
+                {m.brand_subtitle()}
               </span>
             </div>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-1 bg-[#F4F4F0] dark:bg-[#1C1C1F] p-1 rounded-xl border border-[#E5E5DF] dark:border-[#2E2E33]">
+          <nav className="hidden xl:flex items-center gap-1 bg-[#F4F4F0] dark:bg-[#1C1C1F] p-1 rounded-xl border border-[#E5E5DF] dark:border-[#2E2E33]" aria-label="Main Navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeView === item.id;
               return (
                 <button
                   key={item.id}
+                  id={`nav-btn-${item.id}`}
                   onClick={() => setActiveView(item.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  className={`px-2.5 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'bg-[#1A1A1A] text-[#FFFFFF] dark:bg-[#F59E0B] dark:text-[#18181B] shadow-xs font-bold'
-                      : 'text-[#575750] dark:text-[#D4D4D8] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5DF] dark:hover:bg-[#27272A]'
+                      : 'text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5DF] dark:hover:bg-[#27272A] font-semibold'
                   }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#F59E0B] dark:text-[#18181B]' : item.color}`} />
@@ -113,47 +171,86 @@ export const Header: React.FC<HeaderProps> = ({
             })}
           </nav>
 
-          {/* Right Action Tools: Language (SR/EN), Saved Bookmark, Dark Mode */}
+          {/* Right Action Tools: Language Dropdown, Saved Bookmark, Dark Mode */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Language Switcher */}
-            <div className="flex items-center p-0.5 rounded-lg bg-[#F4F4F0] dark:bg-[#202023] border border-[#E5E5DF] dark:border-[#3F3F46]">
+            {/* Language Selection Dropdown */}
+            <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setLocale('sr')}
-                className={`px-2 py-1 rounded-md text-[11px] font-mono font-bold transition flex items-center gap-1 cursor-pointer ${
-                  locale === 'sr'
-                    ? 'bg-[#FFFFFF] dark:bg-[#2E2E33] text-[#B45309] dark:text-[#F59E0B] shadow-xs'
-                    : 'text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]'
-                }`}
-                title="Srpski jezik"
+                id="language-dropdown-toggle"
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className="h-8 px-2.5 rounded-lg bg-[#FAF9F5] dark:bg-[#202023] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#1A1A1A] dark:text-[#F4F4F5] hover:border-[#78350F] dark:hover:border-[#F59E0B] transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
+                aria-label={m.lang_switcher_label()}
+                aria-expanded={langDropdownOpen}
+                aria-haspopup="true"
               >
-                <span>🇷🇸</span>
-                <span>SR</span>
+                <Languages className="w-3.5 h-3.5 text-[#78350F] dark:text-[#F59E0B]" />
+                <span className="font-mono font-bold text-[11px] uppercase tracking-wider">
+                  {locale === 'sr' ? '🇷🇸 SR' : '🇬🇧 EN'}
+                </span>
+                <ChevronDown className={`w-3 h-3 text-[#40403C] dark:text-[#D4D4D8] transition-transform duration-200 ${langDropdownOpen ? 'rotate-180 text-[#78350F] dark:text-[#F59E0B]' : ''}`} />
               </button>
-              <button
-                onClick={() => setLocale('en')}
-                className={`px-2 py-1 rounded-md text-[11px] font-mono font-bold transition flex items-center gap-1 cursor-pointer ${
-                  locale === 'en'
-                    ? 'bg-[#FFFFFF] dark:bg-[#2E2E33] text-[#B45309] dark:text-[#F59E0B] shadow-xs'
-                    : 'text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]'
-                }`}
-                title="English language"
-              >
-                <span>🇬🇧</span>
-                <span>EN</span>
-              </button>
+
+              {/* Dropdown Menu */}
+              {langDropdownOpen && (
+                <div 
+                  id="language-dropdown-menu"
+                  className="absolute right-0 mt-1.5 w-40 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1E22] border border-[#E5E5DF] dark:border-[#3F3F46] shadow-xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                  role="menu"
+                >
+                  <div className="px-2 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#40403C] dark:text-[#D4D4D8] border-b border-[#F4F4F0] dark:border-[#27272A] mb-1">
+                    {m.lang_switcher_label()}
+                  </div>
+
+                  <button
+                    id="lang-select-en"
+                    onClick={() => handleSelectLanguage('en')}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition ${
+                      locale === 'en'
+                        ? 'bg-[#F4F4F0] dark:bg-[#27272A] text-[#78350F] dark:text-[#F59E0B] font-bold'
+                        : 'text-[#3F3F3C] dark:text-[#D4D4D8] hover:bg-[#FAF9F5] dark:hover:bg-[#2E2E33] hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF] font-medium'
+                    }`}
+                    role="menuitem"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>🇬🇧</span>
+                      <span>English</span>
+                    </span>
+                    {locale === 'en' && <Check className="w-3.5 h-3.5 text-[#78350F] dark:text-[#F59E0B]" />}
+                  </button>
+
+                  <button
+                    id="lang-select-sr"
+                    onClick={() => handleSelectLanguage('sr')}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition ${
+                      locale === 'sr'
+                        ? 'bg-[#F4F4F0] dark:bg-[#27272A] text-[#78350F] dark:text-[#F59E0B] font-bold'
+                        : 'text-[#3F3F3C] dark:text-[#D4D4D8] hover:bg-[#FAF9F5] dark:hover:bg-[#2E2E33] hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF] font-medium'
+                    }`}
+                    role="menuitem"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>🇷🇸</span>
+                      <span>Srpski</span>
+                    </span>
+                    {locale === 'sr' && <Check className="w-3.5 h-3.5 text-[#78350F] dark:text-[#F59E0B]" />}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Saved Bookmarks Toggle */}
             <button
+              id="bookmarks-filter-btn"
               onClick={() => setShowOnlyBookmarks(!showOnlyBookmarks)}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition cursor-pointer h-8 ${
                 showOnlyBookmarks
-                  ? 'bg-[#B45309] dark:bg-[#F59E0B] border-[#B45309] dark:border-[#F59E0B] text-white dark:text-[#18181B] shadow-xs'
-                  : 'bg-[#FAF9F5] dark:bg-[#202023] border-[#E5E5DF] dark:border-[#3F3F46] text-[#575750] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF]'
+                  ? 'bg-[#78350F] dark:bg-[#F59E0B] border-[#78350F] dark:border-[#F59E0B] text-white dark:text-[#18181B] shadow-xs'
+                  : 'bg-[#FAF9F5] dark:bg-[#202023] border-[#E5E5DF] dark:border-[#3F3F46] text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF]'
               }`}
               title={m.filter_saved_tooltip()}
+              aria-label={m.filter_saved()}
             >
-              <Bookmark className={`w-3.5 h-3.5 ${showOnlyBookmarks ? 'fill-current' : 'text-[#B45309] dark:text-[#F59E0B]'}`} />
+              <Bookmark className={`w-3.5 h-3.5 ${showOnlyBookmarks ? 'fill-current' : 'text-[#78350F] dark:text-[#F59E0B]'}`} />
               <span className="hidden md:inline">{m.filter_saved()}</span>
               {bookmarkedCount > 0 && (
                 <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
@@ -166,28 +263,31 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Dark / Light Mode Toggle */}
             <button
+              id="theme-toggle-button"
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="w-8 h-8 rounded-lg border bg-[#FAF9F5] dark:bg-[#202023] border-[#E5E5DF] dark:border-[#3F3F46] text-[#575750] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF] transition cursor-pointer flex items-center justify-center"
+              className="w-8 h-8 rounded-lg border bg-[#FAF9F5] dark:bg-[#202023] border-[#E5E5DF] dark:border-[#3F3F46] text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF] transition cursor-pointer flex items-center justify-center"
               title={isDarkMode ? m.toggle_theme_light() : m.toggle_theme_dark()}
+              aria-label={isDarkMode ? m.toggle_theme_light() : m.toggle_theme_dark()}
             >
-              {isDarkMode ? <Sun className="w-4 h-4 text-[#F59E0B]" /> : <Moon className="w-4 h-4 text-[#575750]" />}
+              {isDarkMode ? <Sun className="w-4 h-4 text-[#F59E0B]" /> : <Moon className="w-4 h-4 text-[#3F3F3C]" />}
             </button>
           </div>
         </div>
 
         {/* Secondary Mobile/Tablet Horizontal Scroll Nav (Only below xl) */}
-        <div className="flex xl:hidden items-center gap-1 overflow-x-auto py-2 border-t border-[#E5E5DF]/70 dark:border-[#27272A]/70 no-scrollbar">
+        <div className="flex xl:hidden items-center gap-1 overflow-x-auto py-2 border-t border-[#E5E5DF]/70 dark:border-[#27272A]/70 no-scrollbar" aria-label="Mobile Navigation">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeView === item.id;
             return (
               <button
                 key={item.id}
+                id={`mobile-nav-${item.id}`}
                 onClick={() => setActiveView(item.id)}
-                className={`px-2.5 py-1 rounded-lg text-xs whitespace-nowrap font-medium cursor-pointer transition flex items-center gap-1.5 flex-shrink-0 ${
+                className={`px-2.5 py-1 rounded-lg text-xs whitespace-nowrap cursor-pointer transition flex items-center gap-1.5 flex-shrink-0 ${
                   isActive
-                    ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#FFFFFF] dark:text-[#18181B] font-semibold shadow-xs'
-                    : 'text-[#575750] dark:text-[#D4D4D8] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A]'
+                    ? 'bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#FFFFFF] dark:text-[#18181B] font-bold shadow-xs'
+                    : 'text-[#3F3F3C] dark:text-[#D4D4D8] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] font-semibold'
                 }`}
               >
                 <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#F59E0B] dark:text-[#18181B]' : item.color}`} />
@@ -205,18 +305,21 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8C8C82] dark:text-[#71717A]" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#575750] dark:text-[#A1A1AA]" />
                 <input
+                  id="topics-search-input"
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={m.search_placeholder()}
-                  className="w-full bg-[#FFFFFF] dark:bg-[#202023] border border-[#E5E5DF] dark:border-[#3F3F46] rounded-xl pl-8.5 pr-8 py-1.5 text-xs text-[#1A1A1A] dark:text-[#F4F4F5] placeholder-[#8C8C82] dark:placeholder-[#71717A] focus:outline-none focus:border-[#1A1A1A] dark:focus:border-[#F59E0B] shadow-2xs transition"
+                  aria-label={m.search_placeholder()}
+                  className="w-full bg-[#FFFFFF] dark:bg-[#202023] border border-[#D4D4CE] dark:border-[#3F3F46] rounded-xl pl-8.5 pr-8 py-1.5 text-xs text-[#1A1A1A] dark:text-[#F4F4F5] placeholder-[#575750] dark:placeholder-[#A1A1AA] focus:outline-none focus:border-[#1A1A1A] dark:focus:border-[#F59E0B] shadow-2xs transition font-medium"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8C8C82] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] cursor-pointer"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#575750] hover:text-[#1A1A1A] dark:text-[#A1A1AA] dark:hover:text-[#F4F4F5] cursor-pointer"
+                    aria-label="Clear search"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -225,17 +328,20 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Category pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs" role="tablist" aria-label="Category Filters">
               {categories.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
                 return (
                   <button
                     key={cat.id}
+                    id={`cat-filter-${cat.id}`}
+                    role="tab"
+                    aria-selected={isSelected}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap flex-shrink-0 font-mono text-[11px] ${
                       isSelected
-                        ? 'bg-[#4338CA] dark:bg-[#818CF8] text-white dark:text-[#0F172A] font-bold shadow-xs'
-                        : 'bg-[#FFFFFF] dark:bg-[#202023] text-[#575750] dark:text-[#A1A1AA] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#E5E5DF] dark:border-[#3F3F46]'
+                        ? 'bg-[#312E81] dark:bg-[#818CF8] text-white dark:text-[#0F172A] font-bold shadow-xs'
+                        : 'bg-[#FFFFFF] dark:bg-[#202023] text-[#3F3F3C] dark:text-[#D4D4D8] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] border border-[#D4D4CE] dark:border-[#3F3F46] font-semibold'
                     }`}
                   >
                     {cat.label}

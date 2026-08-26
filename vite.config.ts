@@ -18,6 +18,7 @@ function devServerTimestampPlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
+    base: './',
     plugins: [
       devServerTimestampPlugin(),
       react(),
@@ -30,6 +31,29 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+      },
+    },
+    build: {
+      chunkSizeWarningLimit: 600,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'vendor-react';
+              }
+              if (id.includes('lucide-react')) {
+                return 'vendor-icons';
+              }
+              if (id.includes('motion')) {
+                return 'vendor-motion';
+              }
+              if (id.includes('prismjs')) {
+                return 'vendor-prism';
+              }
+            }
+          },
+        },
       },
     },
     server: {

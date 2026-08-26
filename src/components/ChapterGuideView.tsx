@@ -3,6 +3,7 @@ import { ChapterGuide } from '../types';
 import { useI18n } from '../i18n';
 import { FormattedText } from './FormattedText';
 import { CodeBlock } from './CodeBlock';
+import { AdBanner } from './AdBanner';
 import { 
   Lightbulb, 
   History, 
@@ -66,10 +67,10 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
             <button
               key={item.id}
               onClick={() => setActiveSection(item.id as any)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'bg-[#B45309] dark:bg-[#F59E0B] text-white shadow-xs font-bold'
-                  : 'bg-[#FAF9F5] dark:bg-[#202023] text-[#575750] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] border border-[#E5E5DF] dark:border-[#27272A]'
+                  ? 'bg-[#78350F] dark:bg-[#F59E0B] text-white dark:text-[#18181B] shadow-xs font-bold'
+                  : 'bg-[#FAF9F5] dark:bg-[#202023] text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#000000] dark:hover:text-[#FFFFFF] border border-[#D4D4CE] dark:border-[#27272A] font-semibold'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -83,7 +84,7 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
       {(activeSection === 'all' || activeSection === 'overview') && (
         <section className="space-y-4">
           <div className="bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] p-5 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#B45309] dark:text-[#F59E0B] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#78350F] dark:text-[#FDE68A] uppercase tracking-wider">
               <Lightbulb className="w-4 h-4" />
               <span>{localize('1. O ČEMU SE RADI U OVOJ TEMI?', '1. CORE CONCEPT & INTUITION')}</span>
             </div>
@@ -96,15 +97,15 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
 
             {analogy && (
               <div className="mt-4 p-4 rounded-xl bg-[#FFFBEB] dark:bg-[#2A2012] border border-[#FDE68A] dark:border-[#78350F] flex items-start gap-3">
-                <Compass className="w-5 h-5 text-[#B45309] dark:text-[#F59E0B] flex-shrink-0 mt-0.5" />
+                <Compass className="w-5 h-5 text-[#78350F] dark:text-[#FDE68A] flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#92400E] dark:text-[#FDE68A] block">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#78350F] dark:text-[#FDE68A] block">
                     {localize('Slikovito poređenje (Metafora iz stvarnog sveta):', 'Real-world Metaphor & Analogy:')}
                   </span>
                   <FormattedText
                     text={analogy}
                     as="p"
-                    className="text-xs sm:text-sm text-[#78350F] dark:text-[#FCD34D] leading-relaxed"
+                    className="text-xs sm:text-sm text-[#78350F] dark:text-[#FDE68A] leading-relaxed"
                   />
                 </div>
               </div>
@@ -117,29 +118,29 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
       {(activeSection === 'all' || activeSection === 'history') && (
         <section className="space-y-4">
           <div className="bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] p-5 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#4338CA] dark:text-[#818CF8] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#3730A3] dark:text-[#C7D2FE] uppercase tracking-wider">
               <History className="w-4 h-4" />
               <span>{localize('2. ISTORIJAT, POREKLO IMENA I ZAŠTO JE TAKO NAPRAVLJENO', '2. ORIGIN, NAMING & HISTORICAL ROOTS')}</span>
             </div>
 
-            <h4 className="text-base sm:text-lg font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+            <h3 className="text-base sm:text-lg font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
               {historyTitle}
-            </h4>
+            </h3>
 
             <FormattedText
               text={historyDesc}
               as="p"
-              className="text-sm text-[#575750] dark:text-[#A1A1AA] leading-relaxed"
+              className="text-sm text-[#40403C] dark:text-[#D4D4D8] leading-relaxed"
             />
 
             <div className="p-4 rounded-xl bg-[#EEF2FF] dark:bg-[#1E1E38] border border-[#C7D2FE] dark:border-[#3730A3] space-y-1.5">
-              <span className="text-xs font-mono font-bold text-[#3730A3] dark:text-[#C7D2FE] block uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-[#312E81] dark:text-[#E0E7FF] block uppercase tracking-wider">
                 {localize('Zašto ovo ponašanje nije promenjeno u novim verzijama?', 'Why was this behavior preserved in modern ECMAScript?')}
               </span>
               <FormattedText
                 text={historyWhy}
                 as="p"
-                className="text-xs sm:text-sm text-[#312E81] dark:text-[#E0E7FF] leading-relaxed"
+                className="text-xs sm:text-sm text-[#312E81] dark:text-[#E0E7FF] leading-relaxed font-medium"
               />
             </div>
           </div>
@@ -151,20 +152,20 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
         <section className="space-y-4">
           <div className="bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] p-5 sm:p-6 space-y-5 shadow-sm">
             <div className="flex items-center justify-between border-b border-[#E5E5DF] dark:border-[#27272A] pb-3">
-              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#059669] dark:text-[#34D399] uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#065F46] dark:text-[#6EE7B7] uppercase tracking-wider">
                 <Cpu className="w-4 h-4" />
                 <span>{localize('3. KAKO FUNKCIONIŠE ISPOD HUBE (ALGORITMI & V8)', '3. HOW IT WORKS UNDER THE HOOD (ENGINE MECHANICS)')}</span>
               </div>
             </div>
 
             <div className="space-y-1">
-              <h4 className="text-base sm:text-lg font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+              <h3 className="text-base sm:text-lg font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
                 {engineTitle}
-              </h4>
+              </h3>
               <FormattedText
                 text={engineSummary}
                 as="p"
-                className="text-sm text-[#575750] dark:text-[#A1A1AA] leading-relaxed"
+                className="text-sm text-[#40403C] dark:text-[#D4D4D8] leading-relaxed"
               />
             </div>
 
@@ -185,14 +186,18 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
                       onClick={() => toggleStep(step.stepNumber)}
                     >
                       <div className="flex items-center gap-2.5">
-                        <span className="w-6 h-6 rounded-full bg-[#059669]/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center text-xs font-mono font-bold border border-[#059669]/30">
+                        <span className="w-6 h-6 rounded-full bg-[#065F46]/15 text-[#065F46] dark:text-[#6EE7B7] flex items-center justify-center text-xs font-mono font-bold border border-[#065F46]/30">
                           {step.stepNumber}
                         </span>
-                        <h5 className="text-sm sm:text-[15px] font-mono font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+                        <h4 className="text-sm sm:text-[15px] font-mono font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
                           {stepTitle}
-                        </h5>
+                        </h4>
                       </div>
-                      <button className="text-[#73736C] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] p-1">
+                      <button 
+                        className="text-[#40403C] dark:text-[#D4D4D8] hover:text-[#000000] dark:hover:text-[#FFFFFF] p-1 cursor-pointer"
+                        aria-label={isExpanded ? localize('Skupi detalje koraka', 'Collapse step details') : localize('Proširi detalje koraka', 'Expand step details')}
+                        title={isExpanded ? localize('Skupi detalje koraka', 'Collapse step details') : localize('Proširi detalje koraka', 'Expand step details')}
+                      >
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
                     </div>
@@ -202,7 +207,7 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
                         <FormattedText
                           text={stepDesc}
                           as="p"
-                          className="text-xs sm:text-sm text-[#575750] dark:text-[#D4D4D8] leading-relaxed font-sans"
+                          className="text-xs sm:text-sm text-[#40403C] dark:text-[#D4D4D8] leading-relaxed font-sans"
                         />
                         {step.codeSnippet && (
                           <div className="pt-1">
@@ -219,11 +224,19 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
         </section>
       )}
 
+      {/* Strategic Native Ad Placement between Engine Mechanics and Pitfalls */}
+      {activeSection === 'all' && (
+        <AdBanner
+          format="horizontal"
+          label={locale === 'sr' ? 'Sponzorisani resursi za programere' : 'Sponsored Developer Resources'}
+        />
+      )}
+
       {/* SECTION 4: Common Pitfalls & Real Bugs */}
       {(activeSection === 'all' || activeSection === 'pitfalls') && (
         <section className="space-y-4">
           <div className="bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] p-5 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#DC2626] dark:text-[#F87171] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#991B1B] dark:text-[#FCA5A5] uppercase tracking-wider">
               <AlertTriangle className="w-4 h-4" />
               <span>{localize('4. KOJI MOGU BITI PROBLEMI I ZAMKE U PRODUKCIJI?', '4. COMMON PITFALLS & PRODUCTION BUGS')}</span>
             </div>
@@ -241,18 +254,18 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
                   >
                     <div className="flex items-start gap-2">
                       <span className="w-2 h-2 rounded-full bg-[#DC2626] mt-1.5 flex-shrink-0"></span>
-                      <h5 className="text-sm sm:text-base font-serif font-bold text-[#991B1B] dark:text-[#FCA5A5]">
+                      <h3 className="text-sm sm:text-base font-serif font-bold text-[#991B1B] dark:text-[#FCA5A5]">
                         {title}
-                      </h5>
+                      </h3>
                     </div>
 
                     <div className="space-y-2 text-xs sm:text-sm text-[#7F1D1D] dark:text-[#FECACA] pl-4">
                       <div>
-                        <strong className="font-mono text-[#991B1B] dark:text-[#F87171]">{localize('Uzrok problema:', 'Root Cause:')} </strong>
+                        <strong className="font-mono text-[#991B1B] dark:text-[#FCA5A5]">{localize('Uzrok problema:', 'Root Cause:')} </strong>
                         <FormattedText text={cause} as="span" />
                       </div>
                       <div>
-                        <strong className="font-mono text-[#991B1B] dark:text-[#F87171]">{localize('Posledica (Bug):', 'Impact / Failure:')} </strong>
+                        <strong className="font-mono text-[#991B1B] dark:text-[#FCA5A5]">{localize('Posledica (Bug):', 'Impact / Failure:')} </strong>
                         <FormattedText text={impact} as="span" />
                       </div>
                     </div>
@@ -274,7 +287,7 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
       {(activeSection === 'all' || activeSection === 'solutions') && (
         <section className="space-y-4">
           <div className="bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] p-5 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#16A34A] dark:text-[#4ADE80] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#14532D] dark:text-[#86EFAC] uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4" />
               <span>{localize('5. KAKO REŠITI PROBLEME & MODERNA NAJBOLJA PRAKSA', '5. HOW TO SOLVE THEM & MODERN BEST PRACTICES')}</span>
             </div>
@@ -291,19 +304,19 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
                     className="p-4 sm:p-5 rounded-xl bg-[#F0FDF4] dark:bg-[#0E2718] border border-[#BBF7D0] dark:border-[#14532D] space-y-3"
                   >
                     <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#16A34A] dark:text-[#4ADE80] mt-0.5 flex-shrink-0" />
-                      <h5 className="text-sm sm:text-base font-serif font-bold text-[#166534] dark:text-[#86EFAC]">
+                      <CheckCircle2 className="w-4 h-4 text-[#15803D] dark:text-[#86EFAC] mt-0.5 flex-shrink-0" />
+                      <h3 className="text-sm sm:text-base font-serif font-bold text-[#14532D] dark:text-[#86EFAC]">
                         {title}
-                      </h5>
+                      </h3>
                     </div>
 
                     <div className="space-y-2 text-xs sm:text-sm text-[#14532D] dark:text-[#BBF7D0] pl-6">
                       <div>
-                        <strong className="font-mono text-[#15803D] dark:text-[#4ADE80]">{localize('Rešenje:', 'Solution:')} </strong>
+                        <strong className="font-mono text-[#15803D] dark:text-[#86EFAC]">{localize('Rešenje:', 'Solution:')} </strong>
                         <FormattedText text={solutionText} as="span" />
                       </div>
                       <div>
-                        <strong className="font-mono text-[#15803D] dark:text-[#4ADE80]">{localize('Preporuka:', 'Standard / Lint Rule:')} </strong>
+                        <strong className="font-mono text-[#15803D] dark:text-[#86EFAC]">{localize('Preporuka:', 'Standard / Lint Rule:')} </strong>
                         <FormattedText text={rec} as="span" />
                       </div>
                     </div>
@@ -325,7 +338,7 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
       {(activeSection === 'all' || activeSection === 'funfacts') && guide.funFacts.length > 0 && (
         <section className="space-y-4">
           <div className="bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#27272A] p-5 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#EA580C] dark:text-[#FB923C] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#C2410C] dark:text-[#FDBA74] uppercase tracking-wider">
               <Flame className="w-4 h-4" />
               <span>{localize('6. ZANIMLJIVOSTI, KURIOZITETI I FUN FACTS', '6. CURIOSITIES, TRIVIA & FUN FACTS')}</span>
             </div>
@@ -341,10 +354,10 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
                     className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#18181B] border border-[#E5E5DF] dark:border-[#27272A] space-y-2.5 shadow-xs"
                   >
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#EA580C] dark:text-[#FB923C]" />
-                      <h5 className="text-xs sm:text-[13px] font-mono font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+                      <Sparkles className="w-4 h-4 text-[#C2410C] dark:text-[#FDBA74]" />
+                      <h3 className="text-xs sm:text-[13px] font-mono font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
                         {title}
-                      </h5>
+                      </h3>
                     </div>
 
                     {fact.codeSnippet && (
@@ -354,7 +367,7 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
                     <FormattedText
                       text={exp}
                       as="p"
-                      className="text-xs sm:text-[13px] text-[#575750] dark:text-[#A1A1AA] leading-relaxed"
+                      className="text-xs sm:text-[13px] text-[#40403C] dark:text-[#D4D4D8] leading-relaxed"
                     />
                   </div>
                 );
@@ -367,27 +380,27 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
       {/* SECTION 7: Mental Model & Golden Rule */}
       <section className="p-5 sm:p-6 rounded-xl bg-[#FEF3C7]/40 dark:bg-[#78350F]/20 border border-[#FDE68A] dark:border-[#92400E] space-y-4">
         <div className="flex items-start gap-3">
-          <Compass className="w-6 h-6 text-[#B45309] dark:text-[#F59E0B] flex-shrink-0 mt-0.5" />
+          <Compass className="w-6 h-6 text-[#78350F] dark:text-[#FDE68A] flex-shrink-0 mt-0.5" />
           <div className="space-y-2 flex-1">
             <div>
-              <strong className="text-xs font-mono uppercase tracking-wider text-[#92400E] dark:text-[#FDE68A] block">
+              <strong className="text-xs font-mono uppercase tracking-wider text-[#78350F] dark:text-[#FDE68A] block">
                 {localize('Mentalni Model (Kako razmišljati o ovoj temi):', 'Mental Model (How to intuitively reason about this):')}
               </strong>
               <FormattedText
                 text={mentalModel}
                 as="p"
-                className="text-xs sm:text-sm text-[#78350F] dark:text-[#FCD34D] leading-relaxed mt-1"
+                className="text-xs sm:text-sm text-[#78350F] dark:text-[#FDE68A] leading-relaxed mt-1"
               />
             </div>
 
             <div className="pt-2 border-t border-[#FDE68A]/60 dark:border-[#92400E]/60">
-              <strong className="text-xs font-mono uppercase tracking-wider text-[#B45309] dark:text-[#F59E0B] block">
+              <strong className="text-xs font-mono uppercase tracking-wider text-[#78350F] dark:text-[#FDE68A] block">
                 {localize('Zlatno Pravilo u Praksi:', 'Golden Rule in Production:')}
               </strong>
               <FormattedText
                 text={goldenRule}
                 as="p"
-                className="text-xs sm:text-sm font-semibold text-[#92400E] dark:text-[#FEF3C7] leading-relaxed mt-0.5"
+                className="text-xs sm:text-sm font-semibold text-[#78350F] dark:text-[#FDE68A] leading-relaxed mt-0.5"
               />
             </div>
           </div>

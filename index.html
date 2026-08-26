@@ -3,17 +3,140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JavaScript Quirks</title>
-    <meta name="description" content="An interactive, editorial-crafted explorer of JavaScript quirks, type coercion, event loop, prototype inheritance, bad vs good practices, and cross-language comparisons." />
-    <meta property="og:title" content="JavaScript Quirks" />
-    <meta property="og:description" content="An interactive, editorial-crafted explorer of JavaScript specificities and runtime mechanics." />
-    <meta property="og:type" content="website" />
+    <title>JavaScript Quirks & Engine Mechanics — Complete Interactive Guide</title>
+    <meta name="description" content="Master JavaScript quirks, ECMAScript 2026 engine mechanics, ToPrimitive type coercion, Event Loop microtasks/macrotasks, prototype inheritance, and cross-language comparisons with interactive visualizers and coding challenges." />
+    <meta name="keywords" content="JavaScript quirks, type coercion, ToPrimitive, event loop, microtasks, prototypal inheritance, closure memory leaks, JS engine, ECMAScript 2026, JavaScript interview questions, JS vs Python vs Rust" />
+    <meta name="author" content="JavaScript Quirks & Engine Guide" />
+    <meta name="robots" content="index, follow" />
+    <meta name="google-site-verification" content="yVq79Ze0Q7knt1Iq9LHEaZS7duagSKYxvGT95QkC5b0" />
+    <link rel="canonical" href="/" />
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="JavaScript Quirks & Engine Mechanics — Interactive Reference" />
+    <meta property="og:description" content="In-depth analysis of JavaScript type coercion algorithms, event loop execution order, 'this' binding, and memory models aligned with ECMA-262." />
+    <meta property="og:url" content="/" />
+    <meta property="og:site_name" content="JavaScript Quirks" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="JavaScript Quirks & Engine Mechanics" />
+    <meta name="twitter:description" content="Interactive visualizers, ECMAScript step-by-step algorithms, bad vs good code comparisons, and coding interview challenges." />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#F59E0B" />
+
+    <!-- Optimized Non-Blocking Google Fonts with font-display=swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    </noscript>
+
+    <!-- Schema.org JSON-LD Structured Data for Google Rich Snippets -->
+    <script id="json-ld-structured-data" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "#webapp",
+          "name": "JavaScript Quirks & Engine Mechanics",
+          "url": "/",
+          "applicationCategory": "EducationalApplication",
+          "operatingSystem": "All",
+          "description": "Interactive educational workbench exploring ECMAScript runtime mechanics, AST evaluation, memory visualizers, and code challenges.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "TechArticle",
+          "@id": "#article",
+          "headline": "JavaScript Quirks, Engine Mechanics and ECMAScript Coercion Guide",
+          "description": "Comprehensive reference explaining ToPrimitive, the dual nature of addition (+), the event loop microtask queue, prototype chains, and closure memory models.",
+          "inLanguage": ["en", "sr"],
+          "about": [
+            { "@type": "Thing", "name": "JavaScript" },
+            { "@type": "Thing", "name": "ECMAScript" },
+            { "@type": "Thing", "name": "Type Coercion" },
+            { "@type": "Thing", "name": "Event Loop" },
+            { "@type": "Thing", "name": "Prototype Inheritance" }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Why is [] + {} equal to '[object Object]' in JavaScript?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The binary addition operator (+) triggers ToPrimitive(input, default) on both operands. For arrays, [].toString() yields '' (empty string). For plain objects, ({}).toString() yields '[object Object]'. Because one operand evaluates to a string, string concatenation occurs: '' + '[object Object]' = '[object Object]'."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between microtasks and macrotasks in the JavaScript Event Loop?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Microtasks (Promises, queueMicrotask, MutationObserver) execute immediately after the current call stack clears and before the browser renders or moves to the next macrotask (setTimeout, setInterval, I/O). The entire microtask queue is fully drained on each cycle."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why does the binary + operator concatenate strings while unary + coerces to numbers?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Binary addition (+) has a dual nature: if either operand primitive evaluates to a string, it performs string concatenation; otherwise, numeric addition. The unary plus (+x) lacks this duality and unconditionally executes the ToNumber abstract operation on its single operand."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why is typeof null equal to 'object' in JavaScript?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "In the first implementation of JavaScript (1995), values were represented with type tags in their lower bits. The type tag for objects was 000. Because null was represented as the NULL pointer (0x00), its type tag matched objects, resulting in typeof null returning 'object' — an unfixable legacy quirk preserved for web compatibility."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body class="bg-[#F9F9F7] text-[#1A1A1A] antialiased">
+    <!-- Static fallback outline for search engine crawlers without JavaScript -->
+    <noscript>
+      <div style="max-width: 800px; margin: 40px auto; padding: 20px; font-family: sans-serif; line-height: 1.6;">
+        <h1>JavaScript Quirks & Engine Mechanics Manual</h1>
+        <p>A comprehensive guide to JavaScript type coercion algorithms, event loop execution order, prototypal inheritance, and memory management based on ECMAScript 2026 specifications.</p>
+        <h2>Core Chapters & Topics Covered:</h2>
+        <ul>
+          <li><strong>Type Coercion & Equality:</strong> ToPrimitive algorithm, dual nature of the addition (+) operator, loose (==) vs strict (===) equality, and truthy/falsy matrix.</li>
+          <li><strong>Event Loop & Asynchrony:</strong> Call Stack, Web APIs, Microtask queue draining, Macrotasks, and promise resolution orders.</li>
+          <li><strong>This Binding & Context:</strong> Implicit, explicit (.call/.apply/.bind), new constructor binding, and lexical arrow functions.</li>
+          <li><strong>Prototypal Inheritance:</strong> [[Prototype]] internal slots, __proto__, .prototype property, and prototype chain traversal.</li>
+          <li><strong>Scope, Hoisting & TDZ:</strong> Variable lexical environments, Temporal Dead Zone with let/const, and function declaration hoisting.</li>
+          <li><strong>Closures & Memory Management:</strong> Lexical scope persistence, garbage collection roots, and circular reference leaks.</li>
+        </ul>
+        <p><em>Please enable JavaScript in your browser to interact with the step-by-step visualizers, coding sandboxes, and quiz challenges.</em></p>
+      </div>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

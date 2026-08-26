@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://javascript-quirks.ai.studio/sitemap.xml

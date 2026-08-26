@@ -1576,7 +1576,7 @@ export const LEETCODE_PROBLEMS: LeetCodeProblem[] = [
       "0 <= functions.length <= 1000",
       "Sve funkcije primaju i vraćaju ceo broj"
     ],
-    "intuition": "Kompozicija funkcija u matematici $(f \\circ g)(x) = f(g(x))$ znači da se najdesnija funkcija izvršava prva, a njen izlaz postaje ulaz za funkciju sa njene leve strane. U JavaScript-u, ugrađena metoda `Array.prototype.reduceRight()` je savršeno dizajnirana za ovaj obrazac.",
+    "intuition": "Kompozicija funkcija u matematici (f ∘ g)(x) = f(g(x)) znači da se najdesnija funkcija izvršava prva, a njen izlaz postaje ulaz za funkciju sa njene leve strane. U JavaScript-u, ugrađena metoda `Array.prototype.reduceRight()` je savršeno dizajnirana za ovaj obrazac.",
     "optimalSolution": {
       "title": "Optimalno rešenje: reduceRight",
       "code": "/**\n * @param {Function[]} functions\n * @return {Function}\n */\nfunction compose(functions) {\n  return function(x) {\n    // reduceRight iterates through functions array from right to left\n    return functions.reduceRight((acc, fn) => fn(acc), x);\n  };\n}",

@@ -202,7 +202,7 @@ export const LanguageComparisonMatrix: React.FC = () => {
             <Globe className="w-6 h-6 text-[#4338CA] dark:text-[#818CF8]" />
             <span>{m.matrix_title()}</span>
           </h2>
-          <p className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic mt-0.5">
+          <p className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-serif italic mt-0.5">
             {m.matrix_subtitle()}
           </p>
         </div>
@@ -249,7 +249,7 @@ export const LanguageComparisonMatrix: React.FC = () => {
                   </span>
                   <h3 className="text-xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] mt-0.5">{dimensionTitle}</h3>
                 </div>
-                <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-mono">{dimensionDesc}</span>
+                <span className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-medium">{dimensionDesc}</span>
               </div>
 
               {/* Two Column Comparative Layout */}

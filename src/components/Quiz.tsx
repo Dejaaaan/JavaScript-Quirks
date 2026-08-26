@@ -5,6 +5,7 @@ import { HelpCircle, CheckCircle2, XCircle, Award, RotateCcw, ArrowRight, Zap, B
 import confetti from 'canvas-confetti';
 import { CodeBlock } from './CodeBlock';
 import { FormattedText } from './FormattedText';
+import { AdBanner } from './AdBanner';
 import { useI18n } from '../i18n';
 
 export const Quiz: React.FC = () => {
@@ -74,9 +75,9 @@ export const Quiz: React.FC = () => {
         </div>
 
         <div>
-          <span className="text-xs font-mono uppercase font-bold tracking-wider text-[#B45309] dark:text-[#F59E0B]">{locale === 'sr' ? 'Rezultat Provere Znanja' : 'Quiz Knowledge Result'}</span>
+          <span className="text-xs font-mono uppercase font-bold tracking-wider text-[#78350F] dark:text-[#F59E0B]">{locale === 'sr' ? 'Rezultat Provere Znanja' : 'Quiz Knowledge Result'}</span>
           <h2 className="text-3xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] mt-1">{m.quiz_mastery_level()}</h2>
-          <p className="text-sm text-[#73736C] dark:text-[#A1A1AA] font-serif italic mt-2">
+          <p className="text-sm text-[#3F3F3C] dark:text-[#D4D4D8] font-serif italic mt-2">
             {m.quiz_points_scored({ score, total: QUIZ_QUESTIONS.length, percent: percentage })}
           </p>
         </div>
@@ -106,6 +107,12 @@ export const Quiz: React.FC = () => {
           <RotateCcw className="w-4 h-4 text-[#F59E0B] dark:text-[#18181B]" />
           <span>{m.quiz_restart_btn()}</span>
         </button>
+
+        {/* Post-Quiz Achievement Ad Placement */}
+        <AdBanner
+          format="auto"
+          label={locale === 'sr' ? 'Preporučeni kursevi i alati' : 'Recommended Tools & Courses'}
+        />
       </div>
     );
   }
@@ -118,15 +125,15 @@ export const Quiz: React.FC = () => {
           <span className="px-3 py-1 rounded-lg bg-[#1A1A1A] dark:bg-[#F59E0B] text-[#F9F9F7] dark:text-[#18181B] font-mono text-xs font-semibold">
             {m.quiz_question_num({ current: currentIdx + 1, total: QUIZ_QUESTIONS.length })}
           </span>
-          <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-mono font-medium">§ {question.category}</span>
+          <span className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-semibold">§ {question.category}</span>
         </div>
 
         <div className="flex items-center gap-3 text-xs font-mono">
-          <span className="flex items-center gap-1 text-[#B45309] dark:text-[#F59E0B] font-bold">
+          <span className="flex items-center gap-1 text-[#78350F] dark:text-[#F59E0B] font-bold">
             <Zap className="w-4 h-4 fill-current" />
             {m.quiz_streak({ streak })}
           </span>
-          <span className="text-[#73736C] dark:text-[#A1A1AA]">{m.quiz_points({ score, total: currentIdx + (isAnswered ? 1 : 0) })}</span>
+          <span className="text-[#3F3F3C] dark:text-[#D4D4D8] font-semibold">{m.quiz_points({ score, total: currentIdx + (isAnswered ? 1 : 0) })}</span>
         </div>
       </div>
 
@@ -141,11 +148,11 @@ export const Quiz: React.FC = () => {
       {/* Main Question Card */}
       <div className="bg-[#FFFFFF] dark:bg-[#18181B] text-[#1A1A1A] dark:text-[#F4F4F5] rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] space-y-5">
         <div>
-          <span className="text-xs font-mono font-bold text-[#B45309] dark:text-[#F59E0B] uppercase tracking-wider">{question.difficulty}</span>
+          <span className="text-xs font-mono font-bold text-[#78350F] dark:text-[#F59E0B] uppercase tracking-wider">{question.difficulty}</span>
           <h3 className="text-xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] mt-1">
             {locale === 'en' && question.titleEn ? question.titleEn : question.title}
           </h3>
-          <p className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic mt-1">{m.quiz_prompt()}</p>
+          <p className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-serif italic mt-1">{m.quiz_prompt()}</p>
         </div>
 
         {/* Code Snippet */}
@@ -201,8 +208,8 @@ export const Quiz: React.FC = () => {
         {/* Explanation Revealed */}
         {isAnswered && (
           <div className="mt-4 p-5 bg-[#FAF9F5] dark:bg-[#202023] rounded-xl border border-[#E5E5DF] dark:border-[#3F3F46] space-y-2">
-            <div className="flex items-center gap-2 text-xs font-serif font-bold text-[#B45309] dark:text-[#F59E0B]">
-              <Sparkles className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
+            <div className="flex items-center gap-2 text-xs font-serif font-bold text-[#78350F] dark:text-[#F59E0B]">
+              <Sparkles className="w-4 h-4 text-[#78350F] dark:text-[#F59E0B]" />
               <span>{m.quiz_explanation_title()}</span>
             </div>
             <FormattedText
@@ -210,8 +217,8 @@ export const Quiz: React.FC = () => {
               as="p"
               className="text-xs sm:text-sm text-[#262624] dark:text-[#D4D4D8] leading-relaxed"
             />
-            <div className="pt-2 border-t border-[#E5E5DF] dark:border-[#3F3F46] text-[11px] text-[#73736C] dark:text-[#A1A1AA] flex items-center gap-1.5 font-mono">
-              <BookOpen className="w-3.5 h-3.5 text-[#B45309] dark:text-[#F59E0B]" />
+            <div className="pt-2 border-t border-[#E5E5DF] dark:border-[#3F3F46] text-[11px] text-[#3F3F3C] dark:text-[#D4D4D8] flex items-center gap-1.5 font-mono font-medium">
+              <BookOpen className="w-3.5 h-3.5 text-[#78350F] dark:text-[#F59E0B]" />
               <span>{m.quiz_spec_ref({ rule: (locale === 'en' && question.ecmaRuleEn) ? question.ecmaRuleEn : question.ecmaRule })}</span>
             </div>
 

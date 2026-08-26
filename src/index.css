@@ -22,7 +22,12 @@
   }
 }
 
-/* Custom editorial scrollbars */
+/* Performance optimizations for Core Web Vitals */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 360px;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -49,21 +54,21 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   background: #52525B;
 }
 
-/* Prism.js Syntax Highlighting Color Palette (Editorial Dark) */
+/* Prism.js Syntax Highlighting Color Palette (High-Contrast Editorial Dark) */
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #71717A;
+  color: #A1A1AA; /* High contrast: 5.8:1 on #18181B */
   font-style: italic;
 }
 
 .token.punctuation {
-  color: #A1A1AA;
+  color: #D4D4D8; /* High contrast: 10.5:1 on #18181B */
 }
 
 .token.namespace {
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .token.property,
@@ -73,7 +78,7 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #F59E0B; /* Amber/Orange */
+  color: #FBBF24; /* Amber: 10.9:1 on #18181B */
   font-weight: 500;
 }
 
@@ -83,7 +88,7 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #34D399; /* Mint / Emerald */
+  color: #4ADE80; /* Emerald: 10.2:1 on #18181B */
 }
 
 .token.operator,
@@ -91,26 +96,26 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #38BDF8; /* Sky Blue */
+  color: #67E8F9; /* Sky Cyan: 11.5:1 on #18181B */
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #C084FC; /* Violet / Lavender */
+  color: #D8B4FE; /* Violet: 9.6:1 on #18181B */
   font-weight: 600;
 }
 
 .token.function,
 .token.class-name {
-  color: #60A5FA; /* Dodger Blue / Periwinkle */
+  color: #93C5FD; /* Dodger Blue: 9.5:1 on #18181B */
   font-weight: 600;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #FB7185; /* Rose */
+  color: #FDA4AF; /* Rose: 10.1:1 on #18181B */
 }
 
 .token.important,

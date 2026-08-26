@@ -159,14 +159,14 @@ console.log("toSorted array:", sorted);`
             <Terminal className="w-6 h-6 text-[#047857] dark:text-[#34D399]" />
             <span>{m.play_title()}</span>
           </h2>
-          <p className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic mt-0.5">
+          <p className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-serif italic mt-0.5">
             {m.play_subtitle()}
           </p>
         </div>
 
         {/* Preset Selector */}
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-mono font-medium">{localize('Primeri:', 'Presets:')}</span>
+          <span className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-medium">{localize('Primeri:', 'Presets:')}</span>
           {PLAYGROUND_PRESETS.map((preset, idx) => (
             <button
               key={idx}
@@ -174,7 +174,7 @@ console.log("toSorted array:", sorted);`
                 setCode(preset.code);
                 setResult(null);
               }}
-              className="px-2.5 py-1 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#202023] text-[#575750] dark:text-[#D4D4D8] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] transition border border-[#E5E5DF] dark:border-[#3F3F46] shadow-sm font-medium cursor-pointer"
+              className="px-2.5 py-1 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#202023] text-[#3F3F3C] dark:text-[#D4D4D8] hover:bg-[#EBEBE5] dark:hover:bg-[#27272A] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] transition border border-[#D4D4CE] dark:border-[#3F3F46] shadow-sm font-medium cursor-pointer"
             >
               {preset.name}
             </button>
@@ -192,8 +192,8 @@ console.log("toSorted array:", sorted);`
                 <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] inline-block"></span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] inline-block"></span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] inline-block"></span>
-                <span className="text-xs font-mono text-[#73736C] dark:text-[#A1A1AA] ml-2">sandbox.js</span>
-                <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-[#FAF9F5] dark:bg-[#27272A] text-[#73736C] dark:text-[#A1A1AA] border border-[#E5E5DF] dark:border-[#3F3F46]">
+                <span className="text-xs font-mono text-[#3F3F3C] dark:text-[#D4D4D8] ml-2">sandbox.js</span>
+                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#FAF9F5] dark:bg-[#27272A] text-[#3F3F3C] dark:text-[#D4D4D8] border border-[#D4D4CE] dark:border-[#3F3F46]">
                   {localize('Uživo označavanje koda', 'Live Syntax Highlighting')}
                 </span>
               </div>
@@ -202,7 +202,7 @@ console.log("toSorted array:", sorted);`
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 text-xs text-[#575750] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] px-2.5 py-1 rounded-lg bg-[#FAF9F5] dark:bg-[#27272A] hover:bg-[#EBEBE5] dark:hover:bg-[#3F3F46] border border-[#E5E5DF] dark:border-[#3F3F46] transition cursor-pointer"
+                  className="flex items-center gap-1 text-xs text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] px-2.5 py-1 rounded-lg bg-[#FAF9F5] dark:bg-[#27272A] hover:bg-[#EBEBE5] dark:hover:bg-[#3F3F46] border border-[#D4D4CE] dark:border-[#3F3F46] transition cursor-pointer"
                   title={localize('Kopirajte kod', 'Copy code')}
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-[#15803D] dark:text-[#4ADE80]" /> : <Copy className="w-3.5 h-3.5" />}
@@ -255,7 +255,7 @@ console.log("toSorted array:", sorted);`
 
           {/* Action Bar */}
           <div className="flex items-center justify-between pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] mt-3 shrink-0">
-            <span className="text-xs text-[#73736C] dark:text-[#A1A1AA] font-serif italic">
+            <span className="text-xs text-[#3F3F3C] dark:text-[#D4D4D8] font-serif italic">
               {localize('Podržava ES2026, async/await i standardne console funkcije', 'Supports ES2026, async/await and standard console functions')}
             </span>
             <button
@@ -278,7 +278,7 @@ console.log("toSorted array:", sorted);`
                 {m.play_console_output()}
               </span>
               {result && (
-                <span className="text-[11px] font-mono text-[#73736C] dark:text-[#A1A1AA] flex items-center gap-1">
+                <span className="text-[11px] font-mono text-[#3F3F3C] dark:text-[#D4D4D8] flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {result.executionTimeMs}ms
                 </span>
@@ -288,11 +288,11 @@ console.log("toSorted array:", sorted);`
             {/* Console Log Stream */}
             <div className="flex-1 min-h-[460px] overflow-y-auto bg-[#141413] dark:bg-[#09090B] rounded-xl p-4 border border-[#2B2B28] dark:border-[#27272A] font-mono text-xs space-y-2">
               {!result ? (
-                <div className="text-[#73736C] dark:text-[#71717A] italic text-center my-28 font-serif">
+                <div className="text-[#A1A1AA] dark:text-[#A1A1AA] italic text-center my-28 font-serif">
                   {m.play_no_output()}
                 </div>
               ) : result.logs.length === 0 && !result.returnValue && !result.error ? (
-                <div className="text-[#73736C] dark:text-[#71717A] italic">{localize('Kod je izvršen bez ispisa u konzoli.', 'Code executed with no console output.')}</div>
+                <div className="text-[#A1A1AA] dark:text-[#A1A1AA] italic">{localize('Kod je izvršen bez ispisa u konzoli.', 'Code executed with no console output.')}</div>
               ) : (
                 <>
                   {result.logs.map((log, idx) => (
@@ -330,11 +330,11 @@ console.log("toSorted array:", sorted);`
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] text-[11px] text-[#73736C] dark:text-[#A1A1AA] flex items-center justify-between mt-3 shrink-0">
+          <div className="pt-3 border-t border-[#E5E5DF] dark:border-[#27272A] text-[11px] text-[#3F3F3C] dark:text-[#D4D4D8] flex items-center justify-between mt-3 shrink-0">
             <span>{localize('Izvršeno u izolovanom okruženju pretraživača', 'Executed in isolated browser environment')}</span>
             <button
               onClick={() => setResult(null)}
-              className="text-[#575750] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5] transition font-medium cursor-pointer"
+              className="text-[#3F3F3C] dark:text-[#D4D4D8] hover:text-[#000000] dark:hover:text-[#FFFFFF] transition font-semibold cursor-pointer"
             >
               {m.play_clear_btn()}
             </button>

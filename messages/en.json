@@ -151,5 +151,6 @@
   "matrix_tab_all": "All comparisons",
   "matrix_js_behavior": "JavaScript Approach",
   "matrix_other_behavior": "Other Language Approach",
-  "matrix_key_contrast": "Key Contrast & Why JS does this"
+  "matrix_key_contrast": "Key Contrast & Why JS does this",
+  "footer_text": "Built for developers mastering modern ECMAScript mechanics, JavaScript engine optimizations, and coding interviews."
 }

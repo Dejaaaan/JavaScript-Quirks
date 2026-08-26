@@ -253,5 +253,153 @@ export const COERCION_DATABASE: CoercionItem[] = [
       'Step 4: Solution: Use `new Map()` when you need object references as keys.'
     ],
     specReference: 'ECMA-262 §7.1.17 ToPropertyKey'
+  },
+  {
+    id: 'relational-string-vs-number',
+    expression: '"10" < "9" vs "10" < 9',
+    evaluatedResult: 'true vs false',
+    category: 'Aritmetika i Konkatenacija',
+    categoryEn: 'Arithmetic & Concatenation',
+    explanation: 'Kada su OBA operanda stringovi, relacioni operatori (`<`, `>`, `<=`, `>=`) vrše leksikografsko poređenje UTF-16 kodova znakova (`"1"` ima manji kod od `"9"`, pa je `"10" < "9"` tačno!). Ali kada je jedan operand broj, a drugi string, string se preko `ToNumber()` konvertuje u broj, pa `10 < 9` daje `false`.',
+    explanationEn: 'When BOTH operands are strings, relational operators (`<`, `>`, `<=`, `>=`) compare UTF-16 character codes lexicographically (`"1"` < `"9"`, making `"10" < "9"` true!). But when one operand is a number, the string is coerced via `ToNumber()`, making `10 < 9` evaluate to `false`.',
+    steps: [
+      'Korak 1: `"10" < "9"`: Oba su stringovi → Leksikografsko poređenje prvih znakova: `"1"` (kod 49) < `"9"` (kod 57) → `true`',
+      'Korak 2: `"10" < 9`: Jedan je broj → `ToNumber("10")` = `10` → Numeričko poređenje: `10 < 9` → `false`',
+      'Korak 3: Zato je `"100" < "20"` tačno, dok je `"100" < 20` netačno!'
+    ],
+    stepsEn: [
+      'Step 1: `"10" < "9"`: Both are strings → Lexicographical UTF-16 comparison of first characters: `"1"` (code 49) < `"9"` (code 57) → `true`',
+      'Step 2: `"10" < 9`: One operand is number → `ToNumber("10")` = `10` → Numeric comparison: `10 < 9` → `false`',
+      'Step 3: Hence `"100" < "20"` is true, whereas `"100" < 20` is false!'
+    ],
+    specReference: 'ECMA-262 §7.2.13 Abstract Relational Comparison'
+  },
+  {
+    id: 'null-relational-quirk',
+    expression: 'null == 0 vs null >= 0 vs null > 0',
+    evaluatedResult: 'false vs true vs false',
+    category: 'Labava Jednakost (==)',
+    categoryEn: 'Loose Equality (==)',
+    explanation: 'Jedna od najpoznatijih asimetrija u JavaScript-u. Labava jednakost `==` koristi algoritam u 11 koraka gde `null` biva jednak isključivo sa `undefined`. Nasuprot tome, relacioni operatori (`>=`, `<=`, `<`, `>`) koriste Abstract Relational Comparison koji eksplicitno poziva `ToNumber(null)` što daje `0`. Zato `0 >= 0` daje `true`, dok `0 > 0` daje `false`!',
+    explanationEn: 'One of the most famous asymmetries in JS. Loose equality `==` uses an 11-step algorithm where `null` only equals `undefined`. In contrast, relational operators (`>=`, `<=`, `<`, `>`) invoke `ToNumber(null)` which yields `0`. Thus `0 >= 0` evaluates to `true`, while `0 > 0` evaluates to `false`!',
+    steps: [
+      'Korak 1: `null == 0` → Pravilo specifikacije: `null` je labavo jednak samo sa `undefined` → `false`',
+      'Korak 2: `null >= 0` → Relaciono poređenje pretvara `null` preko `ToNumber(null)` u `0` → `0 >= 0` → `true`',
+      'Korak 3: `null > 0` → `ToNumber(null)` = `0` → `0 > 0` → `false`'
+    ],
+    stepsEn: [
+      'Step 1: `null == 0` → Spec rule: `null` loosely equals only `undefined` → `false`',
+      'Step 2: `null >= 0` → Relational comparison coerces `null` via `ToNumber(null)` to `0` → `0 >= 0` → `true`',
+      'Step 3: `null > 0` → `ToNumber(null)` = `0` → `0 > 0` → `false`'
+    ],
+    specReference: 'ECMA-262 §7.2.13 (Relational) vs §7.2.14 (Equality)'
+  },
+  {
+    id: 'samevalue-zero-nan-zero',
+    expression: 'Object.is(+0, -0) vs (+0 === -0) && [NaN].includes(NaN)',
+    evaluatedResult: 'false vs true && true',
+    category: 'Labava Jednakost (==)',
+    categoryEn: 'Loose Equality (==)',
+    explanation: 'ECMAScript definiše 4 algoritma jednakosti: 1) Abstract Equality (`==`), 2) Strict Equality (`===`), 3) SameValue (`Object.is`), i 4) SameValueZero (koristi se u `Map`, `Set` i `Array.prototype.includes`). `SameValue` razlikuje `+0` i `-0` i smatra `NaN` jednakim samom sebi. `SameValueZero` smatra `+0` i `-0` jednakim, ali takođe smatra da je `NaN` jednak `NaN` (zbog čega `[NaN].includes(NaN)` vraća `true`, dok `[NaN].indexOf(NaN)` koji koristi `===` vraća `-1`).',
+    explanationEn: 'ECMAScript defines 4 equality algorithms: 1) Abstract (`==`), 2) Strict (`===`), 3) SameValue (`Object.is`), and 4) SameValueZero (used by `Map`, `Set`, and `Array.prototype.includes`). `SameValue` distinguishes `+0` from `-0` and treats `NaN` equal to `NaN`. `SameValueZero` treats `+0` and `-0` as equal, but matches `NaN` to `NaN` (which is why `[NaN].includes(NaN)` is `true`, while `[NaN].indexOf(NaN)` using `===` returns `-1`).',
+    steps: [
+      'Korak 1: `+0 === -0` vraća `true` (IEEE 754 striktna jednakost)',
+      'Korak 2: `Object.is(+0, -0)` vraća `false` (SameValue algoritam)',
+      'Korak 3: `NaN === NaN` vraća `false`, pa `[NaN].indexOf(NaN)` vraća `-1`',
+      'Korak 4: `[NaN].includes(NaN)` koristi SameValueZero algoritam i vraća `true`!'
+    ],
+    stepsEn: [
+      'Step 1: `+0 === -0` returns `true` (IEEE 754 strict equality)',
+      'Step 2: `Object.is(+0, -0)` returns `false` (SameValue algorithm)',
+      'Step 3: `NaN === NaN` returns `false`, so `[NaN].indexOf(NaN)` returns `-1`',
+      'Step 4: `[NaN].includes(NaN)` uses SameValueZero algorithm and returns `true`!'
+    ],
+    specReference: 'ECMA-262 §7.2.11 SameValue & §7.2.12 SameValueZero'
+  },
+  {
+    id: 'bitwise-toint32-coercion',
+    expression: '~~3.9 vs (1.5 | 0) vs (2**32 | 0)',
+    evaluatedResult: '3 vs 1 vs 0',
+    category: 'Konverzija Tipova',
+    categoryEn: 'Type Conversion',
+    explanation: 'Svi bitwise operatori u JavaScript-u (`~`, `|`, `&`, `^`, `<<`, `>>`) prinudno konvertuju svoje operande u 32-bitne označene cele brojeve (algoritam `ToInt32`). Decimalni deo se momentalno odseca (truncation). Brojevi veći od 2^31 - 1 se prelivaju (wrap-around), pa `(2**32) | 0` postaje `0`.',
+    explanationEn: 'All JavaScript bitwise operators (`~`, `|`, `&`, `^`, `<<`, `>>`) force their operands into 32-bit signed integers (via `ToInt32`). Decimal portions are instantly truncated. Numbers beyond 2^31 - 1 wrap around, turning `(2**32) | 0` into `0`.',
+    steps: [
+      'Korak 1: `~~3.9`: Prvi `~3.9` poziva `ToInt32(3.9)` = 3, zatim bitwise NOT `~3` = -4; drugi `~(-4)` vraća 3 (brzo odsecanje decimale)',
+      'Korak 2: `1.5 | 0`: `ToInt32(1.5)` = 1, `1 | 0` = 1',
+      'Korak 3: `2**32 | 0`: `2**32` je 4294967296. U 32-bitnoj aritmetici sa modulom 2^32 ovo se preliva u `0`'
+    ],
+    stepsEn: [
+      'Step 1: `~~3.9`: First `~3.9` runs `ToInt32(3.9)` = 3, bitwise NOT `~3` = -4; second `~(-4)` returns 3 (fast truncation)',
+      'Step 2: `1.5 | 0`: `ToInt32(1.5)` = 1, `1 | 0` = 1',
+      'Step 3: `2**32 | 0`: `2**32` is 4294967296. In 32-bit modulo 2^32 arithmetic it wraps around to `0`'
+    ],
+    specReference: 'ECMA-262 §7.1.5 ToInt32 & §7.1.6 ToUint32'
+  },
+  {
+    id: 'symbol-coercion-rules',
+    expression: 'String(Symbol("id")) vs ("" + Symbol("id"))',
+    evaluatedResult: '"Symbol(id)" vs TypeError',
+    category: 'Konverzija Tipova',
+    categoryEn: 'Type Conversion',
+    explanation: 'Simboli (`Symbol`) se namerno NE MOGU implicitno konvertovati u stringove ili brojeve! Pisanje `"" + Symbol("id")` ili `+Symbol("id")` baca `TypeError: Cannot convert a Symbol value to a string/number`. Ovo je namerno dizajnirano u ES6 kako bi se sprečilo da simboli slučajno postanu obična svojstva objekata. Eksplicitna konverzija preko `String(Symbol("id"))` ili `Boolean(Symbol("id"))` (koji je uvek `true`) je dozvoljena.',
+    explanationEn: 'Symbols cannot be implicitly coerced to strings or numbers! Writing `"" + Symbol("id")` or `+Symbol("id")` throws `TypeError: Cannot convert a Symbol value to a string/number`. This was deliberately designed in ES6 to prevent symbols from silently degrading into normal string object properties. Explicit conversion via `String(Symbol("id"))` or `Boolean(Symbol("id"))` (always `true`) is permitted.',
+    steps: [
+      'Korak 1: `"" + Symbol("id")` pokušava implicitni `ToString` → baca `TypeError`!',
+      'Korak 2: `+Symbol("id")` pokušava `ToNumber` → baca `TypeError`!',
+      'Korak 3: `String(Symbol("id"))` vrši eksplicitnu konverziju → `"Symbol(id)"` (uspešno)',
+      'Korak 4: `Boolean(Symbol("id"))` → `true` (svi simboli su truthy)'
+    ],
+    stepsEn: [
+      'Step 1: `"" + Symbol("id")` attempts implicit `ToString` → throws `TypeError`!',
+      'Step 2: `+Symbol("id")` attempts `ToNumber` → throws `TypeError`!',
+      'Step 3: `String(Symbol("id"))` performs explicit conversion → `"Symbol(id)"` (succeeds)',
+      'Step 4: `Boolean(Symbol("id"))` → `true` (all symbols are truthy)'
+    ],
+    specReference: 'ECMA-262 §7.1.12 ToString (Symbol rejection)'
+  },
+  {
+    id: 'symbol-toprimitive-custom',
+    expression: '+{ [Symbol.toPrimitive]: h => h==="number"?42:"hi" }',
+    evaluatedResult: '42',
+    category: 'Konverzija Tipova',
+    categoryEn: 'Object-to-Primitive Coercion',
+    explanation: 'Kada objekat implementira `[Symbol.toPrimitive](hint)`, JavaScript motor preskače standardne `.valueOf()` i `.toString()` metode i direktno prepušta kontrolu vašoj funkciji. Parametar `hint` može biti `"number"`, `"string"` ili `"default"`.',
+    explanationEn: 'When an object defines `[Symbol.toPrimitive](hint)`, the JavaScript engine bypasses the standard `.valueOf()` and `.toString()` algorithms and delegates directly to your function. The `hint` argument is `"number"`, `"string"`, or `"default"`.',
+    steps: [
+      'Korak 1: Unarni `+` operator zahteva numeričku vrednost → Pokreće `ToPrimitive(hint: "number")`',
+      'Korak 2: Motor pronalazi `[Symbol.toPrimitive]` hook i poziva ga sa `hint = "number"`',
+      'Korak 3: Funkcija vraća `42` → Unarni plus dobija primitiv i rezultat je `42`',
+      'Korak 4: Kada bismo upotrebili template literal `${obj}`, hint bi bio `"string"` i vratio bi `"hi"`!'
+    ],
+    stepsEn: [
+      'Step 1: Unary `+` operator demands a numeric value → Triggers `ToPrimitive(hint: "number")`',
+      'Step 2: Engine detects `[Symbol.toPrimitive]` hook and executes it passing `hint = "number"`',
+      'Step 3: Function returns `42` → Unary plus receives primitive number and finishes with `42`',
+      'Step 4: If evaluated in a template string `${obj}`, hint would be `"string"` and return `"hi"`!'
+    ],
+    specReference: 'ECMA-262 §7.1.1 ToPrimitive with Symbol.toPrimitive'
+  },
+  {
+    id: 'parseint-vs-number-coercion',
+    expression: 'parseInt("10px", 10) vs Number("10px") vs parseInt("08")',
+    evaluatedResult: '10 vs NaN vs 8',
+    category: 'Konverzija Tipova',
+    categoryEn: 'Type Conversion',
+    explanation: 'Razlika između parsiranja i konverzije: `Number("10px")` vrši striktnu `ToNumber` konverziju koja zahteva da CEO string bude validan broj (ako naiđe na `"px"`, vraća `NaN`). Nasuprot tome, `parseInt("10px", 10)` skenira string s leva na desno i staje na prvom ne-numeričkom karakteru (vraća `10`). Uvek eksplicitno navedite osnovu `10` (`radix`) u `parseInt` da biste izbegli oktalno parsiranje u starijim okruženjima!',
+    explanationEn: 'Parsing vs Coercion distinction: `Number("10px")` runs strict `ToNumber` coercion requiring the ENTIRE string to be numeric (returns `NaN` upon encountering `"px"`). In contrast, `parseInt("10px", 10)` reads left-to-right until the first non-numeric character (returns `10`). Always supply explicit base `10` (`radix`) to `parseInt` to prevent legacy octal parsing!',
+    steps: [
+      'Korak 1: `Number("10px")` → Striktan `ToNumber` algoritam nailazi na slovo `"p"` → Momentalno vraća `NaN`',
+      'Korak 2: `parseInt("10px", 10)` → Čita `"1"`, `"0"`, nailazi na `"p"` i prekida čitanje → Vraća `10`',
+      'Korak 3: `Number("")` vraća `0`, dok `parseInt("")` vraća `NaN` (jer prazan string nema početne cifre)',
+      'Korak 4: Zlatno pravilo: Za čiste brojeve koristite `Number(x)` ili `+x`; za CSS jedinice i mešovite stringove koristite `parseInt(x, 10)`'
+    ],
+    stepsEn: [
+      'Step 1: `Number("10px")` → Strict `ToNumber` algorithm encounters non-digit `"p"` → Instantly returns `NaN`',
+      'Step 2: `parseInt("10px", 10)` → Parses `"1"`, `"0"`, halts at `"p"` → Returns parsed integer `10`',
+      'Step 3: `Number("")` evaluates to `0`, while `parseInt("")` evaluates to `NaN` (no starting digits)',
+      'Step 4: Golden rule: For pure numbers use `Number(x)` or `+x`; for CSS units and mixed strings use `parseInt(x, 10)`'
+    ],
+    specReference: 'ECMA-262 §7.1.3 ToNumber vs §19.2.5 parseInt'
   }
 ];

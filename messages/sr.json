@@ -151,5 +151,6 @@
   "matrix_tab_all": "Sva poređenja",
   "matrix_js_behavior": "JavaScript Pristup",
   "matrix_other_behavior": "Pristup u drugom jeziku",
-  "matrix_key_contrast": "Ključna Razlika & Zašto JS to radi"
+  "matrix_key_contrast": "Ključna Razlika & Zašto JS to radi",
+  "footer_text": "Kreirano za programere koji savladavaju mehaniku modernog ECMAScript motora, optimizacije i pripremu za tehničke intervjue."
 }

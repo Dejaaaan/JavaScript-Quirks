@@ -28,9 +28,9 @@ const RAW_TOPICS: JSTopic[] = [
         },
         {
           "term": "Preopterećeni operator sabiranja (+)",
-          "detail": "Operator + je jedini aritmetički operator koji vrši i matematičko sabiranje i konkatenaciju stringova. Pravilo glasi: ako je makar jedan operand nakon ToPrimitive operacije String, vrši se spajanje stringova. Svi ostali operatori (-, *, /, %) bezuslovno konvertuju oba operanda u Number preko ToNumber().",
+          "detail": "Binarni operator `+` je jedini aritmetički operator koji vrši i matematičko sabiranje i konkatenaciju stringova (dvostruka priroda). Ako je makar jedan operand nakon `ToPrimitive` String, vrši se spajanje stringova; u suprotnom, oba postaju brojevi. Za razliku od binarnog sabiranja, unarni plus (`+x`) nema ovu dualnost — on uvek strogo forsira numeričku konverziju (`ToNumber`). Svi ostali binarni operatori (-, *, /, %) takođe bezuslovno konvertuju u Number.",
           "termEn": "Overloaded Addition Operator (+)",
-          "detailEn": "The + operator is the only arithmetic operator performing both mathematical addition and string concatenation. Rule: if either operand becomes a String after ToPrimitive, string concatenation occurs. All other operators (-, *, /, %) unconditionally convert operands to Number via ToNumber()."
+          "detailEn": "The binary `+` operator is the only arithmetic operator performing both mathematical addition and string concatenation (its dual nature). If either operand becomes a String after `ToPrimitive`, string concatenation occurs; otherwise, numeric addition is performed. Unlike binary addition, the unary plus (`+x`) lacks this duality — it strictly and unconditionally coerces its operand to a Number via `ToNumber`. All other binary arithmetic operators (-, *, /, %) likewise unconditionally convert to Number."
         },
         {
           "term": "Labava jednakost (==) naspram Striktne (===)",

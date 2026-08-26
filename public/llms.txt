@@ -1,0 +1,46 @@
+# JavaScript Quirks & Engine Internals Guide
+> An authoritative reference and interactive learning engine for ECMAScript 2026 specifications, JavaScript engine internals (V8/SpiderMonkey), type coercion, event loop execution, and interview challenges.
+
+## Core Chapters & Language Quirks (9 Comprehensive Guides)
+- [Implicit Type Coercion and Loose Equality (==)](https://javascript-quirks.ai.studio/#topic-type-coercion-equality): JavaScript is dynamically and weakly typed. When operators receive incompatible types, rather than halting execution, the runtime invokes ab...
+- [Event Loop & Task Queues](https://javascript-quirks.ai.studio/#topic-event-loop-concurrency): JavaScript executes on a single thread with a single Call Stack. Asynchronous behavior is achieved through the runtime environment (Browser ...
+- [The "this" Keyword & Execution Context](https://javascript-quirks.ai.studio/#topic-this-context-binding): Unlike languages where `this` is permanently tied to a class instance, in JavaScript standard functions dynamically evaluate `this` based on...
+- [Scope, Hoisting & Closures](https://javascript-quirks.ai.studio/#topic-scope-hoisting-closures): JavaScript uses lexical (static) scoping. Before execution, the engine runs an environment creation phase where memory is allocated for decl...
+- [Prototypes, __proto__ & Inheritance](https://javascript-quirks.ai.studio/#topic-prototypes-oop): JavaScript lacks classical copy-based classes. ES6 `class` syntax is pure syntactic sugar over the prototype delegation chain. Every object ...
+- [Array Quirks, Sparse Holes & Mutation](https://javascript-quirks.ai.studio/#topic-arrays-and-objects): JavaScript arrays are specialized objects with numeric keys and an automatic `length` property. The default `Array.prototype.sort()` convert...
+- [Floating-Point Math & BigInt Precision](https://javascript-quirks.ai.studio/#topic-floating-point-numbers): All standard numbers in JavaScript are stored as 64-bit double-precision floating point numbers adhering to the IEEE 754 standard. Because b...
+- [Automatic Semicolon Insertion (ASI) & Syntax Traps](https://javascript-quirks.ai.studio/#topic-syntax-asi-traps): JavaScript features Automatic Semicolon Insertion (ASI), automatically placing semicolons at line breaks where code would otherwise produce ...
+- [Async JavaScript & ES2026 Tools (Promise.try, withResolvers, using)](https://javascript-quirks.ai.studio/#topic-async-promises-es2026): Modern ECMAScript (ES2024–ES2026) introduces powerful async primitives: Promise.withResolvers() eliminates deferred boilerplate, Promise.try...
+
+## LeetCode & Technical Interview Challenges (21 Problems with Test Cases)
+- [#1 Two Sum (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Hash Map Lookup (Single Pass). Category: Arrays & Hash Maps.
+- [#20 Valid Parentheses (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Stack (LIFO). Category: Stack.
+- [#121 Best Time to Buy and Sell Stock (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Greedy / Single Pass Tracker. Category: Two Pointers.
+- [#242 Valid Anagram (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Frequency Counter / Hash Map. Category: Arrays & Hash Maps.
+- [#49 Group Anagrams (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Categorization by Canonical Key (Hash Map). Category: Arrays & Hash Maps.
+- [#3 Longest Substring Without Repeating Characters (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Sliding Window + Hash Map. Category: Sliding Window.
+- [#11 Container With Most Water (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Two Pointers (Inward Shrink). Category: Two Pointers.
+- [#15 3Sum (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Sorting + Two Pointers. Category: Two Pointers.
+- [#53 Maximum Subarray (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Kadane's Algorithm (Dynamic Programming). Category: Dynamic Programming.
+- [#70 Climbing Stairs (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Dynamic Programming (Fibonacci Sequence). Category: Dynamic Programming.
+- [#704 Binary Search (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Binary Search (Divide & Conquer). Category: Two Pointers.
+- [#56 Merge Intervals (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Sorting + Interval Sweeping. Category: Arrays & Hash Maps.
+- [#2627 Debounce (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Closure + Timer Management. Category: JavaScript & Async.
+- [#2721 Execute Asynchronous Functions in Parallel (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Asynchronous Coordination / Custom Promise.all. Category: JavaScript & Async.
+- [#2629 Function Composition (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Functional Programming / Reduce Right. Category: JavaScript & Async.
+- [#146 LRU Cache (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Doubly Linked List + Hash Map / JS Map Ordering. Category: Arrays & Hash Maps.
+- [#206 Reverse Linked List (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Pointer Manipulation (Iterative 3-Pointers). Category: Linked Lists.
+- [#21 Merge Two Sorted Lists (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Dummy Head Node + Two Pointers. Category: Linked Lists.
+- [#226 Invert Binary Tree (Easy)](https://javascript-quirks.ai.studio/#view=leetcode): Tree Traversal (DFS / Recursion). Category: Trees.
+- [#238 Product of Array Except Self (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Prefix and Suffix Accumulation. Category: Arrays & Hash Maps.
+- [#198 House Robber (Medium)](https://javascript-quirks.ai.studio/#view=leetcode): Dynamic Programming (State Reduction). Category: Dynamic Programming.
+
+## Interactive Tools & Visualizers
+- [Interactive AST Playground](https://javascript-quirks.ai.studio/#view=playground): Real-time sandbox to execute, debug, and inspect JavaScript expressions with console output.
+- [Event Loop Visualizer](https://javascript-quirks.ai.studio/#view=event-loop): Visual step-by-step animator for Call Stack, Microtasks, Macrotasks, and rendering ticks.
+- [Type Coercion Matrix](https://javascript-quirks.ai.studio/#view=coercion): Interactive matrix comparing strict vs loose equality across all JavaScript primitives.
+- [JavaScript Diagnostics Quiz](https://javascript-quirks.ai.studio/#view=quiz): 12-question diagnostic test covering tricky language semantics.
+
+## Documentation & Raw Knowledge Base
+- [Full Documentation (llms-full.txt)](https://javascript-quirks.ai.studio/llms-full.txt): Complete uncompressed textual knowledge base including every single topic, chapter guide, ECMAScript rule, code sample, and interview solution.
+- [Sitemap](https://javascript-quirks.ai.studio/sitemap.xml): Complete URL index of all topics and interactive tools.

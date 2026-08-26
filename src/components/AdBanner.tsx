@@ -60,7 +60,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   const [adError, setAdError] = useState(false);
 
   const metaEnv = (import.meta as unknown as { env?: Record<string, string> })?.env || {};
-  const activeClientId = (clientId || metaEnv.VITE_ADSENSE_CLIENT_ID || '').trim();
+  const activeClientId = (clientId || metaEnv.VITE_ADSENSE_CLIENT_ID || 'ca-pub-6816887029574421').trim();
   const activeSlotId = (slotId || metaEnv.VITE_ADSENSE_SLOT_ID || '').trim();
 
   // Determine whether we are in a live production environment with valid Google publisher ID

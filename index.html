@@ -12,13 +12,29 @@
     <meta name="google-adsense-account" content="ca-pub-6816887029574421" />
     <link rel="canonical" href="/" />
 
-    <!-- Instant Theme Initialization Script (Prevents FOUC) -->
+    <!-- Instant Theme Initialization Script (Prevents FOUC across subdomains via Cookie & LocalStorage) -->
     <script>
       (function() {
         try {
-          const theme = localStorage.getItem('theme');
-          const legacy = localStorage.getItem('js_quirks_dark_mode');
-          if (theme === 'dark' || (!theme && legacy === 'true') || (!theme && !legacy && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          var match = document.cookie.match(/(?:^|;\s*)theme=([^;]*)/);
+          var cookieTheme = match ? decodeURIComponent(match[1]) : null;
+          var localTheme = localStorage.getItem('theme');
+          var legacy = localStorage.getItem('js_quirks_dark_mode');
+          
+          var isDark = false;
+          if (cookieTheme === 'dark' || (!cookieTheme && localTheme === 'dark')) {
+            isDark = true;
+          } else if (cookieTheme === 'light' || (!cookieTheme && localTheme === 'light')) {
+            isDark = false;
+          } else if (legacy === 'true') {
+            isDark = true;
+          } else if (legacy === 'false') {
+            isDark = false;
+          } else {
+            isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          }
+
+          if (isDark) {
             document.documentElement.classList.add('dark');
           } else {
             document.documentElement.classList.remove('dark');

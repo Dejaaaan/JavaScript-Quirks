@@ -25,6 +25,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useI18n } from './i18n';
+import { getStoredTheme, saveTheme } from './utils/themeStorage';
 
 // Production Code-Splitting for Heavy Visualizers & Sandbox Components
 const CoercionVisualizer = lazy(() => 
@@ -70,24 +71,15 @@ export default function App() {
   });
   const [showOnlyBookmarks, setShowOnlyBookmarks] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    try {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') return true;
-      if (savedTheme === 'light') return false;
-      // Fallback for legacy key
-      const legacySaved = localStorage.getItem('js_quirks_dark_mode');
-      if (legacySaved !== null) {
-        return JSON.parse(legacySaved);
-      }
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    } catch {
-      return false;
-    }
+    const stored = getStoredTheme();
+    if (stored === 'dark') return true;
+    if (stored === 'light') return false;
+    return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
     try {
-      localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+      saveTheme(isDarkMode ? 'dark' : 'light');
       if (isDarkMode) {
         document.documentElement.classList.add('dark');
       } else {

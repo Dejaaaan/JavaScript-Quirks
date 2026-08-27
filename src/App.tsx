@@ -71,9 +71,13 @@ export default function App() {
   const [showOnlyBookmarks, setShowOnlyBookmarks] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('js_quirks_dark_mode');
-      if (saved !== null) {
-        return JSON.parse(saved);
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') return true;
+      if (savedTheme === 'light') return false;
+      // Fallback for legacy key
+      const legacySaved = localStorage.getItem('js_quirks_dark_mode');
+      if (legacySaved !== null) {
+        return JSON.parse(legacySaved);
       }
       return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     } catch {
@@ -83,7 +87,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('js_quirks_dark_mode', JSON.stringify(isDarkMode));
+      localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
       if (isDarkMode) {
         document.documentElement.classList.add('dark');
       } else {

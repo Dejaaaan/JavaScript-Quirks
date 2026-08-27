@@ -105,23 +105,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#E5E5DF] dark:border-[#27272A] bg-[#FAF9F5]/95 dark:bg-[#121214]/95 backdrop-blur-md transition-colors">
-      {/* Top Standard & Spec Banner */}
-      <div className="bg-[#1A1A1A] text-[#F59E0B] px-4 py-1 text-[11px] font-mono flex items-center justify-between border-b border-[#27272A]">
-        <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse"></span>
-            <span className="font-bold tracking-wider">{m.top_masthead_title()}</span>
-            <span className="text-[#73736C] hidden sm:inline">•</span>
-            <span className="text-[#A1A1AA] hidden sm:inline text-[10px]">{m.top_masthead_subtitle()}</span>
-          </div>
-          <div className="flex items-center gap-3 text-[10px] text-[#A1A1AA]">
-            <span className="bg-[#27272A] px-2 py-0.5 rounded font-mono text-[#F4F4F5] border border-[#3F3F46]">
-              {m.top_standard()}
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 gap-3">

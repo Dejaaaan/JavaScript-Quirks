@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -26,18 +26,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build project
+      - name: Build project with environment variables
+        env:
+          # Reads from GitHub Repo Variables / Secrets with intelligent fallbacks
+          VITE_ADSENSE_CLIENT_ID: ${{ vars.VITE_ADSENSE_CLIENT_ID || secrets.VITE_ADSENSE_CLIENT_ID || 'ca-pub-6816887029574421' }}
+          VITE_ADSENSE_SLOT_ID: ${{ vars.VITE_ADSENSE_SLOT_ID || secrets.VITE_ADSENSE_SLOT_ID }}
+          VITE_ADSENSE_HORIZONTAL_SLOT_ID: ${{ vars.VITE_ADSENSE_HORIZONTAL_SLOT_ID || secrets.VITE_ADSENSE_HORIZONTAL_SLOT_ID }}
+          VITE_ADSENSE_INFEED_SLOT_ID: ${{ vars.VITE_ADSENSE_INFEED_SLOT_ID || secrets.VITE_ADSENSE_INFEED_SLOT_ID }}
+          VITE_ADSENSE_RECTANGLE_SLOT_ID: ${{ vars.VITE_ADSENSE_RECTANGLE_SLOT_ID || secrets.VITE_ADSENSE_RECTANGLE_SLOT_ID }}
         run: npm run build
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: './dist'
 
   deploy:
     environment:

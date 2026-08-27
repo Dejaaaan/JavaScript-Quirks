@@ -61,15 +61,22 @@ export const AdBanner: React.FC<AdBannerProps> = ({
 
   const metaEnv = (import.meta as unknown as { env?: Record<string, string> })?.env || {};
   const activeClientId = (clientId || metaEnv.VITE_ADSENSE_CLIENT_ID || 'ca-pub-6816887029574421').trim();
-  const activeSlotId = (slotId || metaEnv.VITE_ADSENSE_SLOT_ID || '').trim();
+  
+  // Format-specific slot resolution with fallback to default global slot ID
+  const resolvedSlotByFormat = (() => {
+    if (format === 'horizontal') return metaEnv.VITE_ADSENSE_HORIZONTAL_SLOT_ID;
+    if (format === 'in-feed') return metaEnv.VITE_ADSENSE_INFEED_SLOT_ID;
+    if (format === 'rectangle') return metaEnv.VITE_ADSENSE_RECTANGLE_SLOT_ID;
+    return undefined;
+  })();
+
+  const activeSlotId = (slotId || resolvedSlotByFormat || metaEnv.VITE_ADSENSE_SLOT_ID || '').trim();
 
   // Determine whether we are in a live production environment with valid Google publisher ID
   const isLiveConfigured = 
     Boolean(activeClientId) && 
     activeClientId.startsWith('ca-pub-') && 
-    !activeClientId.includes('XXXX') &&
-    Boolean(activeSlotId) &&
-    !activeSlotId.includes('XXXX');
+    !activeClientId.includes('XXXX');
 
   useEffect(() => {
     if (!isLiveConfigured) return;
@@ -103,14 +110,14 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   const getContainerStyle = () => {
     switch (format) {
       case 'horizontal':
-        return 'min-h-[90px] sm:min-h-[100px] max-w-4xl py-3';
+        return 'min-h-[90px] sm:min-h-[100px] max-w-4xl py-2';
       case 'rectangle':
-        return 'min-h-[250px] sm:min-h-[280px] max-w-sm py-4';
+        return 'min-h-[250px] sm:min-h-[280px] max-w-sm py-3';
       case 'in-feed':
-        return 'min-h-[160px] sm:min-h-[190px] w-full p-5';
+        return 'min-h-[160px] sm:min-h-[190px] w-full p-4';
       case 'auto':
       default:
-        return 'min-h-[120px] sm:min-h-[250px] max-w-3xl py-4';
+        return 'min-h-[100px] sm:min-h-[250px] max-w-3xl py-3';
     }
   };
 
@@ -136,24 +143,16 @@ export const AdBanner: React.FC<AdBannerProps> = ({
             className="adsbygoogle"
             style={{ display: 'block', width: '100%', textAlign: 'center' }}
             data-ad-client={activeClientId}
-            data-ad-slot={activeSlotId}
+            {...(activeSlotId ? { 'data-ad-slot': activeSlotId } : {})}
             data-ad-format={format === 'in-feed' ? 'fluid' : format}
             data-full-width-responsive={responsive ? 'true' : 'false'}
           />
         ) : (
-          /* Elegant placeholder for preview and development */
-          <div className="w-full flex flex-col items-center justify-center px-4 py-6 text-center space-y-2 select-none">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#EBEBE5] dark:bg-[#2A2A2E] text-[#575750] dark:text-[#A1A1AA] text-[11px] font-mono font-medium">
-              <span className="w-2 h-2 rounded-full bg-[#B45309] dark:bg-[#F59E0B] animate-pulse"></span>
-              <span>Google AdSense Placement ({format})</span>
-            </div>
-            <p className="text-xs text-[#575750] dark:text-[#A1A1AA] max-w-md font-sans">
-              Configured for targeted developer tools & cloud sponsors. Set{' '}
-              <code className="text-[11px] font-mono text-[#B45309] dark:text-[#FCD34D]">
-                VITE_ADSENSE_CLIENT_ID
-              </code>{' '}
-              to activate live ad serving.
-            </p>
+          /* Clean, neutral placeholder */
+          <div className="w-full flex items-center justify-center px-4 py-8 text-center select-none">
+            <span className="text-xs text-[#71717A] dark:text-[#A1A1AA] font-mono tracking-wider opacity-60">
+              {label}
+            </span>
           </div>
         )}
       </div>

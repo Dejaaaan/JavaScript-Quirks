@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-full bg-[#F9F9F7] dark:bg-[#121214] scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -150,7 +150,7 @@
     }
     </script>
   </head>
-  <body class="bg-[#F9F9F7] text-[#1A1A1A] antialiased">
+  <body class="min-h-full bg-[#F9F9F7] dark:bg-[#121214] text-[#1A1A1A] dark:text-[#F4F4F5] antialiased flex flex-col">
     <!-- Static fallback outline for search engine crawlers without JavaScript -->
     <noscript>
       <div style="max-width: 800px; margin: 40px auto; padding: 20px; font-family: sans-serif; line-height: 1.6;">
@@ -169,7 +169,7 @@
       </div>
     </noscript>
 
-    <div id="root"></div>
+    <div id="root" class="min-h-screen min-h-[100dvh] flex flex-col flex-grow bg-[#F9F9F7] dark:bg-[#121214]"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

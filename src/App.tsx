@@ -49,7 +49,7 @@ const LeetCodeSection = lazy(() =>
 
 // Sleek loading skeleton for lazily-loaded modules
 const ViewLoadingFallback = () => (
-  <div className="flex flex-col items-center justify-center min-h-[400px] gap-3 text-slate-500 dark:text-slate-400">
+  <div className="flex flex-col items-center justify-center min-h-[50vh] flex-grow gap-3 text-slate-500 dark:text-slate-400">
     <Loader2 className="w-8 h-8 animate-spin text-[#B45309] dark:text-[#F59E0B]" />
     <span className="font-mono text-xs tracking-wider uppercase">Loading Interactive Engine...</span>
   </div>
@@ -156,7 +156,7 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F9F9F7] dark:bg-[#121214] text-[#1A1A1A] dark:text-[#F4F4F5] font-sans antialiased transition-colors duration-200 flex flex-col justify-between">
+    <div className="min-h-screen min-h-[100dvh] bg-[#F9F9F7] dark:bg-[#121214] text-[#1A1A1A] dark:text-[#F4F4F5] font-sans antialiased transition-colors duration-200 flex flex-col justify-between flex-grow">
       {/* Header */}
       <Header
         activeView={activeView}
@@ -180,7 +180,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
         {/* VIEW 1: Main Topics Catalog */}
         {activeView === 'topics' && (
           <div className="space-y-6">
@@ -366,7 +366,7 @@ export default function App() {
       </main>
 
       {/* Editorial App Footer */}
-      <footer className="mt-16 border-t border-[#E5E5DF] dark:border-[#27272A] bg-[#F2F2ED] dark:bg-[#18181B] py-8 text-[#3F3F3C] dark:text-[#D4D4D8] text-xs transition-colors">
+      <footer className="mt-auto border-t border-[#E5E5DF] dark:border-[#27272A] bg-[#F2F2ED] dark:bg-[#18181B] py-8 text-[#3F3F3C] dark:text-[#D4D4D8] text-xs transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <span className="w-6 h-6 rounded bg-[#1A1A1A] dark:bg-[#27272A] text-[#F59E0B] font-mono font-bold flex items-center justify-center text-[10px]">

@@ -111,7 +111,7 @@ export const Quiz: React.FC = () => {
         {/* Post-Quiz Achievement Ad Placement */}
         <AdBanner
           format="auto"
-          label={locale === 'sr' ? 'Preporučeni kursevi i alati' : 'Recommended Tools & Courses'}
+          label={locale === 'sr' ? 'Sponzorisano' : 'Sponsored'}
         />
       </div>
     );

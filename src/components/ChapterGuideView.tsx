@@ -228,7 +228,7 @@ export const ChapterGuideView: React.FC<ChapterGuideViewProps> = ({ guide }) => 
       {activeSection === 'all' && (
         <AdBanner
           format="horizontal"
-          label={locale === 'sr' ? 'Sponzorisani resursi za programere' : 'Sponsored Developer Resources'}
+          label={locale === 'sr' ? 'Sponzorisano' : 'Sponsored'}
         />
       )}
 

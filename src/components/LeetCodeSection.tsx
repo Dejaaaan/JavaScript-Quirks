@@ -1299,7 +1299,7 @@ export const LeetCodeSection: React.FC<LeetCodeSectionProps> = ({ onOpenInPlaygr
       {/* Strategic Bottom Placement for LeetCode workspace */}
       <AdBanner
         format="horizontal"
-        label={locale === 'sr' ? 'Sponzorisani alati za pripremu intervjua' : 'Sponsored Interview Prep & Cloud Tools'}
+        label={locale === 'sr' ? 'Sponzorisano' : 'Sponsored'}
       />
     </div>
   );

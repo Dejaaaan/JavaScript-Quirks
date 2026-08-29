@@ -156,7 +156,7 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-[#F9F9F7] dark:bg-[#121214] text-[#1A1A1A] dark:text-[#F4F4F5] font-sans antialiased transition-colors duration-200 flex flex-col justify-between flex-grow">
+    <div className="min-h-screen min-h-[100dvh] w-full max-w-full overflow-x-hidden bg-[#F9F9F7] dark:bg-[#121214] text-[#1A1A1A] dark:text-[#F4F4F5] font-sans antialiased transition-colors duration-200 flex flex-col justify-between flex-grow">
       {/* Header */}
       <Header
         activeView={activeView}
@@ -180,10 +180,10 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col min-w-0">
         {/* VIEW 1: Main Topics Catalog */}
         {activeView === 'topics' && (
-          <div className="space-y-6">
+          <div className="space-y-6 min-w-0 w-full">
             {/* Editorial Header Banner */}
             <div className="rounded-2xl border border-[#E5E5DF] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#18181B] p-6 shadow-xs relative overflow-hidden">
               <div className="absolute -right-10 -bottom-10 opacity-5 pointer-events-none text-9xl font-mono font-black select-none text-[#1A1A1A] dark:text-[#F4F4F5]">
@@ -193,7 +193,7 @@ export default function App() {
               <div className="max-w-3xl space-y-3">
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#FAF9F5] dark:bg-[#202023] border border-[#E5E5DF] dark:border-[#3F3F46] text-[#78350F] dark:text-[#FDE68A] font-mono text-xs font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>{locale === 'sr' ? 'Standardizovan Referentni Priručnik' : 'Standardized Engineering Reference'}</span>
+                  <span>{locale === 'sr' ? 'Standardizovana Referentna Baza' : 'Standardized Engineering Reference'}</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight leading-tight">
                   {m.app_title()}

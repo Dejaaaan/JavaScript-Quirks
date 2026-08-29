@@ -208,7 +208,7 @@ export const LanguageComparisonMatrix: React.FC = () => {
         </div>
 
         {/* Filter Language */}
-        <div className="flex items-center gap-1.5 bg-[#FFFFFF] dark:bg-[#18181B] p-1 rounded-xl border border-[#E5E5DF] dark:border-[#27272A] shadow-sm">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 bg-[#FFFFFF] dark:bg-[#18181B] p-1 rounded-xl border border-[#E5E5DF] dark:border-[#27272A] shadow-sm max-w-full overflow-x-auto">
           {(['All', 'Python', 'Java', 'Rust', 'Go'] as const).map((lang) => (
             <button
               key={lang}

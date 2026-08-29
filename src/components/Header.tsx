@@ -121,9 +121,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="font-serif font-bold text-base sm:text-lg tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
                   {m.brand_title()}
                 </span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#EBEBE5] dark:bg-[#27272A] text-[#3F3F3C] dark:text-[#D4D4D8] font-mono font-semibold">
-                  {m.brand_badge()}
-                </span>
               </div>
               <span className="text-[10px] text-[#40403C] dark:text-[#D4D4D8] hidden md:block leading-tight">
                 {m.brand_subtitle()}
